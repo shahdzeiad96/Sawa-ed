@@ -69,6 +69,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'Sawaed_project.wsgi.application'
+AUTH_USER_MODEL = 'Sawaed_app.CustomUser'#added for the custom user 
+
 
 
 # Database
