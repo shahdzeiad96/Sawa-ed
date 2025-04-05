@@ -6,7 +6,7 @@ from .models import *
 
 # Create your views here.
 def index(request):
-    return render(request,"guesthome.html")
+    return render(request,"index.html")
 
 
 def register(request):
@@ -18,7 +18,7 @@ def register(request):
         
         if password != confirm_password:
             messages.error(request, "Passwords do not match.")
-            return render(request, "registration/register.html")
+            return render(request, "register.html")
         
         try:
             user = CustomUser.objects.create_user(username=username, email=email, password=password)
@@ -29,7 +29,7 @@ def register(request):
             messages.error(request, "A user with that username or email already exists.")
             return render(request, "register.html")
     else:
-        return render(request, "registration/register.html")
+        return render(request, "register.html")
 
 def login(request):
     if request.method == 'POST':
