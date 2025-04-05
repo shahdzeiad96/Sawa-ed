@@ -1,11 +1,57 @@
+{% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>This is Layout</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>سواعد</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="{% static 'JS/scripts.js' %}" defer></script>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
-<body>
-    
+<body class="bg-[#fdf6ec]">
+  <!-- Overlay -->
+  <div id="overlay" class="fixed inset-0 bg-black bg-opacity-40 z-40 hidden" onclick="closeSidebar()"></div>
+
+  <!-- Navbar -->
+  <nav class="bg-[#0d1b2a] shadow p-4 flex justify-between items-center text-white">
+    <div class="text-2xl font-bold text-[#f4a261] flex items-center gap-4">
+        <button onclick="toggleSidebar()" class="text-white">
+          ☰
+        </button>
+        <img class="logo" src="{% static 'images/logo.png' %}" alt="Logo">
+        <p>سواعد</p>
+    </div>
+    <div class="flex items-center gap-4">
+      <button class="border border-[#f4a261] text-[#f4a261] px-4 py-2 rounded hover:bg-[#f4a261] hover:text-white transition">تسجيل الدخول</button>
+      <button class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition">إنشاء حساب</button>
+    </div>
+  </nav>
+
+  <!-- Sidebar -->
+  <div id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50 border-l">
+    <div class="pt-20 p-4">
+      <h2 class="text-lg font-semibold mb-4 text-right">القائمة</h2>
+      <ul class="space-y-2 text-right">
+        <li class="hover:text-[#f4a261] cursor-pointer">تسجيل الدخول</li>
+        <li class="hover:text-[#f4a261] cursor-pointer">إنشاء حساب</li>
+      </ul>
+      <br>
+      <ul>
+        <h2 class="text-lg font-semibold mb-4 text-right">التصنيفات</h2>
+        <li class="hover:text-[#f4a261] cursor-pointer">النجارة</li>
+        <li class="hover:text-[#f4a261] cursor-pointer">الكهرباء</li>
+        <li class="hover:text-[#f4a261] cursor-pointer">السباكة</li>
+        <li class="hover:text-[#f4a261] cursor-pointer">البناء</li>
+      </ul>
+    </div>
+  </div>
+
+
+  <main class="flex flex-col items-center justify-center p-8">
+    {% block content %}
+
+    {% endblock %}
+  </main>
 </body>
 </html>

@@ -1,0 +1,20 @@
+{% extends "index.html" %}
+
+{% block content %}
+    <main class="flex flex-col items-center justify-center p-8">
+        <div class="max-w-xl w-full text-center">
+          <h1 class="text-3xl font-bold mb-6 text-[#0d1b2a]">
+            ابحث عن خدمات العمال في فلسطين
+          </h1>
+          <div class="flex items-center gap-2">
+            <input type="text" placeholder="ابحث عن خدمة..." class="text-right p-2 border border-gray-300 rounded w-full" />
+            <button class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition">
+              🔍
+            </button>
+          </div>
+        </div>
+      </main>
+      {% endblock %}
+
+
+
