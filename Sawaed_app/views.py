@@ -46,7 +46,7 @@ def login(request):
         if user is not None:
             login(request, user)
             messages.success(request, "Login successful.")
-            return redirect('/')  # we should redirect to home page
+            return redirect(request,"userhome.html") 
         else:
             messages.error(request, "Invalid login credentials.")
             return render(request, "login.html")
@@ -55,3 +55,9 @@ def login(request):
     
 def cart_view(request):
     return render(request, 'cart.html')
+def user_home(request):
+    return render(request,'userhome.html')
+def add_service(request):
+    # implementing form to add service
+
+    return render(request, 'addservice.html')

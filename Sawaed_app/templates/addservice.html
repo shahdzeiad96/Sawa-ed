@@ -1,0 +1,33 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <div class="container mx-auto p-4">
+    <h1 class="text-3xl font-bold text-center mb-6 text-[#0d1b2a]">إضافة خدمة جديدة</h1>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      
+      <div class="mb-4">
+        <label for="name" class="block text-lg font-medium text-[#0d1b2a]">اسم الخدمة</label>
+        <input type="text" name="name" id="name" class="w-full p-3 border border-gray-300 rounded" placeholder="اسم الخدمة" required />
+      </div>
+
+      <div class="mb-4">
+        <label for="description" class="block text-lg font-medium text-[#0d1b2a]">الوصف</label>
+        <textarea name="description" id="description" rows="4" class="w-full p-3 border border-gray-300 rounded" placeholder="وصف الخدمة" required></textarea>
+      </div>
+
+      <div class="mb-4">
+        <label for="price" class="block text-lg font-medium text-[#0d1b2a]">السعر</label>
+        <input type="number" name="price" id="price" class="w-full p-3 border border-gray-300 rounded" placeholder="السعر" required />
+      </div>
+
+      <div class="mb-4">
+        <label for="image" class="block text-lg font-medium text-[#0d1b2a]">صورة الخدمة</label>
+        <input type="file" name="image" id="image" class="w-full p-3 border border-gray-300 rounded" required />
+      </div>
+
+      <button type="submit" class="bg-[#f4a261] text-white px-6 py-2 rounded hover:bg-[#e76f51] transition">إضافة الخدمة</button>
+    </form>
+  </div>
+{% endblock %}

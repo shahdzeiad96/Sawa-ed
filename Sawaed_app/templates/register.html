@@ -1,12 +1,18 @@
 {% extends "index.html" %}
 
 {% block content %}
+{% load socialaccount %}
   <div class="mt-10 mx-auto max-w-xl bg-white shadow-md p-6 rounded-lg">
     <h1 class="text-2xl font-bold mb-6 text-[#0d1b2a] text-center">تسجيل عضوية جديدة لدى سواعد</h1>
     
     <form action="{% url 'register' %}" method="POST" class="space-y-4">
       {% csrf_token %}
-
+      <a href="{% provider_login_url 'google' %}">
+        <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition w-full mt-4">
+          التسجيل باستخدام Google
+        </button>
+      </a>
+      
       <div>
         <label for="username" class="block mb-1 text-[#0d1b2a] font-medium">اسم المستخدم</label>
         <input type="text" name="username" id="username" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#f4a261]" placeholder="ادخل اسم المستخدم" required />
@@ -35,6 +41,7 @@
     <p class="mt-4 text-center text-sm text-[#0d1b2a]">
       هل انت عضو لدينا؟
       <a href="{% url 'login' %}" class="text-[#f4a261] hover:underline">سجل دخولك هنا!</a>
+      
     </p>
   </div>
 {% endblock %}

@@ -1,6 +1,8 @@
 {% extends "index.html" %}
 
 {% block content %}
+{% load socialaccount %}
+
   <div class="mt-10 mx-auto max-w-xl bg-white shadow-md p-6 rounded-lg">
     <h1 class="text-2xl font-bold mb-6 text-[#0d1b2a] text-center">تسجيل الدخول إلى سواعد</h1>
 
@@ -20,6 +22,11 @@
       <button type="submit" class="w-full bg-[#f4a261] text-white py-2 rounded hover:bg-[#e76f51] transition">
         تسجيل الدخول
       </button>
+      <a href="{% provider_login_url 'google' %}">
+        <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition w-full mt-4">
+          تسجيل الدخول باستخدام Google
+        </button>
+      </a>
     </form>
 
     <p class="mt-4 text-center text-sm text-[#0d1b2a]">
