@@ -3,12 +3,12 @@ from django.contrib.auth.models import AbstractUser
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from django.core.validators import RegexValidator
-
 class CustomUser(AbstractUser): 
     class UserType(models.TextChoices):
         CLIENT = 'client', _('عميل')
         HANDYMAN = 'handyman', _('عامل يدوي') #the name in arabic will be edited later
-        ADMIN = 'admin', _('مسؤول')
+        # ADMIN = 'admin', _('مسؤول') 
+        # not sure if we need it here just remove the comment and run the migrations if we need it later  in the project 
     user_type = models.CharField(
         max_length=50,
         choices=UserType.choices,
@@ -18,6 +18,7 @@ class CustomUser(AbstractUser):
         regex=r'^\+?1?\d{9,15}$', #a validation on the phone number because its customed 
         message="Phone number must be in the format: '+999999999'. Up to 15 digits allowed."
     )
+    image = models.ImageField(upload_to='profile_pics/',default='default_profile.jpeg' ,null=True, blank=True)
     phone_number = models.CharField(validators=[phone_regex], max_length=15, unique=True, null=True, blank=True)
     email = models.EmailField(unique=True)
     bio = models.CharField(max_length=500, blank=True, null=True)  
@@ -27,7 +28,7 @@ class CustomUser(AbstractUser):
     USERNAME_FIELD = 'username'  # we could change it to email later in the project 
     def __str__(self):
         return f"{self.username} ({self.user_type})" 
-
+        
 class ServiceListing(models.Model):
     handyman = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -37,6 +38,7 @@ class ServiceListing(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    image = models.ImageField(upload_to='service_images/', null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -49,17 +51,14 @@ class HandymanProfile(models.Model):
         on_delete=models.CASCADE,
         related_name='handyman_profile'
     )
-    bio = models.TextField()
     location = models.CharField(max_length=255)
-    experience = models.TextField()
-    phone = models.CharField(max_length=50)
-    availability = models.TextField()
+    availability = models.BooleanField(null=True)
     rating = models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return f"{self.user.username} - Profile"
+        return f"{self.user.username} - Handyman Profile"
 
 class Application(models.Model):
     class Status(models.TextChoices):
