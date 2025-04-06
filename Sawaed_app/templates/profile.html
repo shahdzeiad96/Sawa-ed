@@ -1,0 +1,80 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto mt-12">
+    <div class="bg-white rounded-3xl shadow-lg p-8 space-y-6 border border-gray-200">
+
+        <h2 class="text-3xl font-semibold text-gray-800 flex items-center gap-2">
+            <i data-lucide="user-cog" class="w-6 h-6 text-orange-500"></i>
+        </h2>
+
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+
+            <!-- Bio -->
+            <div>
+                <label class="block text-gray-700 font-medium mb-1 flex items-center gap-1">
+                    <i data-lucide="file-text" class="w-4 h-4 text-navy-700 text-[#1e3a8a]"></i> نبذة عنك
+                </label>   
+                <textarea name="bio" rows="3" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400">{{ profile.bio }}</textarea>
+            </div>
+
+            <!-- Location -->
+            <div>
+                <label class="block text-gray-700 font-medium mb-1 flex items-center gap-1">
+                    <i data-lucide="map-pin" class="w-4 h-4 text-[#1e3a8a]"></i> الموقع
+                </label>
+                <input type="text" name="location" value="{{ profile.location }}"
+                       class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400" />
+            </div>
+
+            <!-- Experience -->
+            <div>
+                <label class="block text-gray-700 font-medium mb-1 flex items-center gap-1">
+                    <i data-lucide="briefcase" class="w-4 h-4 text-[#1e3a8a]"></i> الخبرة
+                </label>
+                <textarea name="experience" rows="3" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400">{{ profile.experience }}</textarea>
+            </div>
+
+            <!-- Phone -->
+            <div>
+                <label class="block text-gray-700 font-medium mb-1 flex items-center gap-1">
+                    <i data-lucide="phone" class="w-4 h-4 text-[#1e3a8a]"></i> رقم الهاتف
+                </label>
+                <input type="text" name="phone" value="{{ profile.phone }}"
+                       class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400" />
+            </div>
+
+            <!-- Availability -->
+            <div>
+                <label class="block text-gray-700 font-medium mb-2 flex items-center gap-1">
+                    <i data-lucide="calendar-check" class="w-4 h-4 text-[#1e3a8a]"></i> التوفر
+                </label>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {% for day in week_days %}
+                        <label class="flex items-center gap-2 bg-gray-100 p-2 rounded-lg hover:bg-orange-100 transition">
+                            <input type="checkbox" name="availability" value="{{ day }}"
+                                {% if day in profile.availability %}checked{% endif %}>
+                            <span class="text-sm">{{ day }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Submit -->
+            <div class="pt-4">
+                <button type="submit"
+                        class="w-full bg-[#1e3a8a] hover:bg-[#172b5c] transition text-white py-3 rounded-xl font-semibold shadow">
+                    حفظ التعديلات
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    lucide.createIcons();
+</script>
+{% endblock %}

@@ -32,7 +32,15 @@
         <label for="confirm-password" class="block mb-1 text-[#0d1b2a] font-medium">أعد كلمة المرور</label>
         <input type="password" name="confirm_password" id="confirm-password" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#f4a261]" placeholder="اعد كتابة كلمة المرور" required />
       </div>
-
+      {% if messages %}
+        <ul class="messages">
+          {% for message in messages %}
+              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+              {{ message }}
+              </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
       <button type="submit" class="w-full bg-[#f4a261] text-white py-2 rounded hover:bg-[#e76f51] transition">
         تسجيل
       </button>
