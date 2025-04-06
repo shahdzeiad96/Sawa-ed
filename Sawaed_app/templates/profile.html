@@ -1,75 +1,104 @@
 {% extends "index.html" %}
+{% load static %}
 
 {% block content %}
-<div class="max-w-3xl mx-auto mt-12">
-    <div class="bg-white rounded-3xl shadow-lg p-8 space-y-6 border border-gray-200">
+<div class="max-w-5xl mx-auto mt-2 bg-white p-10 rounded-3xl shadow-lg border border-gray-200">
+    <h2 class="text-3xl font-bold text-[#002244] mb-8 text-center flex items-center justify-center gap-2">
+        <i data-lucide="user-cog" class="text-orange-500"></i>
+        تعديل الملف الشخصي
+    </h2>
 
-        <h2 class="text-3xl font-semibold text-gray-800 flex items-center gap-2">
-            <i data-lucide="user-cog" class="w-6 h-6 text-orange-500"></i>
-        </h2>
+    <form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% csrf_token %}
 
-        <form method="post" class="space-y-5">
-            {% csrf_token %}
+        <!-- Username -->
+        <div>
+            <label for="username" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
+                <i data-lucide="user"></i> اسم المستخدم
+            </label>
+            <input type="text" id="username" name="username" value="{{ user.username }}"
+                class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
 
-            <!-- Bio -->
-            <div>
-                <label class="block text-gray-700 font-medium mb-1 flex items-center gap-1">
-                    <i data-lucide="file-text" class="w-4 h-4 text-navy-700 text-[#1e3a8a]"></i> نبذة عنك
-                </label>   
-                <textarea name="bio" rows="3" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400">{{ profile.bio }}</textarea>
-            </div>
+        <!-- Email -->
+        <div>
+            <label for="email" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
+                <i data-lucide="mail"></i> البريد الإلكتروني
+            </label>
+            <input type="email" id="email" name="email" value="{{ user.email }}"
+                class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
 
-            <!-- Location -->
-            <div>
-                <label class="block text-gray-700 font-medium mb-1 flex items-center gap-1">
-                    <i data-lucide="map-pin" class="w-4 h-4 text-[#1e3a8a]"></i> الموقع
+        <!-- Phone -->
+        <div>
+            <label for="phone_number" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
+                <i data-lucide="phone"></i> رقم الهاتف
+            </label>
+            <input type="text" id="phone_number" name="phone_number" value="{{ user.phone_number }}"
+                class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">
+        </div>
+
+        <!-- Profile Image -->
+        <div>
+            <label for="image" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
+                <i data-lucide="image"></i> الصورة الشخصية
+            </label>
+            <input type="file" id="image" name="image"
+                class="w-full border border-gray-300 rounded-xl p-2 file:bg-orange-500 file:text-white file:px-4 file:py-2 file:rounded-xl file:border-0">
+        </div>
+
+        <!-- Bio -->
+        <div class="md:col-span-2">
+            <label for="bio" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
+                <i data-lucide="info"></i> نبذة عنك
+            </label>
+            <textarea id="bio" name="bio" rows="3"
+                class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">{{ user.bio }}</textarea>
+        </div>
+
+        <!-- Experience -->
+        <div class="md:col-span-2">
+            <label for="experience" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
+                <i data-lucide="briefcase"></i> الخبرة
+            </label>
+            <textarea id="experience" name="experience" rows="3"
+                class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">{{ user.experience }}</textarea>
+        </div>
+
+        <!-- Field of Expertise -->
+        <div class="md:col-span-2">
+            <label for="field_of_expertise" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
+                <i data-lucide="hammer"></i> مجال الخبرة
+            </label>
+            <textarea id="field_of_expertise" name="field_of_expertise" rows="2"
+                class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">{{ user.field_of_expertise }}</textarea>
+        </div>
+
+        <div class="md:col-span-2">
+            <label class="block text-[#002244] font-semibold mb-2 flex items-center gap-2">
+                <i data-lucide="calendar-check"></i> هل أنت متاح للعمل؟
+            </label>
+            <div class="flex items-center gap-4">
+                <label class="flex items-center text-[#002244]">
+                    <input type="radio" name="availability" value="True" {% if user.handyman_profile.availability %}checked{% endif %} class="accent-orange-500">
+                    <span>نعم</span>
                 </label>
-                <input type="text" name="location" value="{{ profile.location }}"
-                       class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400" />
-            </div>
-
-            <!-- Experience -->
-            <div>
-                <label class="block text-gray-700 font-medium mb-1 flex items-center gap-1">
-                    <i data-lucide="briefcase" class="w-4 h-4 text-[#1e3a8a]"></i> الخبرة
+                <label class="flex items-center text-[#002244]">
+                    <input type="radio" name="availability" value="False" {% if not user.handyman_profile.availability %}checked{% endif %} class="accent-orange-500">
+                    <span>لا</span>
                 </label>
-                <textarea name="experience" rows="3" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400">{{ profile.experience }}</textarea>
             </div>
+        </div>
 
-            <!-- Phone -->
-            <div>
-                <label class="block text-gray-700 font-medium mb-1 flex items-center gap-1">
-                    <i data-lucide="phone" class="w-4 h-4 text-[#1e3a8a]"></i> رقم الهاتف
-                </label>
-                <input type="text" name="phone" value="{{ profile.phone }}"
-                       class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400" />
-            </div>
-
-            <!-- Availability -->
-            <div>
-                <label class="block text-gray-700 font-medium mb-2 flex items-center gap-1">
-                    <i data-lucide="calendar-check" class="w-4 h-4 text-[#1e3a8a]"></i> التوفر
-                </label>
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {% for day in week_days %}
-                        <label class="flex items-center gap-2 bg-gray-100 p-2 rounded-lg hover:bg-orange-100 transition">
-                            <input type="checkbox" name="availability" value="{{ day }}"
-                                {% if day in profile.availability %}checked{% endif %}>
-                            <span class="text-sm">{{ day }}</span>
-                        </label>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <!-- Submit -->
-            <div class="pt-4">
-                <button type="submit"
-                        class="w-full bg-[#1e3a8a] hover:bg-[#172b5c] transition text-white py-3 rounded-xl font-semibold shadow">
-                    حفظ التعديلات
-                </button>
-            </div>
-        </form>
-    </div>
+        <!-- Submit Button -->
+        <div class="md:col-span-2 text-center mt-6">
+            <button type="submit"
+                class="bg-[#002244] hover:bg-[#001933] text-white font-semibold py-3 px-8 rounded-xl transition flex items-center justify-center gap-2 mx-auto">
+                <i data-lucide="save"></i>
+                حفظ التعديلات
+            </button>
+        </div>
+    </form>
 </div>
 
 <!-- Lucide Icons -->

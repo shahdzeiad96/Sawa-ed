@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.db import IntegrityError
-from .models import *
+from .models import CustomUser, HandymanProfile
 from django.contrib.auth import authenticate, login as auth_login
 
 # Create your views here.
@@ -12,26 +12,36 @@ def index(request):
 
 def register(request):
     if request.method == 'POST':
-        username         = request.POST.get('username')
-        email            = request.POST.get('email')
-        password         = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
-        
-        if password != confirm_password:
-            messages.error(request, "Passwords do not match.")
-            return render(request, "register.html")
-        
-        try:
-            user = CustomUser.objects.create_user(username=username, email=email, password=password)
-            user.save()
-            messages.success(request, "Registration successful. Please log in.")
-            return redirect('login')
-        except IntegrityError:
-            messages.error(request, "A user with that username or email already exists.")
-            return render(request, "register.html")
-    else:
-        return render(request, "register.html")
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        phone_number = request.POST.get('phone_number')
+        user_type = request.POST.get('user_type')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
 
+        if password1 != password2:
+            messages.error(request, "كلمتا المرور غير متطابقتين.")
+            return render(request, "register.html")
+        try:
+            user = CustomUser.objects.create_user(
+                username=username,
+                email=email,
+                password=password1,
+                phone_number=phone_number,
+                user_type=user_type
+            )
+            user.save()
+            if user.user_type == CustomUser.UserType.HANDYMAN:
+                HandymanProfile.objects.get_or_create(user=user)
+                
+            messages.success(request, "تم إنشاء الحساب بنجاح. يمكنك تسجيل الدخول الآن.")
+            return redirect('login')
+
+        except IntegrityError:
+            messages.error(request, "اسم المستخدم أو البريد الإلكتروني مستخدم بالفعل.")
+            return render(request, "register.html")
+
+    return render(request, "register.html")
 def login(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -48,8 +58,8 @@ def login(request):
             messages.success(request, "Login successful.")
             return redirect('userhome') 
         
-            messages.error(request, "Invalid login credentials.")
-            return render(request, "login.html")
+        messages.error(request, "بيانات تسجيل الدخول غير متطابقة, حاول مرة أخرى ")
+        return render(request, "login.html")
     else:
         return render(request, "login.html")
 def cart_view(request):
@@ -61,8 +71,44 @@ def add_service(request):
 
     return render(request, 'addservice.html')
 
-def edit_profile(request): 
-    week_days = ['السبت', 'الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة']
 
+def edit_profile(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        phone_number = request.POST.get("phone_number")
+        bio = request.POST.get("bio")
+        experience = request.POST.get("experience")
+        field_of_expertise = request.POST.get("field_of_expertise")
+        availability = request.POST.get("availability") == "True" 
+        image = request.FILES.get("image")
 
-    return render(request, 'profile.html',{'week_days': week_days})
+        try:
+            user = request.user
+            user.username = username
+            user.email = email
+            user.phone_number = phone_number
+            user.bio = bio
+            user.experience = experience
+            user.field_of_expertise = field_of_expertise
+
+            if image:
+                user.image = image
+
+            handyman_profile = user.handyman_profile
+            handyman_profile.availability = availability
+            handyman_profile.save() 
+            user.save()
+
+            messages.success(request, "تم حفظ التعديلات بنجاح!")
+            return redirect('profile') 
+
+        except Exception as e:
+            messages.error(request, "حدث خطأ أثناء حفظ التعديلات. يرجى المحاولة مرة أخرى.")
+            return redirect('edit-profile')
+
+    return render(request, 'profile.html')
+
+def logout(request):
+    request.session.flush() 
+    return redirect('login')

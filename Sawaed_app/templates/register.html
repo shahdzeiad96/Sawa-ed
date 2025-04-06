@@ -1,55 +1,102 @@
 {% extends "index.html" %}
 
 {% block content %}
-{% load socialaccount %}
-  <div class="mt-10 mx-auto max-w-xl bg-white shadow-md p-6 rounded-lg">
-    <h1 class="text-2xl font-bold mb-6 text-[#0d1b2a] text-center">تسجيل عضوية جديدة لدى سواعد</h1>
-    
-    <form action="{% url 'register' %}" method="POST" class="space-y-4">
-      {% csrf_token %}
-      <a href="{% provider_login_url 'google' %}">
-        <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition w-full mt-4">
-          التسجيل باستخدام Google
-        </button>
-      </a>
-      
-      <div>
-        <label for="username" class="block mb-1 text-[#0d1b2a] font-medium">اسم المستخدم</label>
-        <input type="text" name="username" id="username" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#f4a261]" placeholder="ادخل اسم المستخدم" required />
-      </div>
+<div class="max-w-2xl mx-auto mt-2 bg-white p-10 rounded-3xl shadow-lg border border-gray-200">
+    <h2 class="text-3xl font-bold text-[#1e3a8a] mb-8 text-center flex items-center justify-center gap-2">
+        <i data-lucide="user-plus" class="w-6 h-6 text-orange-500"></i>
+        إنشاء حساب جديد
+    </h2>
 
-      <div>
-        <label for="email" class="block mb-1 text-[#0d1b2a] font-medium">البريد الالكتروني</label>
-        <input type="email" name="email" id="email" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#f4a261]" placeholder="ادخل بريدك الالكتروني" required />
-      </div>
+    <form method="post" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% csrf_token %}
 
-      <div>
-        <label for="password" class="block mb-1 text-[#0d1b2a] font-medium">كلمة المرور</label>
-        <input type="password" name="password" id="password" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#f4a261]" placeholder="ادخل كلمة المرور" required />
-      </div>
+        <!-- Username -->
+        <div>
+            <label class="block text-gray-700 font-medium mb-1 flex items-center gap-2">
+                <i data-lucide="user"></i>
+                اسم المستخدم
+            </label>
+            <input type="text" name="username" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400" required>
+        </div>
 
-      <div>
-        <label for="confirm-password" class="block mb-1 text-[#0d1b2a] font-medium">أعد كلمة المرور</label>
-        <input type="password" name="confirm_password" id="confirm-password" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#f4a261]" placeholder="اعد كتابة كلمة المرور" required />
-      </div>
-      {% if messages %}
+        <!-- Email -->
+        <div>
+            <label class="block text-gray-700 font-medium mb-1 flex items-center gap-2">
+                <i data-lucide="mail"></i>
+                البريد الإلكتروني
+            </label>
+            <input type="email" name="email" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400" required>
+        </div>
+
+        <!-- Phone -->
+        <div>
+            <label class="block text-gray-700 font-medium mb-1 flex items-center gap-2">
+                <i data-lucide="phone"></i>
+                رقم الهاتف
+            </label>
+            <input type="text" name="phone_number" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400" required>
+        </div>
+
+        <!-- User Type -->
+        <div>
+            <label class="block text-gray-700 font-medium mb-1 flex items-center gap-2">
+                <i data-lucide="user-check"></i>
+                نوع المستخدم
+            </label>
+            <select name="user_type" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400" required>
+                <option value="client">عميل</option>
+                <option value="handyman">عامل يدوي</option>
+                <option value="admin">مسؤول</option>
+            </select>
+        </div>
+
+        <!-- Password -->
+        <div>
+            <label class="block text-gray-700 font-medium mb-1 flex items-center gap-2">
+                <i data-lucide="lock"></i>
+                كلمة المرور
+            </label>
+            <input type="password" name="password1" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400" required>
+        </div>
+
+        <!-- Confirm Password -->
+        <div>
+            <label class="block text-gray-700 font-medium mb-1 flex items-center gap-2">
+                <i data-lucide="lock"></i>
+                تأكيد كلمة المرور
+            </label>
+            <input type="password" name="password2" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400" required>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="md:col-span-2 text-center mt-4">
+            <button type="submit" class="bg-[#1e3a8a] hover:bg-[#172b5c] text-white px-6 py-3 rounded-xl font-semibold shadow flex items-center justify-center gap-2 mx-auto">
+                <i data-lucide="check-circle"></i>
+                تسجيل
+            </button>
+        </div>
+        {% if messages %}
         <ul class="messages">
           {% for message in messages %}
-              <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>
+              <li{% if message.tags %} class="{{message.tags}}"{% endif %}>
               {{ message }}
               </li>
           {% endfor %}
         </ul>
       {% endif %}
-      <button type="submit" class="w-full bg-[#f4a261] text-white py-2 rounded hover:bg-[#e76f51] transition">
-        تسجيل
-      </button>
+        <p class="mt-4 text-center text-sm text-[#0d1b2a]">
+          هل انت عضو لدينا؟
+          <a href="{% url 'login' %}" class="text-[#f4a261] hover:underline">سجل دخولك هنا!</a>
+          
+        </p>
     </form>
+</div>
 
-    <p class="mt-4 text-center text-sm text-[#0d1b2a]">
-      هل انت عضو لدينا؟
-      <a href="{% url 'login' %}" class="text-[#f4a261] hover:underline">سجل دخولك هنا!</a>
-      
-    </p>
-  </div>
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+    lucide.createIcons();
+</script>
 {% endblock %}
+
+  

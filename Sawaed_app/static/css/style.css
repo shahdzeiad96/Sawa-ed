@@ -2,3 +2,35 @@
     height: 40px;
     width: 50px;
 }
+/* Sidebar */
+#sidebar {
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Overlay (Background) */
+#overlay {
+    transition: opacity 0.3s ease-in-out;
+    background-color: rgba(0, 0, 0, 0.5);  /* Dark background */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+}
+
+/* Default hidden state for overlay */
+#overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+/* Sidebar initially hidden (off screen) */
+#sidebar.translate-x-full {
+    transform: translateX(100%);
+}
+
+/* Sidebar visible state (on screen) */
+#sidebar.translate-x-0 {
+    transform: translateX(0);
+}

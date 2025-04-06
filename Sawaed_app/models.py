@@ -52,7 +52,7 @@ class HandymanProfile(models.Model):
         related_name='handyman_profile'
     )
     location = models.CharField(max_length=255)
-    availability = models.BooleanField(null=True)
+    availability = models.BooleanField(null=True) 
     rating = models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
