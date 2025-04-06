@@ -27,17 +27,20 @@
     <div class="flex items-center gap-4">
       {% if user.is_authenticated %}
         <!-- if user is logged-in -->
+        <a href="{% url 'cart' %}" class="relative text-white hover:text-[#f4a261] transition text-xl">
+            🛒
+            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">0</span>
+          </a>
         <div class="flex items-center gap-2">
-          <img src="{% static 'images/profile.png' %}" alt="Profile" class="w-10 h-10 rounded-full border-2 border-[#f4a261]">
-          <p class="text-[#f4a261]">مرحبًا، {{ user.username }}</p>
+            <img src="{{ user.image.url }}" 
+            alt="Profile" 
+            class="w-10 h-10 rounded-full border-2 border-[#f4a261]"
+            onerror="this.onerror=null;this.src='{% static 'images/profile.png' %}'"><p class="text-[#f4a261]">مرحبًا، {{ user.username }}</p>
         </div>
+
+  
       {% else %}
         <!-- if guest-->
-        <a href="{% url 'cart' %}" class="relative text-white hover:text-[#f4a261] transition text-xl">
-          🛒
-          <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">0</span>
-        </a>
-
         <a href="{% url 'login' %}">
           <button class="border border-[#f4a261] text-[#f4a261] px-4 py-2 rounded hover:bg-[#f4a261] hover:text-white transition">
             تسجيل الدخول

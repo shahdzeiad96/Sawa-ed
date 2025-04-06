@@ -46,7 +46,6 @@
             <select name="user_type" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400" required>
                 <option value="client">عميل</option>
                 <option value="handyman">عامل يدوي</option>
-                <option value="admin">مسؤول</option>
             </select>
         </div>
 
@@ -70,10 +69,11 @@
 
         <!-- Submit Button -->
         <div class="md:col-span-2 text-center mt-4">
-            <button type="submit" class="bg-[#1e3a8a] hover:bg-[#172b5c] text-white px-6 py-3 rounded-xl font-semibold shadow flex items-center justify-center gap-2 mx-auto">
-                <i data-lucide="check-circle"></i>
-                تسجيل
-            </button>
+          <button type="submit" class="bg-[#0d1b2a] hover:bg-[#1b2f43] text-[#f4a261] px-6 py-3 rounded-xl font-semibold shadow flex items-center justify-center gap-2 mx-auto">
+            <i data-lucide="check-circle"></i>
+            تسجيل
+        </button>
+        
         </div>
         {% if messages %}
         <ul class="messages">
