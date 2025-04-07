@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.db import IntegrityError
-from .models import CustomUser, HandymanProfile
+from .models import *
 from django.contrib.auth import authenticate, login as auth_login
 
 # Create your views here.
@@ -62,13 +62,48 @@ def login(request):
         return render(request, "login.html")
     else:
         return render(request, "login.html")
+    
 def cart_view(request):
     return render(request, 'cart.html')
+
 def user_home(request):
     return render(request,'userhome.html')
-def add_service(request):
-    # implementing form to add service
 
+def add_service(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "يحب تسجيل الدخول لاضافة خدمات")
+        return redirect('login')
+    
+    if request.user.user_type != CustomUser.UserType.HANDYMAN:
+        messages.error(request, "يجب ان تكون فني لاضافة خدمات")
+        return redirect('userhome')
+    
+    if request.method == "POST":
+        name = request.post.get('name')
+        description =request.post.get('description')
+        price = request.post.get('price')
+        image = request.POST.get('image')
+
+    if not name or not description or not price:
+        messages.error("يجب ادخال اسم ووصف وسعر الخدمة")
+        return render(request,'addservice.html')
+    
+    try:
+        service = ServiceListing.objects.create(
+            handyman=request.user,
+            name = name,
+            description= description,
+            price=price,
+            image=image
+
+        )
+        service.save()
+        messages.success("تم اضافة الخدمة بنجاح")
+        return redirect(request, 'userhome')
+    except Exception as e:
+        messages.error(request, f"حدث خطأ اثناء اضافة الخدمة: {e}")
+        return render(request ,'addservice.html')
+    
     return render(request, 'addservice.html')
 
 
@@ -91,6 +126,7 @@ def edit_profile(request):
             user.bio = bio
             user.experience = experience
             user.field_of_expertise = field_of_expertise
+            
 
             if image:
                 user.image = image
@@ -101,7 +137,7 @@ def edit_profile(request):
             user.save()
 
             messages.success(request, "تم حفظ التعديلات بنجاح!")
-            return redirect('profile') 
+            return redirect('userhome') 
 
         except Exception as e:
             messages.error(request, "حدث خطأ أثناء حفظ التعديلات. يرجى المحاولة مرة أخرى.")
