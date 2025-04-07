@@ -1,0 +1,70 @@
+<head>   
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <title>عرض تفاصيل الخدمة</title>
+</head>
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container mx-auto p-2">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4 items-start justify-center">
+        
+        <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-lg mx-auto">
+            <div class="mb-4">
+                {% if service.image %}
+                    <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-full h-72 object-cover rounded-lg shadow-md">
+                {% else %}
+                    <img src="{% static 'images/placeholder.png' %}" alt="صورة افتراضية" class="w-full h-72 object-cover rounded-lg shadow-md">
+                {% endif %}
+            </div>
+            <h2 class="text-3xl font-semibold text-[#0d1b2a] mb-4">{{ service.name }}</h2>
+            <p class="text-lg text-gray-700 mb-4">{{ service.description }}</p>
+            <p class="font-bold text-[#f4a261] text-2xl mb-4">السعر: {{ service.price }} شيكل</p>
+            <p class="text-sm text-gray-500">تاريخ الإضافة: {{ service.created_at|date:"d M Y" }}</p>
+
+            <div class="mt-6">
+                <a href="#" class="rounded-full border-2 border-[#f4a261] text-[#f4a261] px-6 py-3 w-full block text-center hover:bg-[#f4a261] hover:text-white transition duration-200">
+                    <i class="fas fa-cart-plus mr-2"></i> إضافة إلى السلة
+                </a>
+            </div>
+        </div>
+
+        <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-sm mx-auto mt-8 lg:mt-0">
+            <h3 class="text-2xl font-semibold text-[#0d1b2a] mb-6 text-center">معلومات مزود الخدمة</h3>
+            
+            <div class="flex flex-col items-center space-y-4">
+                <div class="relative">
+                    <div class="w-32 h-32 bg-gray-200 rounded-full overflow-hidden border-4 border-[#f4a261] shadow-md flex items-center justify-center">
+                        <img src="{{ handyman.user.image.url }}" alt="{{ handyman.user.username }}" class="w-full h-full object-cover">
+                    </div>
+                    <!-- if user is available to work-->
+                    <div class="absolute top-0 right-0 bg-[#25D366] text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold" style="background-color: {% if handyman.availability %}#25D366{% else %}#dc3545{% endif %};">
+                        <i class="fas fa-check"></i>
+                    </div>
+                </div>
+
+                <h4 class="text-xl font-semibold text-[#0d1b2a] mt-2">{{ handyman.user.username }}</h4>
+
+                <div class="flex flex-col space-y-3 w-full items-center">
+                    <a href="#" class="rounded-full border-2 border-[#f4a261] text-[#f4a261] px-6 py-2 w-full max-w-xs text-center hover:bg-[#f4a261] hover:text-white transition duration-200">
+                        <i class="fas fa-comment-alt mr-2"></i> إرسال رسالة
+                    </a>
+
+                    <a href="https://wa.me/{{ handyman.user.phone_number }}" target="_blank" class="rounded-full border-2 border-[#25D366] text-[#25D366] px-6 py-2 w-full max-w-xs text-center hover:bg-[#25D366] hover:text-white transition duration-200">
+                        <i class="fab fa-whatsapp mr-2"></i> تواصل عبر واتساب
+                    </a>
+                </div>
+
+                <div class="mt-4 space-y-2 text-sm text-gray-600 text-center">
+                    <p><i class="fas fa-star text-[#f4a261]"></i> التقييم: {{ handyman.rating }}</p>
+                    <p><i class="fas fa-map-marker-alt text-[#f4a261]"></i> الموقع: {{ handyman.location }}</p>
+                    <p><i class="fas fa-calendar-check text-[#f4a261]"></i> التوافر: {% if handyman.availability %}متاح{% else %}غير متاح{% endif %}</p>
+                    <p><i class="fas fa-phone-alt text-[#f4a261]"></i> رقم الهاتف: {{ handyman.user.phone_number }}</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

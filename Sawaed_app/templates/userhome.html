@@ -39,7 +39,7 @@
               <h3 class="text-lg font-semibold">اسم الخدمة : {{ service.name }}</h3>
               <p class="text-gray-600 mb-4">عن الخدمة : {{ service.description|truncatewords:20 }}</p>
               <p class="font-bold text-[#f4a261]">السعر: {{ service.price }} شيكل</p>
-              <a href="#" class="text-[#f4a261] mt-4 block text-center">عرض التفاصيل</a>
+              <a href="{% url 'service_detail' service.id %}" class="text-[#f4a261] mt-4 block text-center">عرض التفاصيل</a>
             </div>
           {% endfor %}
         </div>

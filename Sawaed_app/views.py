@@ -73,8 +73,6 @@ def user_home(request):
         'services':services
 
     }
-        
-    
     return render(request,'userhome.html',context)
 
 def add_service(request):
@@ -112,8 +110,15 @@ def add_service(request):
     
     return render(request, 'addservice.html')
 
+def service_detail(request, service_id):
+    service =ServiceListing.objects.get(id=service_id)
+    handyman = HandymanProfile.objects.get(user=service.handyman) 
+    context = {
+        'service': service,
+        'handyman': handyman,
+    }
 
-
+    return render(request, 'service_details.html', context)
 def edit_profile(request):
     if request.method == "POST":
         username = request.POST.get("username")
