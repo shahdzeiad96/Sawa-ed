@@ -3,9 +3,12 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.db import IntegrityError
 from .models import *
+import requests
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+
 from django.contrib.auth import authenticate, login as auth_login
 
-# Create your views here.
 def index(request):
     return render(request,"index.html")
 
@@ -65,6 +68,8 @@ def login(request):
     
 def cart_view(request):
     return render(request, 'cart.html')
+
+    return render(request, 'addservice.html')
 
 def user_home(request):
     services=ServiceListing.objects.all()

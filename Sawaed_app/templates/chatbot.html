@@ -1,0 +1,17 @@
+
+<!-- this page willbe added to another page (about us) later on production and  still on editing list -->
+
+{% extends "index.html" %}
+{% block content %}
+    <div id="chat-container">
+        <div id="chatbot">
+            <p class="bottext"><span>للاستفسار اكثر عن خدماتنا </span></p>
+        </div>
+        <div id="userinput">
+            <input type="text" id="textinput" name="usermsg" placeholder="type here">
+            <!-- <input type="submit" value="send" id="btninput" class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition"> -->
+            <button class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition" type="submit" id="btninput">sek</button>
+        </div>
+    </div>
+    {% endblock %}
+
