@@ -35,7 +35,10 @@
             <div class="flex flex-col items-center space-y-4">
                 <div class="relative">
                     <div class="w-32 h-32 bg-gray-200 rounded-full overflow-hidden border-4 border-[#f4a261] shadow-md flex items-center justify-center">
-                        <img src="{{ handyman.user.image.url }}" alt="{{ handyman.user.username }}" class="w-full h-full object-cover">
+                        <img src="{{ user.image.url }}" 
+                        alt="Profile" 
+                        onerror="this.onerror=null;this.src='{% static 'images/profile.png' %}'">
+                                    
                     </div>
                     <!-- if user is available to work-->
                     <div class="absolute top-0 right-0 bg-[#25D366] text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold" style="background-color: {% if handyman.availability %}#25D366{% else %}#dc3545{% endif %};">

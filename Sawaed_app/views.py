@@ -143,24 +143,27 @@ def edit_profile(request):
             user.bio = bio
             user.experience = experience
             user.field_of_expertise = field_of_expertise
-            
 
             if image:
                 user.image = image
 
-            handyman_profile = user.handyman_profile
-            handyman_profile.availability = availability
-            handyman_profile.save() 
+            # Only update availability for handymen
+            if user.user_type == 'handyman':
+                handyman_profile = user.handyman_profile
+                handyman_profile.availability = availability
+                handyman_profile.save() 
+
             user.save()
 
             messages.success(request, "تم حفظ التعديلات بنجاح!")
-            return redirect('userhome') 
+            return redirect('edit-profile') 
 
         except Exception as e:
             messages.error(request, "حدث خطأ أثناء حفظ التعديلات. يرجى المحاولة مرة أخرى.")
             return redirect('edit-profile')
 
     return render(request, 'profile.html')
+
 
 def logout(request):
     request.session.flush() 
