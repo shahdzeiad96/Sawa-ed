@@ -13,6 +13,7 @@ urlpatterns = [
     path('userhome/',views.user_home,name='userhome'),
     path('add_service/', views.add_service, name='add_service'),
     path('profile/edit',views.edit_profile,name='edit-profile'),
-    path('logout/',views.logout,name='logout')
+    path('logout/',views.logout,name='logout'),
+    path('add_service/addservice', views.add_service, name='add_service'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

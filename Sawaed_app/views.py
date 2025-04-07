@@ -67,7 +67,15 @@ def cart_view(request):
     return render(request, 'cart.html')
 
 def user_home(request):
-    return render(request,'userhome.html')
+    services=ServiceListing.objects.all()
+    handyman=HandymanProfile.objects.all()
+    context={
+        'services':services
+
+    }
+        
+    
+    return render(request,'userhome.html',context)
 
 def add_service(request):
     if not request.user.is_authenticated:
@@ -79,32 +87,31 @@ def add_service(request):
         return redirect('userhome')
     
     if request.method == "POST":
-        name = request.post.get('name')
-        description =request.post.get('description')
-        price = request.post.get('price')
-        image = request.POST.get('image')
+        name = request.POST.get('name') 
+        description = request.POST.get('description')
+        price = request.POST.get('price')
+        image = request.FILES.get('image')  
 
-    if not name or not description or not price:
-        messages.error("يجب ادخال اسم ووصف وسعر الخدمة")
-        return render(request,'addservice.html')
-    
-    try:
-        service = ServiceListing.objects.create(
-            handyman=request.user,
-            name = name,
-            description= description,
-            price=price,
-            image=image
+        if not name or not description or not price:
+            messages.error(request, "يجب ادخال اسم ووصف وسعر الخدمة")
+            return render(request, 'addservice.html')
 
-        )
-        service.save()
-        messages.success("تم اضافة الخدمة بنجاح")
-        return redirect(request, 'userhome')
-    except Exception as e:
-        messages.error(request, f"حدث خطأ اثناء اضافة الخدمة: {e}")
-        return render(request ,'addservice.html')
+        try:
+            service = ServiceListing.objects.create(
+                handyman=request.user,
+                name=name,
+                description=description,
+                price=price,
+                image=image
+            )
+            messages.success(request, "تم اضافة الخدمة بنجاح")
+            return redirect('userhome')
+        except Exception as e:
+            messages.error(request, f"حدث خطأ اثناء اضافة الخدمة: {e}")
+            return render(request, 'addservice.html')
     
     return render(request, 'addservice.html')
+
 
 
 def edit_profile(request):
