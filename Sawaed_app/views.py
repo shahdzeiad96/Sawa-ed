@@ -3,8 +3,11 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.db import IntegrityError
 from .models import *
+import requests
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
 
-# Create your views here.
+
 def index(request):
     return render(request,"index.html")
 
@@ -61,3 +64,4 @@ def add_service(request):
     # implementing form to add service
 
     return render(request, 'addservice.html')
+

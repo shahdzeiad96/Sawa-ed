@@ -2,3 +2,50 @@
     height: 40px;
     width: 50px;
 }
+
+/* chatbot css will be customiz later */
+#chatbot{
+    margin-left: auto;
+    margin-right: auto;
+    width:70%;
+    margin-top: 40px;
+    border-radius: 10px;
+    border:1px solid gray;
+    padding: 10px;
+}
+#bottext{
+    font-size: 14px;
+    text-align: right;
+    line-height: 25px;
+    color: rgb(109,111,109);
+}
+#userinput{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 30px;
+    width: 70%;
+    text-align: center;
+}
+#textinput{
+    height: 40px;
+    border: 3px solid white;
+    border-bottom: 3px solid #222121;
+    border-radius: 5px;
+    width: 60%;
+    padding: 8px;
+    color: rgb(186, 93, 31);
+    box-shadow: 3px 3px 3px black;
+    
+}
+#btninput{
+    height: 37px;
+    width: 85px;
+    padding: 8px;
+    font-size: 14px;
+    border:1px solid #222121;
+    box-shadow: 3px 3px 3px;
+    border-radius: 15px;
+} 
+#chat-container{
+    width: 70%;
+}
