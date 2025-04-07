@@ -1,38 +1,66 @@
 {% extends "index.html" %}
-
-{% block content %}
 {% load socialaccount %}
 
-  <div class="mt-10 mx-auto max-w-xl bg-white shadow-md p-6 rounded-lg">
-    <h1 class="text-2xl font-bold mb-6 text-[#0d1b2a] text-center">تسجيل الدخول إلى سواعد</h1>
+{% block content %}
+<div class="max-w-2xl mx-auto mt-10 bg-white p-10 rounded-3xl shadow-lg border border-gray-200">
+  <h2 class="text-3xl font-bold text-[#1e3a8a] mb-8 text-center flex items-center justify-center gap-2">
+    <i data-lucide="log-in" class="w-6 h-6 text-orange-500"></i>
+    تسجيل الدخول إلى سواعد
+  </h2>
 
-    <form action="{% url 'login' %}" method="POST" class="space-y-4">
-      {% csrf_token %}
+  <form action="{% url 'login' %}" method="POST" class="space-y-6">
+    {% csrf_token %}
 
-      <div>
-        <label for="email" class="block mb-1 text-[#0d1b2a] font-medium">البريد الالكتروني</label>
-        <input type="email" name="email" id="email" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#f4a261]" placeholder="ادخل بريدك الالكتروني" required />
-      </div>
+    <!-- Email -->
+    <div>
+      <label for="email" class="block text-gray-700 font-medium mb-1 flex items-center gap-2">
+        <i data-lucide="mail"></i>
+        البريد الإلكتروني
+      </label>
+      <input type="email" name="email" id="email" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400" placeholder="ادخل بريدك الإلكتروني" required>
+    </div>
 
-      <div>
-        <label for="password" class="block mb-1 text-[#0d1b2a] font-medium">كلمة المرور</label>
-        <input type="password" name="password" id="password" class="w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-[#f4a261]" placeholder="ادخل كلمة المرور" required />
-      </div>
+    <!-- Password -->
+    <div>
+      <label for="password" class="block text-gray-700 font-medium mb-1 flex items-center gap-2">
+        <i data-lucide="lock"></i>
+        كلمة المرور
+      </label>
+      <input type="password" name="password" id="password" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400" placeholder="ادخل كلمة المرور" required>
+    </div>
 
-      <button type="submit" class="w-full bg-[#f4a261] text-white py-2 rounded hover:bg-[#e76f51] transition">
-        تسجيل الدخول
+    {% if messages %}
+    <ul class="messages text-red-600 text-sm">
+      {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    <button type="submit" class="w-full bg-[#0d1b2a] hover:bg-[#1b2f43] text-[#f4a261] py-3 rounded-xl font-semibold shadow flex items-center justify-center gap-2">
+      <i data-lucide="log-in"></i>
+      تسجيل الدخول
+    </button>
+
+    <!-- Google login -->
+    <a href="{% provider_login_url 'google' %}">
+      <button type="button" class="bg-red-500 text-white px-4 py-3 rounded-xl hover:bg-red-600 transition w-full mt-4 flex items-center justify-center gap-2">
+        <i data-lucide="globe"></i>
+        تسجيل الدخول باستخدام Google
       </button>
-      <a href="{% provider_login_url 'google' %}">
-        <button class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition w-full mt-4">
-          تسجيل الدخول باستخدام Google
-        </button>
-      </a>
-    </form>
+    </a>
+  </form>
 
-    <p class="mt-4 text-center text-sm text-[#0d1b2a]">
-      ليس لديك حساب؟
-      <a href="{% url 'register' %}" class="text-[#f4a261] hover:underline">سجل الآن</a>
-    </p>
-  </div>
-  <a class="text-[#f4a261] hover:underline" href="{% url 'chatbot' %}">💬 chatbot</a><!-- this link will be removed and placed in the right page later on  -->
+  <!-- Already have account -->
+  <p class="mt-6 text-center text-sm text-[#0d1b2a]">
+    ليس لديك حساب؟
+    <a href="{% url 'register' %}" class="text-[#f4a261] hover:underline">سجل الآن</a>
+  </p>
+</div>
+
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+  lucide.createIcons();
+</script>
 {% endblock %}

@@ -7,6 +7,7 @@ import requests
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 
+from django.contrib.auth import authenticate, login as auth_login
 
 def index(request):
     return render(request,"index.html")
@@ -14,32 +15,41 @@ def index(request):
 
 def register(request):
     if request.method == 'POST':
-        username         = request.POST.get('username')
-        email            = request.POST.get('email')
-        password         = request.POST.get('password')
-        confirm_password = request.POST.get('confirm_password')
-        
-        if password != confirm_password:
-            messages.error(request, "Passwords do not match.")
-            return render(request, "register.html")
-        
-        try:
-            user = CustomUser.objects.create_user(username=username, email=email, password=password)
-            user.save()
-            messages.success(request, "Registration successful. Please log in.")
-            return redirect('login')
-        except IntegrityError:
-            messages.error(request, "A user with that username or email already exists.")
-            return render(request, "register.html")
-    else:
-        return render(request, "register.html")
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        phone_number = request.POST.get('phone_number')
+        user_type = request.POST.get('user_type')
+        password1 = request.POST.get('password1')
+        password2 = request.POST.get('password2')
 
+        if password1 != password2:
+            messages.error(request, "كلمتا المرور غير متطابقتين.")
+            return render(request, "register.html")
+        try:
+            user = CustomUser.objects.create_user(
+                username=username,
+                email=email,
+                password=password1,
+                phone_number=phone_number,
+                user_type=user_type
+            )
+            user.save()
+            if user.user_type == CustomUser.UserType.HANDYMAN:
+                HandymanProfile.objects.get_or_create(user=user)
+                
+            messages.success(request, "تم إنشاء الحساب بنجاح. يمكنك تسجيل الدخول الآن.")
+            return redirect('login')
+
+        except IntegrityError:
+            messages.error(request, "اسم المستخدم أو البريد الإلكتروني مستخدم بالفعل.")
+            return render(request, "register.html")
+
+    return render(request, "register.html")
 def login(request):
     if request.method == 'POST':
-
-        email    = request.POST.get('email')
+        email = request.POST.get('email')
         password = request.POST.get('password')
-        
+
         try:
             user_obj = CustomUser.objects.get(email=email)
             user = authenticate(request, username=user_obj.username, password=password)
@@ -47,21 +57,106 @@ def login(request):
             user = None
 
         if user is not None:
-            login(request, user)
+            auth_login(request, user)
             messages.success(request, "Login successful.")
-            return redirect(request,"userhome.html") 
-        else:
-            messages.error(request, "Invalid login credentials.")
-            return render(request, "login.html")
+            return redirect('userhome') 
+        
+        messages.error(request, "بيانات تسجيل الدخول غير متطابقة, حاول مرة أخرى ")
+        return render(request, "login.html")
     else:
         return render(request, "login.html")
     
 def cart_view(request):
     return render(request, 'cart.html')
-def user_home(request):
-    return render(request,'userhome.html')
-def add_service(request):
-    # implementing form to add service
 
     return render(request, 'addservice.html')
 
+def user_home(request):
+    services=ServiceListing.objects.all()
+    handyman=HandymanProfile.objects.all()
+    context={
+        'services':services
+
+    }
+        
+    
+    return render(request,'userhome.html',context)
+
+def add_service(request):
+    if not request.user.is_authenticated:
+        messages.error(request, "يحب تسجيل الدخول لاضافة خدمات")
+        return redirect('login')
+    
+    if request.user.user_type != CustomUser.UserType.HANDYMAN:
+        messages.error(request, "يجب ان تكون فني لاضافة خدمات")
+        return redirect('userhome')
+    
+    if request.method == "POST":
+        name = request.POST.get('name') 
+        description = request.POST.get('description')
+        price = request.POST.get('price')
+        image = request.FILES.get('image')  
+
+        if not name or not description or not price:
+            messages.error(request, "يجب ادخال اسم ووصف وسعر الخدمة")
+            return render(request, 'addservice.html')
+
+        try:
+            service = ServiceListing.objects.create(
+                handyman=request.user,
+                name=name,
+                description=description,
+                price=price,
+                image=image
+            )
+            messages.success(request, "تم اضافة الخدمة بنجاح")
+            return redirect('userhome')
+        except Exception as e:
+            messages.error(request, f"حدث خطأ اثناء اضافة الخدمة: {e}")
+            return render(request, 'addservice.html')
+    
+    return render(request, 'addservice.html')
+
+
+
+def edit_profile(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        email = request.POST.get("email")
+        phone_number = request.POST.get("phone_number")
+        bio = request.POST.get("bio")
+        experience = request.POST.get("experience")
+        field_of_expertise = request.POST.get("field_of_expertise")
+        availability = request.POST.get("availability") == "True" 
+        image = request.FILES.get("image")
+
+        try:
+            user = request.user
+            user.username = username
+            user.email = email
+            user.phone_number = phone_number
+            user.bio = bio
+            user.experience = experience
+            user.field_of_expertise = field_of_expertise
+            
+
+            if image:
+                user.image = image
+
+            handyman_profile = user.handyman_profile
+            handyman_profile.availability = availability
+            handyman_profile.save() 
+            user.save()
+
+            messages.success(request, "تم حفظ التعديلات بنجاح!")
+            return redirect('userhome') 
+
+        except Exception as e:
+            messages.error(request, "حدث خطأ أثناء حفظ التعديلات. يرجى المحاولة مرة أخرى.")
+            return redirect('edit-profile')
+
+    return render(request, 'profile.html')
+
+def logout(request):
+    request.session.flush() 
+    return redirect('login')
