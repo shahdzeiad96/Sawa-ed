@@ -10,7 +10,12 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate, login as auth_login
 
 def index(request):
-    return render(request,"index.html")
+    services = ServiceListing.objects.all()
+    context = {'services': services, 
+               'service_types': ServiceListing.SERVICE_TYPES
+               }
+
+    return render(request,"index.html",context)
 
 
 def register(request):
@@ -70,18 +75,21 @@ def login(request):
 def cart_view(request):
     return render(request, 'cart.html')
 
-    return render(request, 'addservice.html')
 
 def user_home(request):
+
     services=ServiceListing.objects.all()
     handyman=HandymanProfile.objects.all()
     context={
         'services':services,
-        'handyman':handyman
+        'handyman':handyman,
+        'service_types': ServiceListing.SERVICE_TYPES
+
     }
     return render(request,'userhome.html',context)
 
 def add_service(request):
+    services=ServiceListing.objects.all()
     if not request.user.is_authenticated:
         messages.error(request, "يحب تسجيل الدخول لاضافة خدمات")
         return redirect('login')
@@ -113,8 +121,12 @@ def add_service(request):
         except Exception as e:
             messages.error(request, f"حدث خطأ اثناء اضافة الخدمة: {e}")
             return render(request, 'addservice.html')
-    
-    return render(request, 'addservice.html')
+    context={
+        'services':services,
+        'service_types': ServiceListing.SERVICE_TYPES
+
+    }
+    return render(request, 'addservice.html',context)
 
 def service_detail(request, service_id,user_id):
     service =ServiceListing.objects.get(id=service_id)

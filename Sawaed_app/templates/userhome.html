@@ -14,13 +14,12 @@
         </div>
 
         <!-- will get types from data base  -->
-        <h2 class="text-md font-semibold mb-2">التصنيفات</h2>
-        <ul class="list-none p-0">
-          <li><a href="#" class="block py-2 text-sm text-[#f4a261] hover:text-[#e76f51]">التصنيف 1</a></li>
-          <li><a href="#" class="block py-2 text-sm text-[#f4a261] hover:text-[#e76f51]">التصنيف 2</a></li>
-          <li><a href="#" class="block py-2 text-sm text-[#f4a261] hover:text-[#e76f51]">التصنيف 3</a></li>
-          <li><a href="#" class="block py-2 text-sm text-[#f4a261] hover:text-[#e76f51]">التصنيف 4</a></li>
-        </ul>
+        <ul>
+          <h2 class="text-lg font-semibold mb-4 text-right">التصنيفات</h2>
+          {% for service_type in service_types %}
+              <li class="hover:text-[#f4a261] cursor-pointer">{{ service_type.0 }}</li> 
+          {% endfor %}
+      </ul>
       </div>
 
       <!-- all services -->
