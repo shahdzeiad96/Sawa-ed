@@ -77,10 +77,8 @@
 <!-- Script to open and close modal -->
 <script>
 function openModal(messageId) {
-    // إظهار الـ Modal
     document.getElementById('message-modal-' + messageId).classList.remove('hidden');
 
-    // إرسال طلب لتحديث حالة الرسالة إلى مقروءة
     fetch(`/mark_as_read/${messageId}/`, {
         method: 'POST',
         headers: {
