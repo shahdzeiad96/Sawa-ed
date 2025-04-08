@@ -27,24 +27,25 @@
       </div>
   
       <div class="flex items-center gap-4">
-          {% if user.is_authenticated %}
-              <!-- if user is logged-in -->
-              {% if unread_messages_count > 0 %}
-              <div class="relative">
-                  <a href="#" class="text-white-800">
-                      <i class="fas fa-envelope text-xl"></i>
-                      <span class="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">{{ unread_messages_count }}</span> <!-- إشعار الرسائل غير المقروءة -->
-                  </a>
-              </div>
-          {% else %}
-              <a href="#" class="text-white-800">
-                  <i class="fas fa-envelope text-xl"></i>
-              </a>
-          {% endif %}
+        {% if user.is_authenticated %}
+        {% if unread_messages_count > 0 %}
+        <div class="relative">
+            <a href="{% url 'inbox' %}" class="text-white-800">
+                <i class="fas fa-envelope text-xl"></i>
+                <span class="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                    {{ unread_messages_count }}
+                </span>
+            </a>
+        </div>
+        {% else %}
+        <a href="{% url 'inbox' %}" class="text-white-800">
+            <i class="fas fa-envelope text-xl"></i>
+        </a>
+        {% endif %}
               <a href="{% url 'cart' %}" class="relative text-white hover:text-[#f4a261] transition">
                 <i class="fas fa-shopping-cart text-xl hover:text-[#f4a261]"></i>
                 <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
-            </a>
+            </a>  
             
             
             
