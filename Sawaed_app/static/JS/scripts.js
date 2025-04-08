@@ -27,6 +27,44 @@ function toggleSidebar() {
     sidebar.classList.add("translate-x-full");
     overlay.classList.add("hidden");
   }
+  lucide.createIcons();
+  function openMessageModal() {
+  document.getElementById('messageModal').classList.remove('hidden');
+}
+
+function closeMessageModal() {
+  document.getElementById('messageModal').classList.add('hidden');
+}
+
+
+function openReviewModal() {
+document.getElementById("reviewModal").classList.remove("hidden");
+}
+
+function closeReviewModal() {
+document.getElementById("reviewModal").classList.add("hidden");
+}
+
+let stars = document.querySelectorAll('.star');
+let ratingInput = document.getElementById('rating-input');
+
+stars.forEach(star => {
+star.addEventListener('click', function() {
+let rating = this.getAttribute('data-value');
+ratingInput.value = rating;
+updateStars(rating); 
+});
+});
+
+function updateStars(rating) {
+stars.forEach(star => {
+if (star.getAttribute('data-value') <= rating) {
+star.innerHTML = "&#9733;";
+} else {
+star.innerHTML = "&#9734;";
+}
+});
+}
 
 
 

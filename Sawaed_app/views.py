@@ -243,13 +243,14 @@ def logout(request):
 
 def rate_service(request, service_id):
     service = ServiceListing.objects.get(id=service_id)
-    if not request.user.is_authinticated:
+    context={"setvice":service}
+    if not request.user.is_authenticated:
         messages.error(request, "الرجاء تسجيل الدخول أولاً")
         return redirect('login')
     
     if request.method == "POST":
-        rating = request.post.get('rating')
-        comment = request.post.get('comment')
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
 
         if not rating or int(rating) < 1 or int(rating) > 5:
             messages.error("الرجاء ادخال تقييم بين 1 و 5")
@@ -263,5 +264,5 @@ def rate_service(request, service_id):
         )
         messages.success(request,"نشكرك على تقييمك")
         return redirect('service_detail', service_id=service_id, user_id=service.handyman.id)
-    
-    return render('rate_service.html', {"setvice":service})
+        
+    return render(request,'rate_service.html', context)
