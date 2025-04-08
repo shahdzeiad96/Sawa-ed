@@ -78,8 +78,6 @@ def user_home(request):
         'services':services
 
     }
-        
-    
     return render(request,'userhome.html',context)
 
 def add_service(request):
@@ -117,8 +115,15 @@ def add_service(request):
     
     return render(request, 'addservice.html')
 
+def service_detail(request, service_id):
+    service =ServiceListing.objects.get(id=service_id)
+    handyman = HandymanProfile.objects.get(user=service.handyman) 
+    context = {
+        'service': service,
+        'handyman': handyman,
+    }
 
-
+    return render(request, 'service_details.html', context)
 def edit_profile(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -138,24 +143,27 @@ def edit_profile(request):
             user.bio = bio
             user.experience = experience
             user.field_of_expertise = field_of_expertise
-            
 
             if image:
                 user.image = image
 
-            handyman_profile = user.handyman_profile
-            handyman_profile.availability = availability
-            handyman_profile.save() 
+            # Only update availability for handymen
+            if user.user_type == 'handyman':
+                handyman_profile = user.handyman_profile
+                handyman_profile.availability = availability
+                handyman_profile.save() 
+
             user.save()
 
             messages.success(request, "تم حفظ التعديلات بنجاح!")
-            return redirect('userhome') 
+            return redirect('edit-profile') 
 
         except Exception as e:
             messages.error(request, "حدث خطأ أثناء حفظ التعديلات. يرجى المحاولة مرة أخرى.")
             return redirect('edit-profile')
 
     return render(request, 'profile.html')
+
 
 def logout(request):
     request.session.flush() 

@@ -47,56 +47,60 @@
                 class="w-full border border-gray-300 rounded-xl p-2 file:bg-orange-500 file:text-white file:px-4 file:py-2 file:rounded-xl file:border-0">
         </div>
 
-        <!-- Bio -->
-        <div class="md:col-span-2">
-            <label for="bio" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
-                <i data-lucide="info"></i> نبذة عنك
-            </label>
-            <textarea id="bio" name="bio" rows="3"
-                class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">{{ user.bio }}</textarea>
-        </div>
 
-        <!-- Experience -->
-        <div class="md:col-span-2">
-            <label for="experience" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
-                <i data-lucide="briefcase"></i> الخبرة
-            </label>
-            <textarea id="experience" name="experience" rows="3"
-                class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">{{ user.experience }}</textarea>
-        </div>
 
-        <!-- Field of Expertise -->
-        <div class="md:col-span-2">
-            <label for="field_of_expertise" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
-                <i data-lucide="hammer"></i> مجال الخبرة
-            </label>
-            <textarea id="field_of_expertise" name="field_of_expertise" rows="2"
-                class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">{{ user.field_of_expertise }}</textarea>
-        </div>
-
-        <div class="md:col-span-2">
-            <label class="block text-[#002244] font-semibold mb-2 flex items-center gap-2">
-                <i data-lucide="calendar-check"></i> هل أنت متاح للعمل؟
-            </label>
-            <div class="flex items-center gap-4">
-                <label class="flex items-center text-[#002244]">
-                    <input type="radio" name="availability" value="True" {% if user.handyman_profile.availability %}checked{% endif %} class="accent-orange-500">
-                    <span>نعم</span>
+        {% if user.user_type == 'handyman' %}
+                <!-- Bio -->
+                <div class="md:col-span-2">
+                    <label for="bio" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
+                        <i data-lucide="info"></i> نبذة عنك
+                    </label>
+                    <textarea id="bio" name="bio" rows="3"
+                        class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">{{ user.bio }}</textarea>
+                </div>
+        
+                <!-- Experience -->
+                <div class="md:col-span-2">
+                    <label for="experience" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
+                        <i data-lucide="briefcase"></i> الخبرة
+                    </label>
+                    <textarea id="experience" name="experience" rows="3"
+                        class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">{{ user.experience }}</textarea>
+                </div>
+        
+                <!-- Field of Expertise -->
+                <div class="md:col-span-2">
+                    <label for="field_of_expertise" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
+                        <i data-lucide="hammer"></i> مجال الخبرة
+                    </label>
+                    <textarea id="field_of_expertise" name="field_of_expertise" rows="2"
+                        class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">{{ user.field_of_expertise }}</textarea>
+                </div>
+            <!-- Availability -->
+            <div class="md:col-span-2">
+                <label class="block text-[#002244] font-semibold mb-2 flex items-center gap-2">
+                    <i data-lucide="calendar-check"></i> هل أنت متاح للعمل؟
                 </label>
-                <label class="flex items-center text-[#002244]">
-                    <input type="radio" name="availability" value="False" {% if not user.handyman_profile.availability %}checked{% endif %} class="accent-orange-500">
-                    <span>لا</span>
-                </label>
+                <div class="flex items-center gap-4">
+                    <label class="flex items-center text-[#002244]">
+                        <input type="radio" name="availability" value="True" {% if user.handyman_profile.availability %}checked{% endif %} class="accent-orange-500">
+                        <span>نعم</span>
+                    </label>
+                    <label class="flex items-center text-[#002244]">
+                        <input type="radio" name="availability" value="False" {% if not user.handyman_profile.availability %}checked{% endif %} class="accent-orange-500">
+                        <span>لا</span>
+                    </label>
+                </div>
             </div>
-        </div>
+        {% endif %}
 
         <!-- Submit Button -->
         <div class="md:col-span-2 text-center mt-6">
             <button type="submit"
-                class="bg-[#002244] hover:bg-[#001933] text-white font-semibold py-3 px-8 rounded-xl transition flex items-center justify-center gap-2 mx-auto">
-                <i data-lucide="save"></i>
-                حفظ التعديلات
-            </button>
+            class="bg-transparent border-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-green-500 font-semibold py-3 px-8 rounded-full transition flex items-center justify-center gap-2 mx-auto">
+            <i data-lucide="save"></i>
+            حفظ التعديلات
+        </button>
         </div>
     </form>
 </div>
