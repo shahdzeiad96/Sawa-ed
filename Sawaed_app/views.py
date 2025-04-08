@@ -162,6 +162,30 @@ def send_message(request, recipient_id, service_id):
     
     return redirect('service_detail', service_id=service_id, user_id=recipient_id)
 
+def send_reply(request, message_id):
+    # الحصول على الرسالة الأصلية
+    original_message = get_object_or_404(Message, id=message_id)
+
+    # التعامل مع النموذج
+    if request.method == 'POST':
+        content = request.POST.get('content')
+
+        if content:
+            reply = MessageReply(
+                original_message=original_message,
+                sender=request.user,
+                content=content
+            )
+            reply.save()
+
+            original_message.is_read = True
+            original_message.save()
+
+            return redirect('inbox')
+
+    return render(request, 'send_reply.html', {'original_message': original_message})
+
+
 def inbox(request):
     messages = Message.objects.filter(receiver=request.user).order_by('-timestamp')
     return render(request, 'inbox.html', {'messages': messages})
