@@ -54,10 +54,23 @@
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
+                    
+                    <!-- Display Original Message Content -->
                     <p class="text-gray-800 mb-4">{{ message.content }}</p>
 
+                    <!-- Display Message Replies -->
+                    {% for reply in message.replies.all %}
+                        <div class="p-4 mb-4 border rounded-lg bg-gray-50">
+                            <p class="font-semibold text-[#0d1b2a]">{{ reply.sender.username }}</p>
+                            <p class="text-sm text-gray-500">{{ reply.timestamp|date:"Y/m/d H:i" }}</p>
+                            <p class="text-gray-800 mt-4">{{ reply.content }}</p>
+                        </div>
+                    {% empty %}
+                        <p class="text-gray-600">لا توجد ردود لهذه الرسالة.</p>
+                    {% endfor %}
+
                     <!-- Reply Form -->
-                    <form method="POST" action="{% url 'send_message' recipient.id service.id %}">
+                    <form method="POST" action="{% url 'send_reply' message.id %}">
                         {% csrf_token %}
                         <textarea name="reply_content" class="w-full p-3 border border-gray-300 rounded mb-4" placeholder="اكتب ردك هنا..." required></textarea>
                         <button type="submit" class="bg-[#f7c6a3] text-white py-2 px-5 rounded-md hover:bg-[#e76f51] transition-all duration-300">
@@ -77,8 +90,10 @@
 <!-- Script to open and close modal -->
 <script>
 function openModal(messageId) {
+    // Show the modal
     document.getElementById('message-modal-' + messageId).classList.remove('hidden');
 
+    // Mark the message as read
     fetch(`/mark_as_read/${messageId}/`, {
         method: 'POST',
         headers: {
@@ -95,8 +110,10 @@ function openModal(messageId) {
 }
 
 function closeModal(messageId) {
+    // Hide the modal
     document.getElementById('message-modal-' + messageId).classList.add('hidden');
 }
 </script>
 
 {% endblock %}
+ 

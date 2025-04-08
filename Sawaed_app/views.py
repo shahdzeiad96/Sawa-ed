@@ -163,14 +163,12 @@ def send_message(request, recipient_id, service_id):
     return redirect('service_detail', service_id=service_id, user_id=recipient_id)
 
 def send_reply(request, message_id):
-    # الحصول على الرسالة الأصلية
-    original_message = get_object_or_404(Message, id=message_id)
+    original_message = Message.objects.get(id=message_id)
 
-    # التعامل مع النموذج
     if request.method == 'POST':
         content = request.POST.get('content')
 
-        if content:
+        if content.strip():
             reply = MessageReply(
                 original_message=original_message,
                 sender=request.user,
@@ -181,9 +179,17 @@ def send_reply(request, message_id):
             original_message.is_read = True
             original_message.save()
 
-            return redirect('inbox')
+            messages.success(request, "تم إرسال الرد بنجاح.")
+            return redirect('inbox') 
+        else:
+            messages.error(request, "لا يمكن إرسال رد فارغ.")
+    
+    context = {
+        'original_message': original_message
+    }
 
-    return render(request, 'send_reply.html', {'original_message': original_message})
+    return render(request, 'send_reply.html', context)
+
 
 
 def inbox(request):
@@ -237,13 +243,14 @@ def logout(request):
 
 def rate_service(request, service_id):
     service = ServiceListing.objects.get(id=service_id)
-    if not request.user.is_authinticated:
+    context={"setvice":service}
+    if not request.user.is_authenticated:
         messages.error(request, "الرجاء تسجيل الدخول أولاً")
         return redirect('login')
     
     if request.method == "POST":
-        rating = request.post.get('rating')
-        comment = request.post.get('comment')
+        rating = request.POST.get('rating')
+        comment = request.POST.get('comment')
 
         if not rating or int(rating) < 1 or int(rating) > 5:
             messages.error("الرجاء ادخال تقييم بين 1 و 5")
@@ -257,5 +264,5 @@ def rate_service(request, service_id):
         )
         messages.success(request,"نشكرك على تقييمك")
         return redirect('service_detail', service_id=service_id, user_id=service.handyman.id)
-    
-    return render('rate_service.html', {"setvice":service})
+        
+    return render(request,'rate_service.html', context)

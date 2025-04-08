@@ -10,6 +10,7 @@
 <div class="container mx-auto p-2">
     <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-4 items-start justify-center">
         
+        <!-- تفاصيل الخدمة -->
         <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-lg mx-auto">
             <div class="mb-4">
                 {% if service.image %}
@@ -28,18 +29,48 @@
                     <i class="fas fa-cart-plus mr-2"></i> إضافة إلى السلة
                 </a>
             </div>
+            <div class="mt-6">
+                <h2 class="text-xl font-semibold text-[#0d1b2a] mb-4 text-center">التقييمات:</h2>
+                <ul class="space-y-4">
+                    {% for review in service.review_set.all %}
+                        <li class="bg-gray-100 p-4 rounded-lg shadow-md">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <i class="fas fa-user text-[#f4a261] mr-2"></i>
+                                    <strong class="text-[#0d1b2a]">{{ review.client.username }}</strong>
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    {% for i in "12345" %}
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star text-yellow-400"></i>
+                                        {% else %}
+                                            <i class="fas fa-star text-gray-300"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <p class="text-gray-600 mt-2">{{ review.comment }}</p>
+                            <p class="text-sm text-gray-500 mt-2">{{ review.created_at|date:"d M Y" }}</p>
+                        </li>
+                    {% empty %}
+                        <li class="text-center text-gray-500">لا توجد تقييمات بعد.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            
         </div>
+
+        
 
         <div class="bg-white shadow-lg rounded-lg p-6 w-full max-w-sm mx-auto mt-8 lg:mt-0">
             <h3 class="text-2xl font-semibold text-[#0d1b2a] mb-6 text-center">معلومات مزود الخدمة</h3>
-            
             <div class="flex flex-col items-center space-y-4">
                 <div class="relative">
                     <div class="w-32 h-32 bg-gray-200 rounded-full overflow-hidden border-4 border-[#f4a261] shadow-md flex items-center justify-center">
                         <img src="{{ user.image.url }}" 
                         alt="Profile" 
                         onerror="this.onerror=null;this.src='{% static 'images/profile.png' %}'">
-                                    
                     </div>
                     <!-- if user is available to work-->
                     <div class="absolute top-0 right-0 bg-[#25D366] text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold" style="background-color: {% if handyman.availability %}#25D366{% else %}#dc3545{% endif %};">
@@ -58,7 +89,14 @@
                         <i class="fab fa-whatsapp mr-2"></i> تواصل عبر واتساب
                     </a>
                 </div>
-
+                
+                <div class="mt-4 space-y-2 text-sm text-gray-600 text-center">
+                    <p><i class="fas fa-star text-[#f4a261]"></i> التقييم: {{ handyman.rating }}</p>
+                    <p><i class="fas fa-map-marker-alt text-[#f4a261]"></i> الموقع: {{ handyman.location }}</p>
+                    <p><i class="fas fa-calendar-check text-[#f4a261]"></i> التوافر: {% if handyman.availability %}متاح{% else %}غير متاح{% endif %}</p>
+                    <p><i class="fas fa-phone-alt text-[#f4a261]"></i> رقم الهاتف: {{ handyman.user.phone_number }}</p>
+                </div>
+                
                 <!-- Modal for sending message -->
                 <div id="messageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
                     <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-lg relative">
@@ -73,6 +111,7 @@
                         <form method="POST" action="{% url 'send_message' recipient.id service.id %}">
                             {% csrf_token %}
                             
+
                             <textarea name="content" rows="4" required
                                 class="w-full border border-[#f4a261] rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#f4a261]"
                                 placeholder="اكتب رسالتك هنا..."></textarea>
@@ -86,23 +125,41 @@
                 </div>
                 
 
-                <div class="mt-4 space-y-2 text-sm text-gray-600 text-center">
-                    <p><i class="fas fa-star text-[#f4a261]"></i> التقييم: {{ handyman.rating }}</p>
-                    <p><i class="fas fa-map-marker-alt text-[#f4a261]"></i> الموقع: {{ handyman.location }}</p>
-                    <p><i class="fas fa-calendar-check text-[#f4a261]"></i> التوافر: {% if handyman.availability %}متاح{% else %}غير متاح{% endif %}</p>
-                    <p><i class="fas fa-phone-alt text-[#f4a261]"></i> رقم الهاتف: {{ handyman.user.phone_number }}</p>
-                </div>
-                <div class="mt-4 space-y-2 text-sm text-gray-600 text-center">
-                    <h2>Ratings:</h2>
-                    <ul>
-                        {% for review in service.review_set.all %}
-                            <li>
-                                <strong>{{ review.client.username }}</strong>: 
-                                {{ review.rating }}/5 - {{ review.comment }}
-                            </li>
-                        {% endfor %}
-                    </ul>
-                    <a href="{% url 'rate_service' service.id %}">Rate this Service</a>
+                <button onclick="openReviewModal()" class="bg-[#f4a261] hover:bg-[#f7c6a3] text-white px-4 py-2 rounded mt-4 shadow-lg">
+                    ✨  قيم هذه الخدمة 
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+                    <!-- Modal -->
+                    <div id="reviewModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex justify-center items-center">
+                        <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
+                        <div class="flex justify-between items-center mb-4">
+                            <h2 class="text-2xl font-bold text-[#0d1b2a]">أضف تقييمك</h2>
+                            <button onclick="closeReviewModal()" class="text-red-500 text-xl">&times;</button>
+                        </div>
+                    
+                        <form method="POST" action="{% url 'rate_service' service.id %}">
+                            {% csrf_token %}
+                            <div class="flex justify-center mb-4 text-2xl text-yellow-400" id="star-container">
+                                {% for i in "12345" %}
+                                  <span class="cursor-pointer star" data-value="{{ forloop.counter }}" id="star-{{ forloop.counter }}">&#9734;</span>
+                                {% endfor %}
+                              </div>
+                            <input type="hidden" name="rating" id="rating-input" required>
+                    
+                            <textarea name="comment" class="w-full p-3 border rounded mb-4" placeholder="اكتب تعليقك عن الخدمة..." required></textarea>
+                    
+                            <button type="submit" class="w-full bg-[#f4a261] hover:bg-[#f7c6a3] text-white font-semibold py-2 rounded transition duration-300">
+                            إرسال التقييم
+                            </button>
+                        </form>
+                        </div>
+                    </div>
+                   
                 </div>
             </div>
         </div>
@@ -111,18 +168,6 @@
 </div>
 
 <script src="https://unpkg.com/lucide@latest"></script>
-<script>
-        lucide.createIcons();
-        function openMessageModal() {
-        document.getElementById('messageModal').classList.remove('hidden');
-    }
-
-function closeMessageModal() {
-        document.getElementById('messageModal').classList.add('hidden');
-    }
-
-
-
-</script>
+<script src="{% static 'js/scripts.js' %}"></script> 
 
 {% endblock %}
