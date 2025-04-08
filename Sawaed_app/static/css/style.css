@@ -28,6 +28,7 @@
 /* Sidebar initially hidden (off screen) */
 #sidebar.translate-x-full {
     transform: translateX(100%);
+    
 }
 
 /* Sidebar visible state (on screen) */
