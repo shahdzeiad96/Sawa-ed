@@ -162,6 +162,9 @@ def send_message(request, recipient_id, service_id):
     
     return redirect('service_detail', service_id=service_id, user_id=recipient_id)
 
+def inbox(request):
+    messages = Message.objects.filter(receiver=request.user).order_by('-timestamp')
+    return render(request, 'inbox.html', {'messages': messages})
 
 def edit_profile(request):
     if request.method == "POST":

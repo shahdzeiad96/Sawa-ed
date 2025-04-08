@@ -1,0 +1,19 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md border">
+    <h1 class="text-2xl font-bold mb-6 text-[#0d1b2a]">📨 الرسائل الواردة</h1>
+
+    {% for message in messages %}
+        <div class="mb-4 p-4 rounded-lg border {% if not message.is_read %}bg-yellow-50{% else %}bg-gray-100{% endif %}">
+            <div class="flex justify-between items-center mb-2">
+                <p class="font-semibold text-[#0d1b2a]">من: {{ message.sender.username }}</p>
+                <span class="text-sm text-gray-500">{{ message.timestamp|date:"Y/m/d H:i" }}</span>
+            </div>
+            <p class="text-gray-800">{{ message.content }}</p>
+        </div>
+    {% empty %}
+        <p class="text-gray-600">لا توجد رسائل حالياً.</p>
+    {% endfor %}
+</div>
+{% endblock %}
