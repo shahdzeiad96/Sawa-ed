@@ -240,3 +240,28 @@ def edit_profile(request):
 def logout(request):
     request.session.flush() 
     return redirect('login')
+
+def rate_service(request, service_id):
+    service = ServiceListing.objects.get(id=service_id)
+    if not request.user.is_authinticated:
+        messages.error(request, "الرجاء تسجيل الدخول أولاً")
+        return redirect('login')
+    
+    if request.method == "POST":
+        rating = request.post.get('rating')
+        comment = request.post.get('comment')
+
+        if not rating or int(rating) < 1 or int(rating) > 5:
+            messages.error("الرجاء ادخال تقييم بين 1 و 5")
+            return redirect('service_detail', service_id=service_id, user_id=service.handyman.id)
+        
+        Review.objects.create(
+            client = request.user,
+            service = service,
+            rating=int(rating),
+            comment = comment
+        )
+        messages.success(request,"نشكرك على تقييمك")
+        return redirect('service_detail', service_id=service_id, user_id=service.handyman.id)
+    
+    return render('rate_service.html', {"setvice":service})
