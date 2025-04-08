@@ -54,7 +54,7 @@
                        alt="Profile" 
                        class="w-10 h-10 rounded-full border-2 border-[#f4a261]"
                        onerror="this.onerror=null;this.src='{% static 'images/profile.png' %}'">
-                  <p class="text-[#f4a261]">مرحبًا، {{ user.username }}</p>
+                  <a href="{% url 'edit-profile' %}" class="text-[#f4a261]">مرحبًا، {{ user.username }}</a>
               </div>
 
           {% else %}
