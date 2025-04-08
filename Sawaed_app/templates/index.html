@@ -38,7 +38,7 @@
             ☰
           </button>
       <img class="logo" src="{% static 'images/logo.png' %}" alt="Logo">
-      <a href="{%url 'userhome'%}"><p>سواعد</p></a>
+      <a id="logo-anchor" href="{%url 'userhome'%}"><p>سواعد</p></a>
     </div>
 
     <div class="flex items-center gap-4">
@@ -56,19 +56,19 @@
         </div>
 
   
-      {% else %}
+        {% else %}
         <!-- if guest-->
         <a href="{% url 'login' %}">
-          <button class="border border-[#f4a261] text-[#f4a261] px-4 py-2 rounded hover:bg-[#f4a261] hover:text-white transition">
+            <button class="border border-[#f4a261] text-[#f4a261] px-4 py-2 rounded hover:bg-[#f4a261] hover:text-white transition">
             تسجيل الدخول
-          </button>
+            </button>
         </a>
         <a href="{% url 'register' %}">
-          <button class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition">
+            <button class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition">
             إنشاء حساب
-          </button>
+            </button>
         </a>
-      {% endif %}
+        {% endif %}
     </div>
   </nav>
 
@@ -80,6 +80,7 @@
           </button>
       <h2 class="text-lg font-semibold mb-4 text-right">القائمة</h2>
       <ul class="space-y-2 text-right">
+        <a href="{% url 'userhome' %}"><li class="hover:text-[#f4a261] cursor-pointer">الصفحة الرئيسية </li></a>
         {% if user.is_authenticated %}
           <a href="{% url 'edit-profile' %}"><li class="hover:text-[#f4a261] cursor-pointer">الملف الشخصي</li></a>
           <a href="{%url 'logout'%}"><li class="hover:text-[#f4a261] cursor-pointer">تسجيل الخروج</li></a>
@@ -91,10 +92,22 @@
       <br>
       <ul>
         <h2 class="text-lg font-semibold mb-4 text-right">التصنيفات</h2>
-        <li class="hover:text-[#f4a261] cursor-pointer">النجارة</li>
-        <li class="hover:text-[#f4a261] cursor-pointer">الكهرباء</li>
-        <li class="hover:text-[#f4a261] cursor-pointer">السباكة</li>
-        <li class="hover:text-[#f4a261] cursor-pointer">البناء</li>
+        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">النجارة</a></li>
+        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">الكهرباء</a></li>
+        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">السباكة</a></li>
+        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">التكييف والتبريد</a></li>
+        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">الدهان</a></li>
+        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">الحدادة</a></li>
+        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">التمديدات الصحية</a></li>
+        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">الميكانيكا</a></li>
+        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">التصوير</a></li>
+        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">التنظيف</a></li>
+        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">الطبخ</a></li>
+        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">الكتابة والتحرير</a></li>
+        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">التصميم الجرافيكي</a></li>
+        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">البرمجة وتطوير المواقع</a></li>
+        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">الترجمة</a></li>
+        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">خدمات أخرى</a></li>
       </ul>
     </div>
   </div>
