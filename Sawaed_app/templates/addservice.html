@@ -7,13 +7,23 @@
     <div>
         <h1 class="text-3xl font-bold text-[#0d1b2a] mb-8">إضافة خدمة جديدة</h1>
 
-        <form method="POST" enctype="multipart/form-data" action="addservice">
+        <form method="POST" enctype="multipart/form-data" action="{% url 'add_service' %}">
             {% csrf_token %}
             
             <div class="mb-4">
                 <label for="name" class="block text-lg font-medium text-[#0d1b2a]">اسم الخدمة</label>
                 <input type="text" name="name" id="name" class="w-full p-3 border border-gray-300 rounded" placeholder="اسم الخدمة" required />
             </div>
+            
+            <div class="mb-4">
+                <label for="service_type" class="block text-lg font-medium text-[#0d1b2a]">نوع الخدمة</label>
+                <select name="service_type" id="service_type" class="w-full p-3 border border-gray-300 rounded" required>
+                    {% for service_type in service_types %}
+                        <option value="{{ service_type.0 }}">{{ service_type.0 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
 
             <div class="mb-4">
                 <label for="description" class="block text-lg font-medium text-[#0d1b2a]">الوصف</label>

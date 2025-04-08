@@ -1,8 +1,9 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-    <head>
-        <meta charset="UTF-8" />
+<head>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>سواعد</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -10,112 +11,99 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" /> 
     <script src="{% static 'JS/scripts.js' %}" defer></script>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    </head>
-    <body class="bg-[#fdf6ec]">
-    <!-- Overlay -->
-        <div id="overlay" class="fixed inset-0 bg-black bg-opacity-10 z-40 hidden" onclick="closeSidebar()"></div>
-    <!-- Navbar -->
-        <nav class="bg-[#0d1b2a] shadow p-4 flex justify-between items-center text-white">
-        <div class="text-2xl font-bold text-[#f4a261] flex items-center gap-4">
-            <button onclick="toggleSidebar()" class="text-white">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>سواعد</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" />
-  <script src="{% static 'JS/scripts.js' %}" defer></script>
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body class="bg-[#fdf6ec]">
-  <!-- Overlay -->
-  <div id="overlay" class="fixed inset-0  bg-opacity-100 z-40 hidden" onclick="closeSidebar()"></div>
+    <!-- Overlay -->
+    <div id="overlay" class="fixed inset-0 bg-black bg-opacity-10 z-40 hidden" onclick="closeSidebar()"></div>
 
-  <!-- Navbar -->
-  <nav class="bg-[#0d1b2a] shadow p-4 flex justify-between items-center text-white">
-    <div class="text-2xl font-bold text-[#f4a261] flex items-center gap-4">
-        <button onclick="toggleSidebar()" class="text-white">
-            ☰
+    <!-- Navbar -->
+    <nav class="bg-[#0d1b2a] shadow p-4 flex justify-between items-center text-white">
+      <div class="text-2xl font-bold text-[#f4a261] flex items-center gap-4">
+          <button onclick="toggleSidebar()" class="text-white">
+              <i class="fas fa-bars"></i>
           </button>
-      <img class="logo" src="{% static 'images/logo.png' %}" alt="Logo">
-      <a id="logo-anchor" href="{%url 'userhome'%}"><p>سواعد</p></a>
-    </div>
-
-    <div class="flex items-center gap-4">
-      {% if user.is_authenticated %}
-        <!-- if user is logged-in -->
-        <a href="{% url 'cart' %}" class="relative text-white hover:text-[#f4a261] transition text-xl">
-            🛒
-            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full px-1">0</span>
-          </a>
-        <div class="flex items-center gap-2">
-            <img src="{{ user.image.url }}" 
-            alt="Profile" 
-            class="w-10 h-10 rounded-full border-2 border-[#f4a261]"
-            onerror="this.onerror=null;this.src='{% static 'images/profile.png' %}'"><p class="text-[#f4a261]">مرحبًا، {{ user.username }}</p>
-        </div>
-
+          <img class="logo" src="{% static 'images/logo.png' %}" alt="Logo">
+          <a id="logo-anchor" href="{% url 'userhome' %}"><p>سواعد</p></a>
+      </div>
   
+      <div class="flex items-center gap-4">
+        {% if user.is_authenticated %}
+        {% if unread_messages_count > 0 %}
+        <div class="relative">
+            <a href="{% url 'inbox' %}" class="text-white-800">
+                <i class="fas fa-envelope text-xl"></i>
+                <span class="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                    {{ unread_messages_count }}
+                </span>
+            </a>
+        </div>
         {% else %}
-        <!-- if guest-->
-        <a href="{% url 'login' %}">
-            <button class="border border-[#f4a261] text-[#f4a261] px-4 py-2 rounded hover:bg-[#f4a261] hover:text-white transition">
-            تسجيل الدخول
-            </button>
-        </a>
-        <a href="{% url 'register' %}">
-            <button class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition">
-            إنشاء حساب
-            </button>
+        <a href="{% url 'inbox' %}" class="text-white-800">
+            <i class="fas fa-envelope text-xl"></i>
         </a>
         {% endif %}
-    </div>
+              <a href="{% url 'cart' %}" class="relative text-white hover:text-[#f4a261] transition">
+                <i class="fas fa-shopping-cart text-xl hover:text-[#f4a261]"></i>
+                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+            </a>  
+            
+            
+            
+              <div class="flex items-center gap-2">
+                  <img src="{{ user.image.url }}" 
+                       alt="Profile" 
+                       class="w-10 h-10 rounded-full border-2 border-[#f4a261]"
+                       onerror="this.onerror=null;this.src='{% static 'images/profile.png' %}'">
+                  <a href="{% url 'edit-profile' %}" class="text-[#f4a261]">مرحبًا، {{ user.username }}</a>
+              </div>
+
+          {% else %}
+              <!-- if guest-->
+              <a href="{% url 'login' %}">
+                  <button class="border border-[#f4a261] text-[#f4a261] px-4 py-2 rounded hover:bg-[#f4a261] hover:text-white transition">
+                      تسجيل الدخول
+                  </button>
+              </a>
+              <a href="{% url 'register' %}">
+                  <button class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition">
+                      إنشاء حساب
+                  </button>
+              </a>
+          {% endif %}
+      </div>
   </nav>
 
-  <!-- Sidebar -->
-  <div id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50 border-l">
-    <div class="pt-20 p-4">
-        <button onclick="closeSidebar()" class="text-orange-500">
-            ☰
-          </button>
-      <h2 class="text-lg font-semibold mb-4 text-right">القائمة</h2>
-      <ul class="space-y-2 text-right">
-        <a href="{% url 'userhome' %}"><li class="hover:text-[#f4a261] cursor-pointer">الصفحة الرئيسية </li></a>
-        {% if user.is_authenticated %}
-          <a href="{% url 'edit-profile' %}"><li class="hover:text-[#f4a261] cursor-pointer">الملف الشخصي</li></a>
-          <a href="{%url 'logout'%}"><li class="hover:text-[#f4a261] cursor-pointer">تسجيل الخروج</li></a>
-        {% else %}
-          <a href="{% url 'login' %}"><li class="hover:text-[#f4a261] cursor-pointer">تسجيل الدخول</li></a>
-          <a href="{% url 'register' %}"><li class="hover:text-[#f4a261] cursor-pointer">إنشاء حساب</li></a>
-        {% endif %}
-      </ul>
-      <br>
-      <ul>
-        <h2 class="text-lg font-semibold mb-4 text-right">التصنيفات</h2>
-        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">النجارة</a></li>
-        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">الكهرباء</a></li>
-        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">السباكة</a></li>
-        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">التكييف والتبريد</a></li>
-        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">الدهان</a></li>
-        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">الحدادة</a></li>
-        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">التمديدات الصحية</a></li>
-        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">الميكانيكا</a></li>
-        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">التصوير</a></li>
-        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">التنظيف</a></li>
-        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">الطبخ</a></li>
-        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">الكتابة والتحرير</a></li>
-        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">التصميم الجرافيكي</a></li>
-        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">البرمجة وتطوير المواقع</a></li>
-        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">الترجمة</a></li>
-        <li class="hover:text-[#f4a261] cursor-pointer"><a href="#">خدمات أخرى</a></li>
-      </ul>
+    <!-- Sidebar -->
+    <div id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50 border-l">
+        <div class="pt-20 p-4">
+            <button onclick="closeSidebar()" class="text-orange-500">
+                ☰
+            </button>
+            <h2 class="text-lg font-semibold mb-4 text-right">القائمة</h2>
+            <ul class="space-y-2 text-right">
+                <a href="{% url 'userhome' %}"><li class="hover:text-[#f4a261] cursor-pointer">الصفحة الرئيسية</li></a>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'edit-profile' %}"><li class="hover:text-[#f4a261] cursor-pointer">الملف الشخصي</li></a>
+                    <a href="{% url 'logout' %}"><li class="hover:text-[#f4a261] cursor-pointer">تسجيل الخروج</li></a>
+                {% else %}
+                    <a href="{% url 'login' %}"><li class="hover:text-[#f4a261] cursor-pointer">تسجيل الدخول</li></a>
+                    <a href="{% url 'register' %}"><li class="hover:text-[#f4a261] cursor-pointer">إنشاء حساب</li></a>
+                {% endif %}
+            </ul>
+            <br>
+            <ul>
+              <h2 class="text-lg font-semibold mb-4 text-right">التصنيفات</h2>
+              {% for service_type in service_types %}
+                  <li class="hover:text-[#f4a261] cursor-pointer">{{ service_type.0 }}</li> 
+              {% endfor %}
+          </ul>
+        </div>
     </div>
-  </div>
 
-  <!-- Main content block -->
-  <main class="flex flex-col items-center justify-center p-8">
-    {% block content %}
-    {% endblock %}
-  </main>
+    <!-- Main content block -->
+    <main class="flex flex-col items-center justify-center p-8">
+        {% block content %}
+        {% endblock %}
+    </main>
 </body>
 </html>
