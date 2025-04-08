@@ -13,6 +13,7 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('service/<int:service_id>/<int:user_id>/', views.service_detail, name='service_detail'),
     path('send-message/<int:recipient_id>/<int:service_id>/', views.send_message, name='send_message'),
+    path('reply-message/<int:message_id>/', views.send_reply, name='send_reply'),
     path('inbox/', views.inbox, name='inbox'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
