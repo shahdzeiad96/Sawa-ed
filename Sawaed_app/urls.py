@@ -17,6 +17,7 @@ urlpatterns = [
     path('add_service/addservice', views.add_service, name='add_service'),
     path('service/<int:service_id>/<int:user_id>/', views.service_detail, name='service_detail'),
     path('send-message/<int:recipient_id>/<int:service_id>/', views.send_message, name='send_message'),
+    path('rate-service/<int:service_id>/', views.rate_service, name='rate_service'),
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

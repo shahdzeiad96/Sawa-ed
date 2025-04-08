@@ -92,6 +92,18 @@
                     <p><i class="fas fa-calendar-check text-[#f4a261]"></i> التوافر: {% if handyman.availability %}متاح{% else %}غير متاح{% endif %}</p>
                     <p><i class="fas fa-phone-alt text-[#f4a261]"></i> رقم الهاتف: {{ handyman.user.phone_number }}</p>
                 </div>
+                <div class="mt-4 space-y-2 text-sm text-gray-600 text-center">
+                    <h2>Ratings:</h2>
+                    <ul>
+                        {% for review in service.review_set.all %}
+                            <li>
+                                <strong>{{ review.client.username }}</strong>: 
+                                {{ review.rating }}/5 - {{ review.comment }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <a href="{% url 'rate_service' service.id %}">Rate this Service</a>
+                </div>
             </div>
         </div>
 
