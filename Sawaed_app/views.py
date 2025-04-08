@@ -10,7 +10,12 @@ from django.http import JsonResponse
 from django.contrib.auth import authenticate, login as auth_login
 
 def index(request):
-    return render(request,"index.html")
+    services = ServiceListing.objects.all()
+    context = {'services': services, 
+               'service_types': ServiceListing.SERVICE_TYPES
+               }
+
+    return render(request,"index.html",context)
 
 
 def register(request):
@@ -70,18 +75,21 @@ def login(request):
 def cart_view(request):
     return render(request, 'cart.html')
 
-    return render(request, 'addservice.html')
 
 def user_home(request):
+
     services=ServiceListing.objects.all()
     handyman=HandymanProfile.objects.all()
     context={
         'services':services,
-        'handyman':handyman
+        'handyman':handyman,
+        'service_types': ServiceListing.SERVICE_TYPES
+
     }
     return render(request,'userhome.html',context)
 
 def add_service(request):
+    services=ServiceListing.objects.all()
     if not request.user.is_authenticated:
         messages.error(request, "يحب تسجيل الدخول لاضافة خدمات")
         return redirect('login')
@@ -113,8 +121,12 @@ def add_service(request):
         except Exception as e:
             messages.error(request, f"حدث خطأ اثناء اضافة الخدمة: {e}")
             return render(request, 'addservice.html')
-    
-    return render(request, 'addservice.html')
+    context={
+        'services':services,
+        'service_types': ServiceListing.SERVICE_TYPES
+
+    }
+    return render(request, 'addservice.html',context)
 
 def service_detail(request, service_id,user_id):
     service =ServiceListing.objects.get(id=service_id)
@@ -150,6 +162,33 @@ def send_message(request, recipient_id, service_id):
     
     return redirect('service_detail', service_id=service_id, user_id=recipient_id)
 
+def send_reply(request, message_id):
+    # الحصول على الرسالة الأصلية
+    original_message = get_object_or_404(Message, id=message_id)
+
+    # التعامل مع النموذج
+    if request.method == 'POST':
+        content = request.POST.get('content')
+
+        if content:
+            reply = MessageReply(
+                original_message=original_message,
+                sender=request.user,
+                content=content
+            )
+            reply.save()
+
+            original_message.is_read = True
+            original_message.save()
+
+            return redirect('inbox')
+
+    return render(request, 'send_reply.html', {'original_message': original_message})
+
+
+def inbox(request):
+    messages = Message.objects.filter(receiver=request.user).order_by('-timestamp')
+    return render(request, 'inbox.html', {'messages': messages})
 
 def edit_profile(request):
     if request.method == "POST":
