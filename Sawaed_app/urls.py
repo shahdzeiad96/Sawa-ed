@@ -15,7 +15,9 @@ urlpatterns = [
     path('profile/edit',views.edit_profile,name='edit-profile'),
     path('logout/',views.logout,name='logout'),
     path('add_service/addservice', views.add_service, name='add_service'),
-    path('service/<int:service_id>/', views.service_detail, name='service_detail'),
+    path('service/<int:service_id>/<int:user_id>/', views.service_detail, name='service_detail'),
+    path('send-message/<int:recipient_id>/<int:service_id>/', views.send_message, name='send_message'),
+
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

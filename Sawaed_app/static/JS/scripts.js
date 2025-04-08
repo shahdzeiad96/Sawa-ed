@@ -27,4 +27,7 @@ function toggleSidebar() {
     sidebar.classList.add("translate-x-full");
     overlay.classList.add("hidden");
   }
+
+
+
   

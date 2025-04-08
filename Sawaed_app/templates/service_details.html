@@ -2,6 +2,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <title>عرض تفاصيل الخدمة</title>
 </head>
+
 {% extends 'index.html' %}
 {% block content %}
 {% load static %}
@@ -48,7 +49,7 @@
 
                 <h4 class="text-xl font-semibold text-[#0d1b2a] mt-2">{{ handyman.user.username }}</h4>
 
-                <div class="flex flex-col space-y-3 w-full items-center">
+                <div class="flex flex-col space-y-3 w-full items-center" onclick="openMessageModal()">
                     <a href="#" class="rounded-full border-2 border-[#f4a261] text-[#f4a261] px-6 py-2 w-full max-w-xs text-center hover:bg-[#f4a261] hover:text-white transition duration-200">
                         <i class="fas fa-comment-alt mr-2"></i> إرسال رسالة
                     </a>
@@ -57,6 +58,33 @@
                         <i class="fab fa-whatsapp mr-2"></i> تواصل عبر واتساب
                     </a>
                 </div>
+
+                <!-- Modal for sending message -->
+                <div id="messageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+                    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-lg relative">
+                        <button onclick="closeMessageModal()" class="absolute top-2 left-2 text-gray-500 hover:text-red-600">
+                            <i data-lucide="x"></i>
+                        </button>
+                
+                        <h2 class="text-xl font-semibold text-[#002244] mb-4 flex items-center gap-2">
+                            <i data-lucide="message-square"></i> إرسال رسالة
+                        </h2>
+                
+                        <form method="POST" action="{% url 'send_message' recipient.id service.id %}">
+                            {% csrf_token %}
+                            
+                            <textarea name="content" rows="4" required
+                                class="w-full border border-[#f4a261] rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#f4a261]"
+                                placeholder="اكتب رسالتك هنا..."></textarea>
+                
+                            <button type="submit"
+                                class="w-full bg-[#f4a261] hover:bg-[#e07b3b] text-white font-semibold py-2 rounded-xl transition duration-200 mt-4">
+                                إرسال
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
 
                 <div class="mt-4 space-y-2 text-sm text-gray-600 text-center">
                     <p><i class="fas fa-star text-[#f4a261]"></i> التقييم: {{ handyman.rating }}</p>
@@ -69,5 +97,20 @@
 
     </div>
 </div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script>
+        lucide.createIcons();
+        function openMessageModal() {
+        document.getElementById('messageModal').classList.remove('hidden');
+    }
+
+function closeMessageModal() {
+        document.getElementById('messageModal').classList.add('hidden');
+    }
+
+
+
+</script>
 
 {% endblock %}

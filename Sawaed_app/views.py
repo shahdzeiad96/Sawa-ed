@@ -45,6 +45,7 @@ def register(request):
             return render(request, "register.html")
 
     return render(request, "register.html")
+
 def login(request):
     if request.method == 'POST':
         email = request.POST.get('email')
@@ -75,8 +76,8 @@ def user_home(request):
     services=ServiceListing.objects.all()
     handyman=HandymanProfile.objects.all()
     context={
-        'services':services
-
+        'services':services,
+        'handyman':handyman
     }
     return render(request,'userhome.html',context)
 
@@ -115,15 +116,41 @@ def add_service(request):
     
     return render(request, 'addservice.html')
 
-def service_detail(request, service_id):
+def service_detail(request, service_id,user_id):
     service =ServiceListing.objects.get(id=service_id)
-    handyman = HandymanProfile.objects.get(user=service.handyman) 
+    handyman = HandymanProfile.objects.get(user=service.handyman)
+    user=CustomUser.objects.get(id=user_id)
     context = {
         'service': service,
         'handyman': handyman,
+        'recipient': user
     }
 
     return render(request, 'service_details.html', context)
+
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from .models import CustomUser, Message
+
+def send_message(request, recipient_id, service_id):
+    recipient = CustomUser.objects.get(id=recipient_id)
+    
+    if request.method == 'POST':
+        content = request.POST.get('content')
+        if content.strip():  # التأكد من أن الرسالة ليست فارغة
+            Message.objects.create(
+                sender=request.user,
+                receiver=recipient,
+                content=content
+            )
+            messages.success(request, "تم إرسال الرسالة بنجاح.")
+            return redirect('service_detail', service_id=service_id, user_id=recipient_id)
+        else:
+            messages.error(request, "لا يمكن إرسال رسالة فارغة.")
+    
+    return redirect('service_detail', service_id=service_id, user_id=recipient_id)
+
+
 def edit_profile(request):
     if request.method == "POST":
         username = request.POST.get("username")
