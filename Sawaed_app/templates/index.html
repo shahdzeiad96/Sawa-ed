@@ -105,5 +105,44 @@
         {% block content %}
         {% endblock %}
     </main>
+    <!-- Ajax for the forms  just set the class ajax for any form you want to apply ajax on -->
+    <script>
+        function setupAjaxForm(formSelector, successCallback = null, errorCallback = null) {
+            $(formSelector).on('submit', function (e) {
+                e.preventDefault();
+
+                const $form = $(this);
+                const formData = new FormData(this);
+                const actionUrl = $form.attr('action');
+
+                $.ajax({
+                    url: actionUrl,
+                    type: $form.attr('method') || 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (successCallback) {
+                            successCallback(response, $form);
+                        } else {
+                            console.log('Success:', response);
+                            $('#responseArea').html('<p>تم بنجاح</p>');
+                        }
+                    },
+                    error: function (xhr) {
+                        if (errorCallback) {
+                            errorCallback(xhr, $form);
+                        } else {
+                            console.error('Error:', xhr.responseText);
+                            $('#responseArea').html('<p style="color:red;">فشل الإرسال</p>');
+                        }
+                    }
+                });
+            });
+        }
+        $(document).ready(function () {
+            setupAjaxForm('form.ajax'); // Apply AJAX to any form with class="ajax"
+        });
+    </script>
 </body>
 </html>
