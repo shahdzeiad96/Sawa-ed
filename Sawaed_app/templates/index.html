@@ -18,61 +18,62 @@
 
     <!-- Navbar -->
     <nav class="bg-[#0d1b2a] shadow p-4 flex justify-between items-center text-white">
-      <div class="text-2xl font-bold text-[#f4a261] flex items-center gap-4">
-          <button onclick="toggleSidebar()" class="text-white">
-              <i class="fas fa-bars"></i>
-          </button>
-          <img class="logo" src="{% static 'images/logo.png' %}" alt="Logo">
-          <a id="logo-anchor" href="{% url 'userhome' %}"><p>سواعد</p></a>
-      </div>
-  
-      <div class="flex items-center gap-4">
-        {% if user.is_authenticated %}
-        {% if unread_messages_count > 0 %}
-        <div class="relative">
-            <a href="{% url 'inbox' %}" class="text-white-800">
+        <div class="flex items-center gap-4">
+            <button onclick="toggleSidebar()" class="text-white">
+            <i class="fas fa-bars text-xl"></i>
+            </button>
+            <img class="logo w-10 h-10" src="{% static 'images/logo.png' %}" alt="Logo">
+            <a id="logo-anchor" href="{% url 'userhome' %}" class="text-2xl font-bold text-[#f4a261]">سواعد</a>
+        </div>
+        <div class="flex items-center gap-6">
+            {% if user.is_authenticated %}
+            <div class="relative">
+                <a href="{% url 'inbox' %}" class="text-white hover:text-[#f4a261] transition">
                 <i class="fas fa-envelope text-xl"></i>
-                <span class="absolute top-0 right-0 bg-red-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">
+                {% if unread_messages_count > 0 %}
+                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {{ unread_messages_count }}
                 </span>
-            </a>
-        </div>
-        {% else %}
-        <a href="{% url 'inbox' %}" class="text-white-800">
-            <i class="fas fa-envelope text-xl"></i>
-        </a>
-        {% endif %}
-              <a href="{% url 'cart' %}" class="relative text-white hover:text-[#f4a261] transition">
-                <i class="fas fa-shopping-cart text-xl hover:text-[#f4a261]"></i>
+                {% endif %}
+                </a>
+            </div>
+            {% endif %}
+            <div class="relative">
+            <a href="{% url 'cart' %}" class="text-white hover:text-[#f4a261] transition">
+                <i class="fas fa-shopping-cart text-xl"></i>
                 <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
-            </a>  
-            
-            
-            
-              <div class="flex items-center gap-2">
-                  <img src="{{ user.image.url }}" 
-                       alt="Profile" 
-                       class="w-10 h-10 rounded-full border-2 border-[#f4a261]"
-                       onerror="this.onerror=null;this.src='{% static 'images/profile.png' %}'">
-                  <a href="{% url 'edit-profile' %}" class="text-[#f4a261]">مرحبًا، {{ user.username }}</a>
-              </div>
-
-          {% else %}
-              <!-- if guest-->
-              <a href="{% url 'login' %}">
-                  <button class="border border-[#f4a261] text-[#f4a261] px-4 py-2 rounded hover:bg-[#f4a261] hover:text-white transition">
-                      تسجيل الدخول
-                  </button>
-              </a>
-              <a href="{% url 'register' %}">
-                  <button class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition">
-                      إنشاء حساب
-                  </button>
-              </a>
-          {% endif %}
-      </div>
-  </nav>
-
+            </a>
+            </div>
+            {% if user.is_authenticated %}
+            <!-- Profile -->
+            <div class="flex items-center gap-2">
+                <img src="{{ user.image.url }}" 
+                    alt="Profile" 
+                    class="w-10 h-10 rounded-full border-2 border-[#f4a261]"
+                    onerror="this.onerror=null;this.src='{% static 'images/profile.png' %}'">
+                <a href="{% url 'edit-profile' %}" class="text-[#f4a261] hover:underline">مرحبًا، {{ user.username }}</a>
+            </div>
+            <!-- Logout button -->
+            <a href="{% url 'logout' %}">
+                <button class="border border-[#f4a261] text-[#f4a261] px-4 py-2 rounded hover:bg-[#f4a261] hover:text-white transition">
+                تسجيل الخروج
+                </button>
+            </a>
+            {% else %}
+            <!-- Guest login/register -->
+            <a href="{% url 'login' %}">
+                <button class="border border-[#f4a261] text-[#f4a261] px-4 py-2 rounded hover:bg-[#f4a261] hover:text-white transition">
+                تسجيل الدخول
+                </button>
+            </a>
+            <a href="{% url 'register' %}">
+                <button class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition">
+                إنشاء حساب
+                </button>
+            </a>
+            {% endif %}
+        </div>
+        </nav>
     <!-- Sidebar -->
     <div id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50 border-l">
         <div class="pt-20 p-4">
@@ -105,5 +106,64 @@
         {% block content %}
         {% endblock %}
     </main>
+    <!-- Footer -->
+<footer class="bg-[#0d1b2a] shadow p-4 text-white mt-8">
+    <div class="flex flex-col items-center justify-center text-center">
+        <div class="text-sm mb-4">
+            <p>&copy; 2025 Sawa-ed. All rights reserved.</p>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="https://www.facebook.com" target="_blank" class="text-[#f4a261] hover:text-[#e76f51]">
+                <i class="fab fa-facebook"></i>
+            </a>
+            <a href="https://www.twitter.com" target="_blank" class="text-[#f4a261] hover:text-[#e76f51]">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a href="https://www.instagram.com" target="_blank" class="text-[#f4a261] hover:text-[#e76f51]">
+                <i class="fab fa-instagram"></i>
+            </a>
+        </div>
+    </div>
+</footer>
+
+    <!-- Ajax for the forms  just set the class ajax for any form you want to apply ajax on -->
+    <script>
+        function setupAjaxForm(formSelector, successCallback = null, errorCallback = null) {
+            $(formSelector).on('submit', function (e) {
+                e.preventDefault();
+
+                const $form = $(this);
+                const formData = new FormData(this);
+                const actionUrl = $form.attr('action');
+
+                $.ajax({
+                    url: actionUrl,
+                    type: $form.attr('method') || 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function (response) {
+                        if (successCallback) {
+                            successCallback(response, $form);
+                        } else {
+                            console.log('Success:', response);
+                            $('#responseArea').html('<p>تم بنجاح</p>');
+                        }
+                    },
+                    error: function (xhr) {
+                        if (errorCallback) {
+                            errorCallback(xhr, $form);
+                        } else {
+                            console.error('Error:', xhr.responseText);
+                            $('#responseArea').html('<p style="color:red;">فشل الإرسال</p>');
+                        }
+                    }
+                });
+            });
+        }
+        $(document).ready(function () {
+            setupAjaxForm('form.ajax'); // Apply AJAX to any form with class="ajax"
+        });
+    </script>
 </body>
 </html>

@@ -3,15 +3,84 @@
 
 {% extends "index.html" %}
 {% block content %}
-    <div id="chat-container">
-        <div id="chatbot">
-            <p class="bottext"><span>للاستفسار اكثر عن خدماتنا </span></p>
+{% load static %}
+    
+    <div id ="chatcardd"class="max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-lg mt-10">
+        <h2 id="chathead" class="text-center text-2xl font-semibold mb-4">شات سواعد</h2>
+
+        <div id="chat-box" class="p-4 border border-gray-300 rounded-lg shadow-md h-80 overflow-y-auto mb-4 bg-gray-50">
+            <!-- Messages will appear here -->
         </div>
-        <div id="userinput">
-            <input type="text" id="textinput" name="usermsg" placeholder="type here">
-            <!-- <input type="submit" value="send" id="btninput" class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition"> -->
-            <button class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition" type="submit" id="btninput">sek</button>
-        </div>
+        <form id="chat-form" class="flex gap-4 justify-center items-center ajax">
+            {%csrf_token%}
+            <input type="text" id="user-input" placeholder="Type your message..." autofocus
+                class="w-3/4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg">
+            <button type="submit" id="send-button" class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition">
+                ارسال
+            </button>
+        </form>
     </div>
+
+    <script>
+        const chatBox = document.getElementById('chat-box');
+        function appendMessage(sender, message, isLoading = false) {
+            const messageDiv = document.createElement('div');
+            const arabicSender = sender === 'You' || sender === 'أنت' ? 'أنت' : 'سواعد';
+        
+            messageDiv.innerHTML = `<strong class="font-bold">${arabicSender}:</strong> ${message}`;
+        
+            if (isLoading) {
+                messageDiv.id = 'loading-message';
+                messageDiv.classList.add('text-gray-500');
+            }
+        
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+        
+        document.getElementById('chat-form').addEventListener('submit', async function(event) {
+            event.preventDefault();
+        
+            const userInput = document.getElementById('user-input');
+            const userMessage = userInput.value.trim();
+            if (userMessage === "") return;
+        
+            appendMessage('You', userMessage);
+        
+            //  loading message
+            appendMessage('Bot', 'جارٍ تجهيز الإجابة، الرجاء الانتظار...', true);
+        
+            try {
+                const response = await fetch('/chatbot/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    },
+                    body: JSON.stringify({ message: userMessage })
+                });
+        
+                const data = await response.json();
+        
+                const loadingMessage = document.getElementById('loading-message');
+                if (loadingMessage) loadingMessage.remove();
+        
+                if (data && data.response) {
+                    appendMessage('Bot', data.response);
+                } else {
+                    appendMessage('Bot', 'عذرًا، لم أتمكن من فهم سؤالك.');
+                }
+            } catch (error) {
+                const loadingMessage = document.getElementById('loading-message');
+                if (loadingMessage) loadingMessage.remove();
+        
+                console.error("Error:", error);
+                appendMessage('Bot', 'حدث خطأ أثناء معالجة الطلب.');
+            }
+        
+            userInput.value = '';
+        });
+        </script>
+        
     {% endblock %}
 

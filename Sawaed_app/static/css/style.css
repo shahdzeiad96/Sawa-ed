@@ -28,6 +28,7 @@
 /* Sidebar initially hidden (off screen) */
 #sidebar.translate-x-full {
     transform: translateX(100%);
+    
 }
 
 /* Sidebar visible state (on screen) */
@@ -50,4 +51,19 @@ a:hover{
 }
 #logo-anchor:hover{
     color: #fdf6ec;
+}
+#chat-box{
+    height: 295px;
+    width: 370px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#chathead{
+color: #0d1b2a;
+font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif ;
+}
+#chatcardd{
+    height:496px;
+    width:500px;
 }

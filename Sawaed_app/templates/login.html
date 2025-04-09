@@ -8,7 +8,7 @@
     تسجيل الدخول إلى سواعد
   </h2>
 
-  <form action="{% url 'login' %}" method="POST" class="space-y-6">
+  <form action="{% url 'userhome' %}" method="POST" class="space-y-6 ajax">
     {% csrf_token %}
 
     <!-- Email -->
@@ -37,7 +37,7 @@
     </ul>
     {% endif %}
 
-    <button type="submit" class="w-full bg-[#0d1b2a] hover:bg-[#1b2f43] text-[#f4a261] py-3 rounded-xl font-semibold shadow flex items-center justify-center gap-2">
+    <button type="submit" class="w-full bg-[#0d1b2a] text-[#f4a261] hover:bg-[#f4a261] hover:text-white transition py-3 rounded-xl font-semibold shadow flex items-center justify-center gap-2">
       <i data-lucide="log-in"></i>
       تسجيل الدخول
     </button>
