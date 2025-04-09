@@ -6,6 +6,8 @@ from .models import *
 import requests
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+from .chatbot import get_chatbot_response
+import json
 
 from django.contrib.auth import authenticate, login as auth_login
 
@@ -266,3 +268,54 @@ def rate_service(request, service_id):
         return redirect('service_detail', service_id=service_id, user_id=service.handyman.id)
         
     return render(request,'rate_service.html', context)
+
+#chatbot views
+def chatbot_ui(request): #this to load the page only
+    return render(request, "chatbot.html")
+
+
+@csrf_exempt 
+def chatbot_response(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            user_message = data.get('message')
+
+            api_url = 'https://api.aimlapi.com/v1/chat/completions'
+            headers = {
+                'Authorization': 'Bearer 17c7002d4b0b4654ac1642929c14c89e', 
+                'Content-Type': 'application/json',
+            }
+
+            payload = {
+                "model": "gpt-4-0125-preview",
+                "messages": [
+                    {
+                        "role": "system",
+                        "content": (
+    "أنت مساعد ذكي خاص بمنصة إلكترونية تُدعى 'سواعد'. "
+    "سواعد هي موقع إلكتروني يربط بين الحرفيين (مثل السباكين، الكهربائيين، النجارين...) وبين العملاء الذين يحتاجون إلى خدماتهم. "
+    "أجب دائمًا باللغة العربية فقط، وقدم معلومات دقيقة ومبسطة عن المنصة وخدماتها."
+
+)
+                    },
+                    {
+                        "role": "user",
+                        "content": user_message
+                    }
+                ],
+                "max_tokens": 300,
+                "temperature": 0.7
+            }
+
+            response = requests.post(api_url, headers=headers, json=payload)
+            response_data = response.json()
+
+            chatbot_response = response_data.get('choices', [{}])[0].get('message', {}).get('content', 'عذرًا، لم أتمكن من فهم سؤالك.')
+
+            return JsonResponse({'response': chatbot_response})
+
+        except Exception as e:
+            return JsonResponse({'response': f"خطأ: {str(e)}"})
+
+    return JsonResponse({'response': 'طلب غير صالح'})

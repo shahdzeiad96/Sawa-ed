@@ -15,6 +15,8 @@ urlpatterns = [
     path('send-message/<int:recipient_id>/<int:service_id>/', views.send_message, name='send_message'),
     path('inbox/', views.inbox, name='inbox'),
     path('rate-service/<int:service_id>/', views.rate_service, name='rate_service'),
+    path('chatbot/', views.chatbot_response, name='chatbot_response'),
+    path("chat/", views.chatbot_ui, name="chat-ui")
 
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
