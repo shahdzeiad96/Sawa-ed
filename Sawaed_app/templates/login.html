@@ -1,17 +1,17 @@
 {% extends "index.html" %}
 {% load socialaccount %}
-
+ 
 {% block content %}
 <div class="max-w-2xl mx-auto mt-10 bg-white p-10 rounded-3xl shadow-lg border border-gray-200">
   <h2 class="text-3xl font-bold text-[#1e3a8a] mb-8 text-center flex items-center justify-center gap-2">
     <i data-lucide="log-in" class="w-6 h-6 text-orange-500"></i>
     تسجيل الدخول إلى سواعد
   </h2>
-
-  <form action="{% url 'userhome' %}" method="POST" class="space-y-6 ajax">
-    {% csrf_token %}
-
-    <!-- Email -->
+ 
+ 
+   
+    <form  method="POST" class="space-y-6 ">
+      {% csrf_token %}
     <div>
       <label for="email" class="block text-gray-700 font-medium mb-1 flex items-center gap-2">
         <i data-lucide="mail"></i>
@@ -19,8 +19,6 @@
       </label>
       <input type="email" name="email" id="email" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400" placeholder="ادخل بريدك الإلكتروني" required>
     </div>
-
-    <!-- Password -->
     <div>
       <label for="password" class="block text-gray-700 font-medium mb-1 flex items-center gap-2">
         <i data-lucide="lock"></i>
@@ -28,7 +26,7 @@
       </label>
       <input type="password" name="password" id="password" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-400" placeholder="ادخل كلمة المرور" required>
     </div>
-
+ 
     {% if messages %}
     <ul class="messages text-red-600 text-sm">
       {% for message in messages %}
@@ -36,13 +34,12 @@
       {% endfor %}
     </ul>
     {% endif %}
-
+ 
     <button type="submit" class="w-full bg-[#0d1b2a] text-[#f4a261] hover:bg-[#f4a261] hover:text-white transition py-3 rounded-xl font-semibold shadow flex items-center justify-center gap-2">
       <i data-lucide="log-in"></i>
       تسجيل الدخول
     </button>
-
-    <!-- Google login -->
+ 
     <a href="{% provider_login_url 'google' %}">
       <button type="button" class="bg-red-500 text-white px-4 py-3 rounded-xl hover:bg-red-600 transition w-full mt-4 flex items-center justify-center gap-2">
         <i data-lucide="globe"></i>
@@ -50,17 +47,16 @@
       </button>
     </a>
   </form>
-
-  <!-- Already have account -->
+ 
   <p class="mt-6 text-center text-sm text-[#0d1b2a]">
     ليس لديك حساب؟
     <a href="{% url 'register' %}" class="text-[#f4a261] hover:underline">سجل الآن</a>
   </p>
 </div>
-
-<!-- Lucide Icons -->
+ 
 <script src="https://unpkg.com/lucide@latest"></script>
 <script>
   lucide.createIcons();
 </script>
 {% endblock %}
+ 
