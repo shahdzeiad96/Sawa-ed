@@ -25,9 +25,11 @@
 
       <!-- all services -->
       <div class="w-full sm:w-3/4 md:w-4/5 lg:w-5/6">
+        {% if user.user_type == 'handyman'%}
         <div class="flex justify-between mb-4">
           <a href="{% url 'add_service' %}" class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition">إضافة خدمة جديدة</a>
         </div>
+        {% endif %}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {% for service in services %}
             <div class="bg-white shadow-lg rounded p-4 hover:shadow-xl transition">
