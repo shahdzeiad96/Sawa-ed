@@ -5,10 +5,10 @@ from django.db import IntegrityError
 from .models import *
 import requests
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 from .chatbot import get_chatbot_response
 import json
-
 from django.contrib.auth import authenticate, login as auth_login
 
 def index(request):

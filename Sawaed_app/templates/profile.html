@@ -8,7 +8,7 @@
         تعديل الملف الشخصي
     </h2>
 
-    <form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <form method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6 ajax">
         {% csrf_token %}
 
         <!-- Username -->
@@ -46,9 +46,6 @@
             <input type="file" id="image" name="image"
                 class="w-full border border-gray-300 rounded-xl p-2 file:bg-orange-500 file:text-white file:px-4 file:py-2 file:rounded-xl file:border-0">
         </div>
-
-
-
         {% if user.user_type == 'handyman' %}
                 <!-- Bio -->
                 <div class="md:col-span-2">
@@ -110,4 +107,4 @@
 <script>
     lucide.createIcons();
 </script>
-{% endblock %}
+        {% endblock %}

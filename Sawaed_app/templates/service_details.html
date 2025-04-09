@@ -108,7 +108,7 @@
                             <i data-lucide="message-square"></i> إرسال رسالة
                         </h2>
                 
-                        <form method="POST" action="{% url 'send_message' recipient.id service.id %}">
+                        <form method="POST"class="ajax" action="{% url 'send_message' recipient.id service.id %}">
                             {% csrf_token %}
                             
 

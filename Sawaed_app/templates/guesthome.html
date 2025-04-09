@@ -53,7 +53,7 @@
                 </button>
                 
                 <!-- Delete Button -->
-                <form method="POST" action="{% url 'delete_message' message.id %}">
+                <form method="POST" action="{% url 'delete_message' message.id %}" class="ajax">
                     {% csrf_token %}
                     <button type="submit" class="bg-red-500 text-white py-2 px-5 rounded-md hover:bg-red-600 transition-all duration-300">
                         <i class="fas fa-trash-alt"></i> حذف
