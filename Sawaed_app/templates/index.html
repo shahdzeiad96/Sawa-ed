@@ -105,6 +105,26 @@
         {% block content %}
         {% endblock %}
     </main>
+    <!-- Footer -->
+<footer class="bg-[#0d1b2a] shadow p-4 text-white mt-8">
+    <div class="flex flex-col items-center justify-center text-center">
+        <div class="text-sm mb-4">
+            <p>&copy; 2025 Sawa-ed. All rights reserved.</p>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="https://www.facebook.com" target="_blank" class="text-[#f4a261] hover:text-[#e76f51]">
+                <i class="fab fa-facebook"></i>
+            </a>
+            <a href="https://www.twitter.com" target="_blank" class="text-[#f4a261] hover:text-[#e76f51]">
+                <i class="fab fa-twitter"></i>
+            </a>
+            <a href="https://www.instagram.com" target="_blank" class="text-[#f4a261] hover:text-[#e76f51]">
+                <i class="fab fa-instagram"></i>
+            </a>
+        </div>
+    </div>
+</footer>
+
     <!-- Ajax for the forms  just set the class ajax for any form you want to apply ajax on -->
     <script>
         function setupAjaxForm(formSelector, successCallback = null, errorCallback = null) {
