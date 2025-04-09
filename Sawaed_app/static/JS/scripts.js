@@ -65,7 +65,42 @@ star.innerHTML = "&#9734;";
 }
 });
 }
+// chatbot function
+const chatBox = document.getElementById("chat-box");
+const userInput = document.getElementById("user-input");
+const sendButton = document.getElementById("send-button");
 
+function appendMessage(sender, text) {
+    const messageEl = document.createElement("div");
+    messageEl.classList.add("chat-message");
+    messageEl.classList.add(sender === "user" ? "user" : "bot");
+    messageEl.innerHTML = `<strong>${sender === "user" ? "You" : "Bot"}:</strong> ${text}`;
+    chatBox.appendChild(messageEl);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+function sendMessage() {
+    const message = userInput.value.trim();
+    if (!message) return;
+
+    appendMessage("user", message);
+    userInput.value = "";
+
+    fetch(`/chatbot/?message=${encodeURIComponent(message)}`)
+        .then(response => response.json())
+        .then(data => {
+            appendMessage("bot", data.response);
+        })
+        .catch(error => {
+            appendMessage("bot", "⚠️ Error contacting chatbot.");
+            console.error("Error:", error);
+        });
+}
+
+sendButton.addEventListener("click", sendMessage);
+userInput.addEventListener("keypress", function(e) {
+    if (e.key === "Enter") sendMessage();
+});
 
 
   

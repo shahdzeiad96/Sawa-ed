@@ -3,15 +3,87 @@
 
 {% extends "index.html" %}
 {% block content %}
-    <div id="chat-container">
+{% load static %}
+    <!-- <div id="chat-container">
         <div id="chatbot">
             <p class="bottext"><span>للاستفسار اكثر عن خدماتنا </span></p>
         </div>
         <div id="userinput">
             <input type="text" id="textinput" name="usermsg" placeholder="type here">
-            <!-- <input type="submit" value="send" id="btninput" class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition"> -->
+        
             <button class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition" type="submit" id="btninput">sek</button>
         </div>
+    </div> -->
+    <div class="max-w-2xl mx-auto p-4 bg-white rounded-lg shadow-lg mt-10">
+        <h2 class="text-center text-2xl font-semibold mb-4">شات سواعد</h2>
+
+        <div id="chat-box" class="p-4 border border-gray-300 rounded-lg shadow-md h-80 overflow-y-auto mb-4 bg-gray-50">
+            <!-- Messages will appear here -->
+        </div>
+        <form id="chat-form" class="flex gap-4 justify-center items-center">
+            {%csrf_token%}
+            <input type="text" id="user-input" placeholder="Type your message..." autofocus
+                class="w-3/4 p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-lg">
+            <button type="submit" id="send-button" class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition">
+                ارسال
+            </button>
+        </form>
     </div>
+
+    <script>
+        function appendMessage(sender, message) {
+    const messageDiv = document.createElement('div');
+
+    const arabicSender = sender === 'You' ? 'أنت' : 'سواعد';
+
+    messageDiv.innerHTML = `<strong class="font-bold">${arabicSender}:</strong> ${message}`;
+    chatBox.appendChild(messageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+const chatBox = document.getElementById('chat-box');
+function appendinMessage(sender, message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.innerHTML = `<strong class="font-bold">${sender}:</strong> ${message}`;
+    chatBox.appendChild(messageDiv);
+    chatBox.scrollTop = chatBox.scrollHeight; 
+}
+
+// Event listener for the form submit (when the send button is clicked or Enter is pressed)
+document.getElementById('chat-form').addEventListener('submit', async function(event) {
+    event.preventDefault(); // Prevent form submision (page reload)ui
+
+    const userMessage = document.getElementById('user-input').value;
+    if (userMessage.trim() === "") return;  // Dont send empty message
+
+    appendMessage('You', userMessage);
+
+    // Send the user's message to the backendd to get a response from the chatbot
+    try {
+        const response = await fetch('/chatbot/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value, // Include CSRF token if using Django
+            },
+            body: JSON.stringify({ message: userMessage })
+        });
+
+        const data = await response.json();
+        if (data && data.response) {
+            // Append the bot's response to the chatbox
+            appendMessage('Bot', data.response);
+        } else {
+            appendMessage('Bot', 'Sorry, I could not understand that.');
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        appendMessage('Bot', 'There was an error processing your request.');
+    }
+
+    
+    document.getElementById('user-input').value = '';
+});
+
+    </script>
     {% endblock %}
 
