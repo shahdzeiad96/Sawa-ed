@@ -149,3 +149,25 @@ class MessageReply(models.Model):
     sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
+
+class ServiceOrder(models.Model):
+    ORDER_STATUS_CHOICES = [
+        ('pending', _('Pending')),
+        ('confirmed', _('Confirmed')),
+        ('rejected', _('Rejected')),
+    ]
+    client = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE, 
+        related_name='orders'
+    )
+    service = models.ForeignKey(
+        ServiceListing, 
+        on_delete=models.CASCADE, 
+        related_name='orders'
+    )
+    status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def _str_(self):
+        return f"{self.client.username} - {self.service.name} ({self.status})"
