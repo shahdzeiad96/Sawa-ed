@@ -1,38 +1,48 @@
 {% extends 'index.html' %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md border border-gray-200">
-    <h1 class="text-3xl font-bold mb-6 text-[#0d1b2a]">📨 الرسائل الواردة</h1>
+<div class="max-w-full mx-auto mt-10 p-8 bg-white rounded-xl shadow-lg border border-gray-200">
+    <h1 class="text-4xl font-semibold mb-6 text-[#0d1b2a] flex items-center gap-3">
+        📨 الرسائل الواردة
+    </h1>
 
     <!-- Loop through threads (user, last_message) -->
     {% for user, last_message in threads %}
-        <div class="mb-5 p-4 rounded-lg border {% if not last_message.is_read and last_message.receiver == request.user %}bg-gray-50 hover:shadow-lg{% else %}bg-gray-100{% endif %} transition-all duration-300">
-            
+        <div class="mb-6 p-6 rounded-lg border {% if not last_message.is_read and last_message.receiver == request.user %}bg-[#f1e0c5] hover:shadow-lg{% else %}bg-[#e4e5e6]{% endif %} transition-all duration-300">
             <!-- Message Header -->
             <div class="flex justify-between items-center mb-3">
-                <p class="font-semibold text-[#0d1b2a] text-lg">{{ user.username }}</p>
+                <p class="font-semibold text-[#0e1b2a] text-lg">{{ user.username }}</p>
                 <span class="text-sm text-gray-500">{{ last_message.timestamp|date:"Y/m/d H:i" }}</span>
             </div>
 
             <!-- Message Content -->
-            <p class="text-gray-800 leading-relaxed">{{ last_message.content|truncatechars:80 }}</p>
+            <p class="text-gray-700 leading-relaxed">{{ last_message.content|truncatechars:80 }}</p>
 
             <!-- Read/Unread indicator -->
             {% if not last_message.is_read and last_message.receiver == request.user %}
-                <p class="mt-2 text-sm text-yellow-600 font-semibold">رسالة جديدة</p>
+                <p class="mt-3 text-xs text-[#e76f51] font-semibold uppercase">رسالة جديدة</p>
             {% endif %}
 
             <!-- Action Buttons -->
             <div class="flex gap-5 mt-4">
                 <a href="{% url 'chat_detail' user.id %}" 
-                class="bg-[#e76f51] text-white py-2 px-5 rounded-md hover:bg-[#f7c6a3] transition-all duration-300">
-                <i class="fas fa-comment-dots"></i> عرض المحادثة
-             </a>
-             
+                   class="bg-[#e76f51] text-white py-2 px-6 rounded-full hover:bg-[#f7c6a3] transform transition-all duration-300">
+                    <i class="fas fa-comment-dots"></i> عرض المحادثة
+                </a>
+                <a href="#" 
+                   class="bg-[#264653] text-white py-2 px-6 rounded-full hover:bg-[#3a4f5c] transform transition-all duration-300">
+                    <i class="fas fa-trash-alt"></i> حذف المحادثة
+                </a>
+                <a href="#" 
+                   class="bg-[#e4e5e6] text-[#264653] py-2 px-6 rounded-full hover:bg-[#d1d3d4] transform transition-all duration-300">
+                    <i class="fas fa-eye"></i> تحديد كمقروء
+                </a>
             </div>
         </div>
     {% empty %}
-        <p class="text-gray-600">لا توجد رسائل حالياً.</p>
+        <div class="p-6 text-center">
+            <p class="text-lg text-gray-500">✨ لا توجد رسائل حالياً! ✨</p>
+        </div>
     {% endfor %}
 </div>
 {% endblock %}
