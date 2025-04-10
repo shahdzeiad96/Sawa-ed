@@ -1,0 +1,43 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="max-w-xl mx-auto mt-10 bg-white p-6 rounded-xl shadow-md border border-gray-200">
+    <h1 class="text-2xl font-bold mb-6 text-[#0d1b2a]">⭐ تقييم الخدمة</h1>
+
+    <div class="mb-4">
+        <h2 class="text-lg font-semibold text-[#0d1b2a]">الخدمة:</h2>
+        <p class="text-gray-700">{{ service.title }}</p>
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- ⭐ Star Rating -->
+        <div class="mb-6">
+            <label class="block mb-2 font-semibold text-[#0d1b2a]">اختر تقييمك:</label>
+            <div class="flex flex-row-reverse justify-end gap-1" dir="rtl">
+                {% for i in "54321" %}
+                    <input type="radio" name="rating" id="star{{ i }}" value="{{ i }}" class="hidden peer" required />
+                    <label for="star{{ i }}" class="cursor-pointer">
+                        <svg class="w-8 h-8 text-gray-300 peer-checked:text-[#e76f51] peer-hover:text-[#f4a261] hover:text-[#f4a261] transition-all fill-current"
+                             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                            <path d="M10 15l-5.878 3.09 1.122-6.545L.487 6.91l6.561-.955L10 0l2.952 5.955 6.561.955-4.757 4.635 1.122 6.545z"/>
+                        </svg>
+                    </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Comment -->
+        <div class="mb-4">
+            <label for="comment" class="block mb-2 font-semibold text-[#0d1b2a]">تعليقك:</label>
+            <textarea name="comment" id="comment" rows="4" class="w-full p-3 border border-gray-300 rounded-md" placeholder="شارك رأيك حول الخدمة..." required></textarea>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="bg-[#e76f51] text-white py-2 px-6 rounded-md hover:bg-[#f7c6a3] transition duration-300">
+            إرسال التقييم
+        </button>
+    </form>
+</div>
+{% endblock %}

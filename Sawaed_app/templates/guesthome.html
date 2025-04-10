@@ -75,7 +75,7 @@
                     <p class="text-gray-800 mb-4">{{ message.content }}</p>
 
                     <!-- Reply Form -->
-                    <form method="POST" action="{% url 'reply_message' message.id %}">
+                    <form method="POST" action="{% url 'send_reply' message.id %}">
                         {% csrf_token %}
                         <textarea name="reply_content" class="w-full p-3 border border-gray-300 rounded mb-4" placeholder="اكتب ردك هنا..." required></textarea>
                         <button type="submit" class="bg-[#f7c6a3] text-white py-2 px-5 rounded-md hover:bg-[#e76f51] transition-all duration-300">

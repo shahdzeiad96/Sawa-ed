@@ -1,0 +1,66 @@
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md border border-gray-200">
+    <h1 class="text-3xl font-bold mb-6 text-[#0d1b2a]">محادثة مع {{ other_user.username }}</h1>
+
+    <!-- Displaying all messages in the conversation -->
+    <div class="messages-list mb-6" id="messages-list">
+        {% for message in messages %}
+            <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %} p-4 mb-4 rounded-lg border {% if message.is_read %}bg-gray-100{% else %}bg-gray-50{% endif %}">
+                <div class="flex justify-between mb-3">
+                    <p class="font-semibold text-[#0d1b2a] text-lg">{{ message.sender.username }}</p>
+                    <span class="text-sm text-gray-500">{{ message.timestamp|date:"Y/m/d H:i" }}</span>
+                </div>
+                <p class="text-gray-800">{{ message.content }}</p>
+            </div>
+        {% empty %}
+            <p class="text-gray-600">لا توجد رسائل في هذه المحادثة بعد.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Reply form -->
+    <form id="message-form" method="POST" class="mt-4">
+        {% csrf_token %}
+        <textarea name="content" id="content" rows="4" class="w-full p-4 border border-gray-300 rounded-md" placeholder="اكتب ردك هنا..."></textarea>
+        <button type="submit" class="bg-[#e76f51] text-white py-2 px-5 mt-3 rounded-md hover:bg-[#f7c6a3] transition-all duration-300">
+            <i class="fas fa-paper-plane"></i> إرسال
+        </button>
+    </form>
+</div>
+
+
+<script>
+    document.getElementById("message-form").addEventListener("submit", function(e) {
+    e.preventDefault();  // Prevent the default form submission
+
+    let content = document.getElementById("content").value;
+
+    fetch("{% url 'chat_detail' user_id=other_user.id %}", {
+        method: "POST",
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+        body: new URLSearchParams({
+            'content': content
+        })
+    })
+    .then(response => response.text())
+    .then(data => {
+        // Add new message (Reply) directly to the thread
+        let newMessage = `<div class="message sent p-4 mb-4 rounded-lg border bg-gray-50">
+                            <div class="flex justify-between mb-3">
+                                <p class="font-semibold text-[#0d1b2a] text-lg">You</p>
+                                <span class="text-sm text-gray-500">${new Date().toLocaleString()}</span>
+                            </div>
+                            <p class="text-gray-800">${content}</p>
+                        </div>`;
+        document.querySelector('.messages-list').innerHTML += newMessage;  // Add new message
+        document.getElementById("content").value = '';  // Clear the textarea
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+</script>
+{% endblock %}
