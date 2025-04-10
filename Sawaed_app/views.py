@@ -10,6 +10,8 @@ from django.http import JsonResponse
 from .chatbot import get_chatbot_response
 import json
 from django.contrib.auth import authenticate, login as auth_login
+from django.db.models import Q, Max
+from django.shortcuts import get_object_or_404
 
 def index(request):
     services = ServiceListing.objects.all()
@@ -142,61 +144,63 @@ def service_detail(request, service_id,user_id):
 
     return render(request, 'service_details.html', context)
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import CustomUser, Message
+def inbox(request):
+    user = request.user
 
-def send_message(request, recipient_id, service_id):
-    recipient = CustomUser.objects.get(id=recipient_id)
+    #to get all the messages for signed-in user 
+    messages = Message.objects.filter(Q(sender=user) | Q(receiver=user))
+
+    # messages thread
+    threads = {}
+    for msg in messages:
+        other_user = msg.receiver if msg.sender == user else msg.sender
+        if other_user not in threads or msg.timestamp > threads[other_user].timestamp:
+            threads[other_user] = msg  #the last message in thread
+
+    # to sort all the messages
+    sorted_threads = sorted(threads.items(), key=lambda x: x[1].timestamp, reverse=True)
+
+    context = {
+        'threads': sorted_threads,
+    }
+    return render(request, 'inbox.html', context)
+
+def chat_detail(request, user_id):
+    other_user = get_object_or_404(CustomUser, id=user_id)
     
-    if request.method == 'POST':
-        content = request.POST.get('content')
-        if content.strip():  # التأكد من أن الرسالة ليست فارغة
-            Message.objects.create(
-                sender=request.user,
-                receiver=recipient,
-                content=content
-            )
-            messages.success(request, "تم إرسال الرسالة بنجاح.")
-            return redirect('service_detail', service_id=service_id, user_id=recipient_id)
-        else:
-            messages.error(request, "لا يمكن إرسال رسالة فارغة.")
-    
-    return redirect('service_detail', service_id=service_id, user_id=recipient_id)
+    # Get all messages between the two users
+    messages = Message.objects.filter(
+        (Q(sender=request.user) & Q(receiver=other_user)) | 
+        (Q(sender=other_user) & Q(receiver=request.user))
+    ).order_by('timestamp')
 
-def send_reply(request, message_id):
-    original_message = Message.objects.get(id=message_id)
+    # Mark messages as read if they were sent to the current user
+    messages.filter(receiver=request.user, is_read=False).update(is_read=True)
 
+    # Handle POST request to send a new message
     if request.method == 'POST':
         content = request.POST.get('content')
 
         if content.strip():
-            reply = MessageReply(
-                original_message=original_message,
+            new_message = Message(
                 sender=request.user,
-                content=content
+                receiver=other_user,
+                content=content,
+                is_read=False
             )
-            reply.save()
+            new_message.save()
+            messages = Message.objects.filter(
+                (Q(sender=request.user) & Q(receiver=other_user)) | 
+                (Q(sender=other_user) & Q(receiver=request.user))
+            ).order_by('timestamp')  # Refresh the messages list
 
-            original_message.is_read = True
-            original_message.save()
-
-            messages.success(request, "تم إرسال الرد بنجاح.")
-            return redirect('inbox') 
-        else:
-            messages.error(request, "لا يمكن إرسال رد فارغ.")
-    
     context = {
-        'original_message': original_message
+        'messages': messages,
+        'other_user': other_user
     }
-
-    return render(request, 'send_reply.html', context)
-
+    return render(request, 'chat_detail.html', context)
 
 
-def inbox(request):
-    messages = Message.objects.filter(receiver=request.user).order_by('-timestamp')
-    return render(request, 'inbox.html', {'messages': messages})
 
 def edit_profile(request):
     if request.method == "POST":

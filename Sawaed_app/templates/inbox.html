@@ -2,118 +2,37 @@
 
 {% block content %}
 <div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md border border-gray-200">
-
-    <!-- Title -->
     <h1 class="text-3xl font-bold mb-6 text-[#0d1b2a]">📨 الرسائل الواردة</h1>
 
-    <!-- Loop through messages -->
-    {% for message in messages %}
-        <div class="mb-5 p-4 rounded-lg border {% if not message.is_read %}bg-gray-50 hover:shadow-lg {% else %}bg-gray-100{% endif %} transition-all duration-300">
+    <!-- Loop through threads (user, last_message) -->
+    {% for user, last_message in threads %}
+        <div class="mb-5 p-4 rounded-lg border {% if not last_message.is_read and last_message.receiver == request.user %}bg-gray-50 hover:shadow-lg{% else %}bg-gray-100{% endif %} transition-all duration-300">
             
             <!-- Message Header -->
             <div class="flex justify-between items-center mb-3">
-                <p class="font-semibold text-[#0d1b2a] text-lg">{{ message.sender.username }}</p>
-                <span class="text-sm text-gray-500">{{ message.timestamp|date:"Y/m/d H:i" }}</span>
+                <p class="font-semibold text-[#0d1b2a] text-lg">{{ user.username }}</p>
+                <span class="text-sm text-gray-500">{{ last_message.timestamp|date:"Y/m/d H:i" }}</span>
             </div>
 
             <!-- Message Content -->
-            <p class="text-gray-800 leading-relaxed">{{ message.content }}</p>
+            <p class="text-gray-800 leading-relaxed">{{ last_message.content|truncatechars:80 }}</p>
 
             <!-- Read/Unread indicator -->
-            {% if not message.is_read %}
+            {% if not last_message.is_read and last_message.receiver == request.user %}
                 <p class="mt-2 text-sm text-yellow-600 font-semibold">رسالة جديدة</p>
             {% endif %}
 
             <!-- Action Buttons -->
             <div class="flex gap-5 mt-4">
-                <!-- Open Modal Button (View Message) -->
-                <button 
-                    class="bg-[#e76f51] text-white py-2 px-5 rounded-md hover:bg-[#f7c6a3] transition-all duration-300"
-                    data-modal-toggle="message-modal-{{ message.id }}" 
-                    onclick="openModal({{ message.id }})">
-                    <i class="fas fa-eye"></i> عرض الرسالة
-                </button>
-                
-                <!-- Delete Button -->
-                <form method="POST" action="#">
-                    {% csrf_token %}
-                    <button type="submit" class="bg-red-500 text-white py-2 px-5 rounded-md hover:bg-red-600 transition-all duration-300">
-                        <i class="fas fa-trash-alt"></i> حذف
-                    </button>
-                </form>
+                <a href="{% url 'chat_detail' user.id %}" 
+                class="bg-[#e76f51] text-white py-2 px-5 rounded-md hover:bg-[#f7c6a3] transition-all duration-300">
+                <i class="fas fa-comment-dots"></i> عرض المحادثة
+             </a>
+             
             </div>
         </div>
-
-        <!-- Modal for Viewing and Responding to Message -->
-        <div id="message-modal-{{ message.id }}" class="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 hidden z-50">
-            <div class="flex justify-center items-center h-full">
-                <div class="bg-white p-6 rounded-xl shadow-md max-w-lg w-full">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-semibold text-[#0d1b2a]">الرسالة من {{ message.sender.username }}</h3>
-                        <button onclick="closeModal({{ message.id }})" class="text-red-500">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    
-                    <!-- Display Original Message Content -->
-                    <p class="text-gray-800 mb-4">{{ message.content }}</p>
-
-                    <!-- Display Message Replies -->
-                    {% for reply in message.replies.all %}
-                        <div class="p-4 mb-4 border rounded-lg bg-gray-50">
-                            <p class="font-semibold text-[#0d1b2a]">{{ reply.sender.username }}</p>
-                            <p class="text-sm text-gray-500">{{ reply.timestamp|date:"Y/m/d H:i" }}</p>
-                            <p class="text-gray-800 mt-4">{{ reply.content }}</p>
-                        </div>
-                    {% empty %}
-                        <p class="text-gray-600">لا توجد ردود لهذه الرسالة.</p>
-                    {% endfor %}
-
-                    <!-- Reply Form -->
-                    <form method="POST" action="{% url 'send_reply' message.id %}" class="ajax">
-                        {% csrf_token %}
-                        <textarea name="reply_content" class="w-full p-3 border border-gray-300 rounded mb-4" placeholder="اكتب ردك هنا..." required></textarea>
-                        <button type="submit" class="bg-[#f7c6a3] text-white py-2 px-5 rounded-md hover:bg-[#e76f51] transition-all duration-300">
-                            <i class="fas fa-paper-plane"></i> إرسال الرد
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
     {% empty %}
         <p class="text-gray-600">لا توجد رسائل حالياً.</p>
     {% endfor %}
-
 </div>
-
-<!-- Script to open and close modal -->
-<script>
-function openModal(messageId) {
-    // Show the modal
-    document.getElementById('message-modal-' + messageId).classList.remove('hidden');
-
-    // Mark the message as read
-    fetch(`/mark_as_read/${messageId}/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify({ 'message_id': messageId })
-    })
-    .then(response => {
-        if (response.ok) {
-            console.log('Message marked as read');
-        }
-    });
-}
-
-function closeModal(messageId) {
-    // Hide the modal
-    document.getElementById('message-modal-' + messageId).classList.add('hidden');
-}
-</script>
-
 {% endblock %}
- 

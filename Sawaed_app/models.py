@@ -143,12 +143,10 @@ class Message(models.Model):
     content = models.TextField()
     is_read = models.BooleanField(default=False)
     timestamp = models.DateTimeField(auto_now_add=True)
+    reply_to = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name='replies')
 
-class MessageReply(models.Model):
-    original_message = models.ForeignKey(Message, on_delete=models.CASCADE, related_name='replies')
-    sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
-    content = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
+    def __str__(self):
+        return f"From {self.sender} to {self.receiver} at {self.timestamp}"
 
 class ServiceOrder(models.Model):
     ORDER_STATUS_CHOICES = [
