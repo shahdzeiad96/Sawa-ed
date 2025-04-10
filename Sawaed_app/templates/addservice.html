@@ -7,7 +7,7 @@
     <div>
         <h1 class="text-3xl font-bold text-[#0d1b2a] mb-8">إضافة خدمة جديدة</h1>
 
-        <form method="POST" enctype="multipart/form-data" action="{% url 'add_service' %}" class="ajax">
+        <form method="POST" enctype="multipart/form-data" action="{% url 'add_service' %}">
             {% csrf_token %}
             
             <div class="mb-4">

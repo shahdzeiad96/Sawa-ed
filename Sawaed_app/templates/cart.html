@@ -4,30 +4,37 @@
 <div class="p-8 max-w-4xl mx-auto">
   <h1 class="text-2xl font-bold text-[#0d1b2a] mb-6 text-center">سلة المشتريات</h1>
 
-  <!-- Empty Cart-->
-  <div class="text-center text-gray-500" id="empty-cart">
-    🛒 لا توجد عناصر في السلة حالياً.
-  </div>
-
-
-  <div id="cart-items" class="space-y-4 hidden">
-    <div class="flex items-center justify-between bg-white p-4 rounded shadow">
-      <div>
-        <h2 class="font-semibold text-[#0d1b2a]">خدمة النجارة</h2>
-        <p class="text-sm text-gray-600">تفصيل أبواب خشب</p>
-      </div>
-      <div class="flex items-center gap-4">
-        <span class="text-[#f4a261] font-bold">50₪</span>
-        <button class="text-red-500 hover:text-red-700">🗑️</button>
-      </div>
+  <!-- Empty Cart -->
+  {% if cart_items|length == 0 %}
+    <div class="text-center text-gray-500" id="empty-cart">
+      🛒 لا توجد عناصر في السلة حالياً.
     </div>
-  </div>
+  {% else %}
+    <!-- Cart Items -->
+    <div id="cart-items" class="space-y-4">
+      {% for item in cart_items %}
+        <div class="flex items-center justify-between bg-white p-4 rounded shadow">
+          <div>
+            <h2 class="font-semibold text-[#0d1b2a]">{{ item.product.name }}</h2>
+            <p class="text-sm text-gray-600">{{ item.quantity }} × {{ item.product.description }}</p>
+          </div>
+          <div class="flex items-center gap-4">
+            <span class="text-[#f4a261] font-bold">{{ item.product.price }}₪</span>
+            <form method="POST" action="{% url 'remove_from_cart' item.id %}">
+              {% csrf_token %}
+              <button type="submit" class="text-red-500 hover:text-red-700">🗑️</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
 
-  <!-- Confirm the order -->
-  <div class="mt-8 text-center hidden" id="checkout-section">
-    <button class="bg-[#f4a261] text-white px-6 py-2 rounded hover:bg-[#e76f51] transition">
-      اطلب الخدمات الآن  
-    </button>
-  </div>
+    <!-- Checkout Button -->
+    <div class="mt-8 text-center" id="checkout-section">
+      <button class="bg-[#f4a261] text-white px-6 py-2 rounded hover:bg-[#e76f51] transition">
+        اطلب الخدمات الآن
+      </button>
+    </div>
+  {% endif %}
 </div>
 {% endblock %}

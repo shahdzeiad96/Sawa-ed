@@ -36,15 +36,15 @@
           {% if user.is_authenticated %}
           <!-- Messages -->
           <div class="relative">
-              <a href="{% url 'inbox' %}" class="text-white hover:text-[#f4a261] transition">
-                  <i class="fas fa-envelope text-2xl"></i>
-                  {% if unread_messages_count > 0 %}
-                  <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {{ unread_messages_count }}
-                  </span>
-                  {% endif %}
-              </a>
-          </div>
+            <a href="{% url 'inbox' %}" class="text-white hover:text-[#f4a261] transition">
+                <i class="fas fa-envelope text-2xl"></i>
+                {% if unread_messages_count > 0 %}
+                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {{ unread_messages_count }}
+                </span>
+                {% endif %}
+            </a>
+        </div>
   
           <!-- Cart -->
           <div class="relative">
