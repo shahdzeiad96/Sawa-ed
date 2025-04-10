@@ -17,63 +17,87 @@
     <div id="overlay" class="fixed inset-0 bg-black bg-opacity-10 z-40 hidden" onclick="closeSidebar()"></div>
 
     <!-- Navbar -->
-    <nav class="bg-[#0d1b2a] shadow p-4 flex justify-between items-center text-white">
-        <div class="flex items-center gap-4">
-            <button onclick="toggleSidebar()" class="text-white">
-            <i class="fas fa-bars text-xl"></i>
-            </button>
-            <img class="logo w-10 h-10" src="{% static 'images/logo.png' %}" alt="Logo">
-            <a id="logo-anchor" href="{% url 'userhome' %}" class="text-2xl font-bold text-[#f4a261]">سواعد</a>
-        </div>
-        <div class="flex items-center gap-6">
-            {% if user.is_authenticated %}
-            <div class="relative">
-                <a href="{% url 'inbox' %}" class="text-white hover:text-[#f4a261] transition">
-                <i class="fas fa-envelope text-xl"></i>
-                {% if unread_messages_count > 0 %}
-                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {{ unread_messages_count }}
-                </span>
-                {% endif %}
-                </a>
-            </div>
-            {% endif %}
-            <div class="relative">
-            <a href="{% url 'cart' %}" class="text-white hover:text-[#f4a261] transition">
-                <i class="fas fa-shopping-cart text-xl"></i>
-                <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
-            </a>
-            </div>
-            {% if user.is_authenticated %}
-            <!-- Profile -->
-            <div class="flex items-center gap-2">
-                <img src="{{ user.image.url }}" 
-                    alt="Profile" 
-                    class="w-10 h-10 rounded-full border-2 border-[#f4a261]"
-                    onerror="this.onerror=null;this.src='{% static 'images/profile.png' %}'">
-                <a href="{% url 'edit-profile' %}" class="text-[#f4a261] hover:underline">مرحبًا، {{ user.username }}</a>
-            </div>
-            <!-- Logout button -->
-            <a href="{% url 'logout' %}">
-                <button class="border border-[#f4a261] text-[#f4a261] px-4 py-2 rounded hover:bg-[#f4a261] hover:text-white transition">
-                تسجيل الخروج
-                </button>
-            </a>
-            {% else %}
-            <!-- Guest login/register -->
-            <a href="{% url 'login' %}">
-                <button class="border border-[#f4a261] text-[#f4a261] px-4 py-2 rounded hover:bg-[#f4a261] hover:text-white transition">
-                تسجيل الدخول
-                </button>
-            </a>
-            <a href="{% url 'register' %}">
-                <button class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition">
-                إنشاء حساب
-                </button>
-            </a>
-            {% endif %}
-        </div>
-        </nav>
+    <nav class="bg-[#0d1b2a] shadow-md p-4 flex justify-between items-center text-white">
+      <!-- Left Section: Logo and Hamburger -->
+      <div class="flex items-center gap-6">
+          <button onclick="toggleSidebar()" class="text-white text-2xl">
+              <i class="fas fa-bars"></i>
+          </button>
+          <a href="{% url 'userhome' %}">
+              <img class="w-12 h-12" src="{% static 'images/logo.png' %}" alt="Logo">
+          </a>
+          <a id="logo-anchor" href="{% url 'userhome' %}" class="text-2xl font-bold text-[#f4a261]">
+              سواعد
+          </a>
+      </div>
+  
+      <!-- Right Section: Messages, Cart, Profile and Logout -->
+      <div class="flex items-center gap-6">
+          {% if user.is_authenticated %}
+          <!-- Messages -->
+          <div class="relative">
+              <a href="{% url 'inbox' %}" class="text-white hover:text-[#f4a261] transition">
+                  <i class="fas fa-envelope text-2xl"></i>
+                  {% if unread_messages_count > 0 %}
+                  <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {{ unread_messages_count }}
+                  </span>
+                  {% endif %}
+              </a>
+          </div>
+  
+          <!-- Cart -->
+          <div class="relative">
+              <a href="{% url 'cart' %}" class="text-white hover:text-[#f4a261] transition">
+                  <i class="fas fa-shopping-cart text-2xl"></i>
+                  <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+              </a>
+          </div>
+  
+          <!-- Profile with Dropdown -->
+          <div class="relative">
+              <!-- User Image -->
+              <img src="{{ user.image.url }}" alt="Profile" class="w-12 h-12 rounded-full border-2 border-[#f4a261] cursor-pointer"
+                   onerror="this.onerror=null;this.src='{% static 'images/profile.png' %}'" id="userProfileImage">
+  
+              <!-- Dropdown Menu -->
+              <div id="dropdownMenu" class="absolute left-0 mt-2 w-48 bg-white rounded-lg shadow-lg hidden">
+                <ul class="py-2">
+                  <li>
+                    <a href="{% url 'edit-profile' %}" 
+                       class="block px-4 py-2 text-[#0d1b2a] hover:bg-[#f4a261] hover:text-white transition">
+                       تعديل الملف الشخصي
+                    </a>
+                  </li>
+                  <li>
+                    <a href="{% url 'logout' %}" 
+                       class="block px-4 py-2 text-[#0d1b2a] hover:bg-[#f4a261] hover:text-white transition">
+                       تسجيل الخروج
+                    </a>
+                  </li>
+                </ul>
+              </div>
+          </div>
+  
+          {% else %}
+          <!-- Guest login/register -->
+          <div class="flex gap-4">
+              <a href="{% url 'login' %}">
+                  <button class="border border-[#f4a261] text-[#f4a261] px-4 py-2 rounded hover:bg-[#f4a261] hover:text-white transition">
+                      تسجيل الدخول
+                  </button>
+              </a>
+              <a href="{% url 'register' %}">
+                  <button class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition">
+                      إنشاء حساب
+                  </button>
+              </a>
+          </div>
+          {% endif %}
+      </div>
+  </nav>
+
+  
     <!-- Sidebar -->
     <div id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50 border-l">
         <div class="pt-20 p-4">
@@ -164,6 +188,19 @@
         $(document).ready(function () {
             setupAjaxForm('form.ajax'); // Apply AJAX to any form with class="ajax"
         });
+              // Toggle dropdown menu visibility
+      document.getElementById("userProfileImage").addEventListener("click", function() {
+          var dropdownMenu = document.getElementById("dropdownMenu");
+          dropdownMenu.classList.toggle("hidden");
+      });
+  
+      // Close dropdown if clicked outside
+      window.addEventListener("click", function(e) {
+          var dropdownMenu = document.getElementById("dropdownMenu");
+          if (!dropdownMenu.contains(e.target) && e.target.id !== "userProfileImage") {
+              dropdownMenu.classList.add("hidden");
+          }
+      });
     </script>
 </body>
 </html>
