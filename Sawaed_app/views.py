@@ -21,6 +21,17 @@ def index(request):
 
     return render(request,"index.html",context)
 
+def base_view_data(request):
+    services=ServiceListing.objects.all()
+    data = {
+        'services':services,
+        'service_types': ServiceListing.SERVICE_TYPES
+    }
+    if request.user.is_authenticated:
+        data['unread_messages_count'] = Message.objects.filter(receiver=request.user, is_read=False).count()
+    else:
+        data['unread_messages_count'] = 0
+    return data
 
 def register(request):
     if request.method == 'POST':
@@ -77,19 +88,22 @@ def login(request):
         return render(request, "login.html")
     
 def cart_view(request):
+    context={
+        'cart_items': "cart_items",
+        'total_price': "total_price",
+    }
+    context.update(base_view_data(request))
     return render(request, 'cart.html')
 
 
 def user_home(request):
 
-    services=ServiceListing.objects.all()
     handyman=HandymanProfile.objects.all()
     context={
-        'services':services,
         'handyman':handyman,
-        'service_types': ServiceListing.SERVICE_TYPES
-
+    
     }
+    context.update(base_view_data(request))
     return render(request,'userhome.html',context)
 
 def add_service(request):
@@ -130,6 +144,7 @@ def add_service(request):
         'service_types': ServiceListing.SERVICE_TYPES
 
     }
+    context.update(base_view_data(request))
     return render(request, 'addservice.html',context)
 
 def service_detail(request, service_id,user_id):
@@ -141,29 +156,66 @@ def service_detail(request, service_id,user_id):
         'handyman': handyman,
         'recipient': user
     }
-
+    context.update(base_view_data(request))
     return render(request, 'service_details.html', context)
 
 def inbox(request):
     user = request.user
 
-    #to get all the messages for signed-in user 
+    # Get all the messages for the signed-in user
     messages = Message.objects.filter(Q(sender=user) | Q(receiver=user))
 
-    # messages thread
+    # just to check if the id's were passed
+    for message in messages:
+        print("this is an id of msg", message.id)
+
+    # Threads of messages
     threads = {}
     for msg in messages:
         other_user = msg.receiver if msg.sender == user else msg.sender
         if other_user not in threads or msg.timestamp > threads[other_user].timestamp:
-            threads[other_user] = msg  #the last message in thread
+            threads[other_user] = msg  # The last message in the thread
 
-    # to sort all the messages
+    # Sort the threads by timestamp
     sorted_threads = sorted(threads.items(), key=lambda x: x[1].timestamp, reverse=True)
 
     context = {
         'threads': sorted_threads,
+        'messages_ids': [message.id for message in messages]  # Passing a list of message IDs
     }
+    context.update(base_view_data(request))
+
     return render(request, 'inbox.html', context)
+
+def send_message(request, recipient_id, service_id):
+    if request.method == 'POST':
+        content = request.POST.get('message')
+        sender = request.user
+        receiver = get_object_or_404(CustomUser, id=recipient_id)
+
+        if content:
+            Message.objects.create(
+                sender=sender,
+                receiver=receiver,
+                content=content
+            )
+
+        return redirect('/')
+def unread_messages_count(request):
+    if request.user.is_authenticated:
+        count = Message.objects.filter(receiver=request.user, is_read=False).count()
+    else:
+        count = 0
+    return {'unread_messages_count': count}
+
+def mark_as_read(request, message_id):
+    message = get_object_or_404(Message, id=message_id, receiver=request.user)
+    
+    if request.method == 'POST':
+        message.is_read = True
+        message.save()
+    
+    return redirect('inbox') 
 
 def chat_detail(request, user_id):
     other_user = get_object_or_404(CustomUser, id=user_id)
@@ -198,11 +250,14 @@ def chat_detail(request, user_id):
         'messages': messages,
         'other_user': other_user
     }
+    context.update(base_view_data(request))
+
     return render(request, 'chat_detail.html', context)
 
-
-
 def edit_profile(request):
+    context={
+
+    }
     if request.method == "POST":
         username = request.POST.get("username")
         email = request.POST.get("email")
@@ -239,8 +294,9 @@ def edit_profile(request):
         except Exception as e:
             messages.error(request, "حدث خطأ أثناء حفظ التعديلات. يرجى المحاولة مرة أخرى.")
             return redirect('edit-profile')
-
-    return render(request, 'profile.html')
+        
+    context.update(base_view_data(request))
+    return render(request, 'profile.html',context)
 
 
 def logout(request):

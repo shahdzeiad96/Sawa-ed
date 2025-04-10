@@ -33,10 +33,19 @@
                    class="bg-[#264653] text-white py-2 px-6 rounded-full hover:bg-[#3a4f5c] transform transition-all duration-300">
                     <i class="fas fa-trash-alt"></i> حذف المحادثة
                 </a>
-                <a href="#" 
-                   class="bg-[#e4e5e6] text-[#264653] py-2 px-6 rounded-full hover:bg-[#d1d3d4] transform transition-all duration-300">
-                    <i class="fas fa-eye"></i> تحديد كمقروء
-                </a>
+
+                <!-- Mark as read form -->
+                {% if not last_message.is_read and last_message.receiver == request.user %}
+                <form method="POST" action="{% url 'mark_as_read' last_message.id %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                        class="bg-[#e4e5e6] text-[#264653] py-2 px-6 rounded-full hover:bg-[#d1d3d4] transform transition-all duration-300">
+                        <i class="fas fa-eye"></i> تحديد كمقروء
+                    </button>
+                </form>
+                {% else %}
+                    <span class="text-green-600 font-semibold">✓ مقروء</span>
+                {% endif %}
             </div>
         </div>
     {% empty %}
