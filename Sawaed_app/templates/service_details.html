@@ -1,137 +1,141 @@
-<head>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <title>عرض تفاصيل الخدمة</title>
-  </head>
-  
-  {% extends 'index.html' %}
-  {% block content %}
-  {% load static %}
-  
-  <div class="container mx-auto p-4">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div class="lg:col-span-2 space-y-6">
-        <div class="bg-white shadow-xl rounded-3xl overflow-hidden">
-          {% if service.image %}
-            <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-full h-80 object-cover">
-          {% else %}
-            <img src="{% static 'images/placeholder.png' %}" alt="صورة افتراضية" class="w-full h-80 object-cover">
-          {% endif %}
-        </div>
-  
-        <div class="bg-white p-6 rounded-3xl shadow-xl space-y-4">
-          <h1 class="text-3xl font-bold text-[#0d1b2a]">{{ service.name }}</h1>
-          <p class="text-gray-700 text-lg">{{ service.description }}</p>
-          <p class="text-[#f4a261] text-2xl font-bold">السعر: {{ service.price }} شيكل</p>
-          <p class="text-sm text-gray-500">تاريخ الإضافة: {{ service.created_at|date:"d M Y" }}</p>
-  
-          <a href="#" class="block w-full text-center border-2 border-[#f4a261] text-[#f4a261] py-3 rounded-full hover:bg-[#f4a261] hover:text-white transition"> 
-            <i class="fas fa-cart-plus mr-2"></i> إضافة إلى السلة
-          </a>
-        </div>
-  
-        <div class="bg-white p-6 rounded-3xl shadow-xl space-y-4">
-          <h2 class="text-xl font-semibold text-[#0d1b2a] text-center">التقييمات</h2>
-          <ul class="space-y-4">
-            {% for review in service.review_set.all %}
-              <li class="bg-gray-50 p-4 rounded-xl shadow">
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-2">
-                    <i class="fas fa-user text-[#f4a261]"></i>
-                    <span class="font-bold text-[#0d1b2a]">{{ review.client.username }}</span>
-                  </div>
-                  <div class="flex gap-1">
-                    {% for i in "12345" %}
-                      {% if forloop.counter <= review.rating %}
-                        <i class="fas fa-star text-yellow-400"></i>
-                      {% else %}
-                        <i class="fas fa-star text-gray-300"></i>
-                      {% endif %}
-                    {% endfor %}
-                  </div>
-                </div>
-                <p class="text-gray-600 mt-2">{{ review.comment }}</p>
-                <p class="text-sm text-gray-400">{{ review.created_at|date:"d M Y" }}</p>
-              </li>
-            {% empty %}
-              <li class="text-center text-gray-400">لا توجد تقييمات بعد.</li>
-            {% endfor %}
-          </ul>
-  
-          <button onclick="openReviewModal()" class="w-full bg-[#f4a261] hover:bg-[#f7c6a3] text-white py-2 rounded-xl">✨ قيم هذه الخدمة</button>
-        </div>
+
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
+
+<div class="container mx-auto p-4">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <!-- Main Service Content -->
+    <div class="lg:col-span-2 space-y-6">
+
+      <!-- Service Image -->
+    <div class="bg-white shadow-xl rounded-3xl overflow-hidden">
+        {% if service.image %}
+      <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-full h-80 object-cover">
+      {% else %}
+      <img src="{% static 'images/placeholder.png' %}" alt="صورة افتراضية" class="w-full h-80 object-cover">
+      {% endif %}
+    </div>
+
+
+      <!-- Service Description -->
+      <div class="bg-white p-6 rounded-3xl shadow-xl space-y-4">
+        <h1 class="text-4xl font-bold text-[#0d1b2a] mb-2">{{ service.name }}</h1>
+        <p class="text-lg text-gray-700 leading-relaxed">{{ service.description }}</p>
+        <p class="text-[#f4a261] text-2xl font-bold">السعر: {{ service.price }} شيكل</p>
+        <p class="text-sm text-gray-500">تاريخ الإضافة: {{ service.created_at|date:"d M Y" }}</p>
+
+        <a href="#" class="block w-full text-center border-2 border-[#f4a261] text-[#f4a261] py-3 rounded-full hover:bg-[#f4a261] hover:text-white transition duration-300 ease-in-out">
+          <i class="fas fa-cart-plus mr-2"></i> إضافة إلى السلة
+        </a>
       </div>
-  
+
+      <!-- Reviews -->
       <div class="bg-white p-6 rounded-3xl shadow-xl space-y-6">
-        <div class="flex flex-col items-center text-center">
-          <div class="relative mb-4">
-            <div class="w-28 h-28 bg-gray-200 rounded-full overflow-hidden border-4 border-[#f4a261] shadow">
-              <img src="{{ user.image.url }}" alt="Profile" onerror="this.onerror=null;this.src='{% static 'images/profile.png' %}'">
-            </div>
-            <div class="absolute top-0 right-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white" style="background-color: {% if handyman.availability %}#25D366{% else %}#dc3545{% endif %};">
-              <i class="fas fa-check"></i>
-            </div>
-          </div>
-  
-          <h4 class="text-xl font-bold text-[#0d1b2a]">{{ handyman.user.username }}</h4>
-          <p class="text-sm text-gray-500">{{ handyman.field_of_expertise }}</p>
-        </div>
-  
-        <div class="flex flex-col gap-3">
-          <a href="#" onclick="openMessageModal()" class="w-full border-2 border-[#f4a261] text-[#f4a261] py-2 rounded-full text-center hover:bg-[#f4a261] hover:text-white">
-            <i class="fas fa-comment-alt mr-2"></i> إرسال رسالة
-          </a>
-          <a href="https://wa.me/{{ handyman.user.phone_number }}" target="_blank" class="w-full border-2 border-[#25D366] text-[#25D366] py-2 rounded-full text-center hover:bg-[#25D366] hover:text-white">
-            <i class="fab fa-whatsapp mr-2"></i> تواصل عبر واتساب
-          </a>
-        </div>
-  
-        <div class="text-sm text-gray-600 space-y-2">
-          <p><i class="fas fa-star text-[#f4a261]"></i> التقييم العام: {{ handyman.rating }}</p>
-          <p><i class="fas fa-map-marker-alt text-[#f4a261]"></i> الموقع: {{ handyman.location }}</p>
-          <p><i class="fas fa-calendar-check text-[#f4a261]"></i> التوافر: {% if handyman.availability %}متاح{% else %}غير متاح{% endif %}</p>
-          <p><i class="fas fa-phone-alt text-[#f4a261]"></i> رقم الهاتف: {{ handyman.user.phone_number }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-  
-  <div id="messageModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-lg relative">
-      <button onclick="closeMessageModal()" class="absolute top-2 left-2 text-gray-500 hover:text-red-600">
-        <i data-lucide="x"></i>
-      </button>
-      <h2 class="text-xl font-semibold text-[#002244] mb-4 flex items-center gap-2">
-        <i data-lucide="message-square"></i> إرسال رسالة
-      </h2>
-      <form method="POST" action="{% url 'send-message' recipient.id service.id %}">
-        {% csrf_token %}
-        <textarea name="content" rows="4" required class="w-full border border-[#f4a261] rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#f4a261]" placeholder="اكتب رسالتك هنا..."></textarea>
-        <button type="submit" class="w-full bg-[#f4a261] hover:bg-[#e07b3b] text-white font-semibold py-2 rounded-xl transition duration-200 mt-4">إرسال</button>
-      </form>
-    </div>
-  </div>
-  
-  <div id="reviewModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex justify-center items-center">
-    <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-2xl font-bold text-[#0d1b2a]">أضف تقييمك</h2>
-        <button onclick="closeReviewModal()" class="text-red-500 text-xl">&times;</button>
-      </div>
-      <form method="POST" action="{% url 'rate_service' service.id %}">
-        {% csrf_token %}
-        <div class="flex justify-center mb-4 text-2xl text-yellow-400" id="star-container">
-          {% for i in "12345" %}
-            <span class="cursor-pointer star" data-value="{{ forloop.counter }}" id="star-{{ forloop.counter }}">&#9734;</span>
+        <h2 class="text-2xl font-semibold text-[#0d1b2a] text-center">التقييمات</h2>
+        <ul class="space-y-4">
+          {% for review in service.review_set.all %}
+            <li class="bg-white border border-gray-100 p-5 rounded-2xl shadow-md hover:shadow-lg transition-all">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <i class="fas fa-user text-[#f4a261]"></i>
+                  <span class="font-bold text-[#0d1b2a]">{{ review.client.username }}</span>
+                </div>
+                <div class="flex gap-1">
+                  {% for i in "12345" %}
+                    {% if forloop.counter <= review.rating %}
+                      <i class="fas fa-star text-yellow-400"></i>
+                    {% else %}
+                      <i class="fas fa-star text-gray-300"></i>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+              </div>
+              <p class="text-gray-600 mt-2">{{ review.comment }}</p>
+              <p class="text-sm text-gray-400">{{ review.created_at|date:"d M Y" }}</p>
+            </li>
+          {% empty %}
+            <li class="text-center text-gray-400">لا توجد تقييمات بعد.</li>
           {% endfor %}
+        </ul>
+
+        <button onclick="openReviewModal()" class="w-full bg-[#f4a261] hover:bg-[#f7c6a3] text-white py-2 rounded-xl transition duration-300">✨ قيم هذه الخدمة</button>
+      </div>
+    </div>
+
+    <!-- Sidebar: Handyman Info -->
+    <div class="bg-white p-6 rounded-3xl shadow-xl space-y-6 flex flex-col items-center text-center">
+      <div class="relative mb-4">
+        <div class="w-28 h-28 bg-gray-200 rounded-full overflow-hidden border-4 border-[#f4a261] shadow-lg">
+          <img src="{{ user.image.url }}" alt="Profile" onerror="this.onerror=null;this.src='{% static 'images/profile.png' %}'">
         </div>
-        <input type="hidden" name="rating" id="rating-input" required>
-        <textarea name="comment" class="w-full p-3 border rounded mb-4" placeholder="اكتب تعليقك عن الخدمة..." required></textarea>
-        <button type="submit" class="w-full bg-[#f4a261] hover:bg-[#f7c6a3] text-white font-semibold py-2 rounded transition duration-300">إرسال التقييم</button>
-      </form>
+        <div class="absolute top-0 right-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-md"
+             style="background-color: {% if handyman.availability %}#25D366{% else %}#dc3545{% endif %};">
+          <i class="fas fa-check"></i>
+        </div>
+      </div>
+
+      <h4 class="text-xl font-bold text-[#0d1b2a]">{{ handyman.user.username }}</h4>
+      <p class="text-sm text-gray-500">{{ handyman.field_of_expertise }}</p>
+
+      <div class="flex flex-col gap-3 w-full mt-4">
+        <a href="#" onclick="openMessageModal()" class="w-full border-2 border-[#f4a261] text-[#f4a261] py-2 rounded-full text-center hover:bg-[#f4a261] hover:text-white transition">
+          <i class="fas fa-comment-alt mr-2"></i> إرسال رسالة
+        </a>
+        <a href="https://wa.me/{{ handyman.user.phone_number }}" target="_blank" class="w-full border-2 border-[#25D366] text-[#25D366] py-2 rounded-full text-center hover:bg-[#25D366] hover:text-white transition">
+          <i class="fab fa-whatsapp mr-2"></i> تواصل عبر واتساب
+        </a>
+      </div>
+
+      <div class="text-sm text-gray-600 space-y-2 mt-4 text-start w-full">
+        <p><i class="fas fa-star text-[#f4a261]"></i> التقييم العام: {{ handyman.rating }}</p>
+        <p><i class="fas fa-map-marker-alt text-[#f4a261]"></i> الموقع: {{ handyman.location }}</p>
+        <p><i class="fas fa-calendar-check text-[#f4a261]"></i> التوافر: {% if handyman.availability %}متاح{% else %}غير متاح{% endif %}</p>
+        <p><i class="fas fa-phone-alt text-[#f4a261]"></i> رقم الهاتف: {{ handyman.user.phone_number }}</p>
+      </div>
     </div>
   </div>
-  
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="{% static 'js/scripts.js' %}"></script>
-  {% endblock %}
-  
+</div>
+
+<!-- Message Modal -->
+<div id="messageModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+  <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-lg relative">
+    <button onclick="closeMessageModal()" class="absolute top-2 left-2 text-gray-500 hover:text-red-600">
+      <i data-lucide="x"></i>
+    </button>
+    <h2 class="text-xl font-semibold text-[#002244] mb-4 flex items-center gap-2">
+      <i data-lucide="message-square"></i> إرسال رسالة
+    </h2>
+    <form method="POST" action="{% url 'send-message' recipient.id service.id %}">
+      {% csrf_token %}
+      <textarea name="content" rows="4" required class="w-full border border-[#f4a261] rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#f4a261]" placeholder="اكتب رسالتك هنا..."></textarea>
+      <button type="submit" class="w-full bg-[#f4a261] hover:bg-[#e07b3b] text-white font-semibold py-2 rounded-xl transition duration-200 mt-4">إرسال</button>
+    </form>
+  </div>
+</div>
+
+<!-- Review Modal -->
+<div id="reviewModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm z-50 flex justify-center items-center hidden">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-2xl font-bold text-[#0d1b2a]">أضف تقييمك</h2>
+      <button onclick="closeReviewModal()" class="text-red-500 text-xl">&times;</button>
+    </div>
+    <form method="POST" action="{% url 'rate_service' service.id %}">
+      {% csrf_token %}
+      <div class="flex justify-center mb-4 text-2xl text-yellow-400" id="star-container">
+        {% for i in "12345" %}
+          <span class="cursor-pointer star" data-value="{{ forloop.counter }}" id="star-{{ forloop.counter }}">&#9734;</span>
+        {% endfor %}
+      </div>
+      <input type="hidden" name="rating" id="rating-input" required>
+      <textarea name="comment" class="w-full p-3 border rounded mb-4" placeholder="اكتب تعليقك عن الخدمة..." required></textarea>
+      <button type="submit" class="w-full bg-[#f4a261] hover:bg-[#f7c6a3] text-white font-semibold py-2 rounded transition duration-300">إرسال التقييم</button>
+    </form>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="{% static 'js/scripts.js' %}"></script>
+{% endblock %}

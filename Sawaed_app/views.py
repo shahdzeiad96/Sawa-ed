@@ -384,20 +384,6 @@ def chatbot_response(request):
     return JsonResponse({'response': 'طلب غير صالح'})
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def add_to_cart(request, service_id):
     try:
         service = ServiceListing.objects.get(id=service_id)
@@ -413,3 +399,20 @@ def add_to_cart(request, service_id):
         return redirect('cart')
     cart_items = ServiceOrder.objects.filter(client=request.user, status='pending')
     return render(request, 'cart.html', {'cart_items': cart_items})
+
+# search engine 
+def search_services(request):
+    query = request.GET.get('q', '')
+    if query:
+        services = ServiceListing.objects.filter(name__icontains=query)
+    else:
+        services = ServiceListing.objects.all()
+
+    # Collect distinct service types from the choices
+    service_types = ServiceListing.SERVICE_TYPES
+
+    return render(request, 'service_search.html', {
+        'services': services,
+        'service_types': service_types,
+        'query': query
+    })
