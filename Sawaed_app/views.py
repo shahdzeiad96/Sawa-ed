@@ -333,4 +333,5 @@ def add_to_cart(request, service_id):
     else:
         ServiceOrder.objects.create(client=request.user, service=service, status='pending')
         return redirect('cart')
-    
+    cart_items = ServiceOrder.objects.filter(client=request.user, status='pending')
+    return render(request, 'cart.html', {'cart_items': cart_items})
