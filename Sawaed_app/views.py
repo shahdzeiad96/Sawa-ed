@@ -58,7 +58,7 @@ def register(request):
                 HandymanProfile.objects.get_or_create(user=user)
                 
             messages.success(request, "تم إنشاء الحساب بنجاح. يمكنك تسجيل الدخول الآن.")
-            return redirect('login.html')
+            return redirect('login')
 
         except IntegrityError:
             messages.error(request, "اسم المستخدم أو البريد الإلكتروني مستخدم بالفعل.")
@@ -416,3 +416,12 @@ def search_services(request):
         'service_types': service_types,
         'query': query
     })
+
+def remove_from_cart(request, order_id):
+    try:
+        order = ServiceOrder.objects.get(id=order_id, client=request.user, status = 'pending')
+        order.delete()
+        messages.success(request, "تم ازالة الخدمة من السلة")
+    except ServiceOrder.DoesNotExist:
+        messages.error(request, "الخدمة المطلوب ازالتها غير موجودة في السلة")
+    return redirect('cart')
