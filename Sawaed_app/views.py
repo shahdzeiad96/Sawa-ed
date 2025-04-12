@@ -388,15 +388,15 @@ def add_to_cart(request, service_id):
     try:
         service = ServiceListing.objects.get(id=service_id)
     except ServiceListing.DoesNotExist:
-        messages.error(request,"الخدمة غير متوفرة")
-
-    pending_order = ServiceOrder.objects.filter(client = request.user, service = service, status = 'pending').first()
-
-    if pending_order:
-        return redirect('cart')
-    else:
+        messages.error(request, "الخدمة غير متوفرة")
+        return redirect('userhome')
+ 
+    pending_order = ServiceOrder.objects.filter(client=request.user, service=service, status='pending').first()
+ 
+    if not pending_order:
         ServiceOrder.objects.create(client=request.user, service=service, status='pending')
-        return redirect('cart')
+        messages.success(request, "تمت إضافة الخدمة إلى السلة")
+ 
     cart_items = ServiceOrder.objects.filter(client=request.user, status='pending')
     return render(request, 'cart.html', {'cart_items': cart_items})
 
