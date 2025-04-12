@@ -97,6 +97,7 @@ def cart_view(request):
 
 
 def user_home(request):
+    services = ServiceListing.objects.all().order_by('-created_at')
     service_added = request.session.pop('service_added', False)
     user_logged=request.session.pop('user_logged',False)
     handyman=HandymanProfile.objects.all()
@@ -104,6 +105,7 @@ def user_home(request):
         'handyman':handyman,
         'service_added': service_added,
         'user_logged':user_logged,
+        'services':services
     
     }
     context.update(base_view_data(request))
