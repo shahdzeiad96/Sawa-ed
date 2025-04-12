@@ -58,7 +58,7 @@ def register(request):
                 HandymanProfile.objects.get_or_create(user=user)
                 
             messages.success(request, "تم إنشاء الحساب بنجاح. يمكنك تسجيل الدخول الآن.")
-            return redirect('login')
+            return redirect('login.html')
 
         except IntegrityError:
             messages.error(request, "اسم المستخدم أو البريد الإلكتروني مستخدم بالفعل.")
@@ -79,7 +79,7 @@ def login(request):
 
         if user is not None:
             auth_login(request, user)
-            messages.success(request, "Login successful.")
+            request.session['user_logged'] = True
             return redirect('userhome') 
         
         messages.error(request, "بيانات تسجيل الدخول غير متطابقة, حاول مرة أخرى ")
@@ -97,10 +97,13 @@ def cart_view(request):
 
 
 def user_home(request):
-
+    service_added = request.session.pop('service_added', False)
+    user_logged=request.session.pop('user_logged',False)
     handyman=HandymanProfile.objects.all()
     context={
         'handyman':handyman,
+        'service_added': service_added,
+        'user_logged':user_logged,
     
     }
     context.update(base_view_data(request))
@@ -134,7 +137,7 @@ def add_service(request):
                 price=price,
                 image=image
             )
-            messages.success(request, "تم اضافة الخدمة بنجاح")
+            request.session['service_added'] = True
             return redirect('userhome')
         except Exception as e:
             messages.error(request, f"حدث خطأ اثناء اضافة الخدمة: {e}")
