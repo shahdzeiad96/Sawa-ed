@@ -382,6 +382,38 @@ def chatbot_response(request):
             return JsonResponse({'response': f"خطأ: {str(e)}"})
 
     return JsonResponse({'response': 'طلب غير صالح'})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # search engine 
 def search_services(request):
     query = request.GET.get('q', '')
