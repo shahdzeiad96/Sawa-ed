@@ -319,3 +319,18 @@ def chatbot_response(request):
             return JsonResponse({'response': f"خطأ: {str(e)}"})
 
     return JsonResponse({'response': 'طلب غير صالح'})
+
+def add_to_cart(request, service_id):
+    try:
+        service = ServiceListing.objects.get(id=service_id)
+    except ServiceListing.DoesNotExist:
+        messages.error(request,"الخدمة غير متوفرة")
+
+    pending_order = ServiceOrder.objects.filter(client = request.user, service = service, status = 'pending').first()
+
+    if pending_order:
+        return redirect('cart')
+    else:
+        ServiceOrder.objects.create(client=request.user, service=service, status='pending')
+        return redirect('cart')
+    
