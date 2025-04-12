@@ -11,9 +11,14 @@
     <div class="flex justify-between mb-4">
       <div class="w-full sm:w-1/4 md:w-1/5 lg:w-1/6 px-2">
         <!--Search-bar-->
-        <div class="mb-4">
-          <input type="text" placeholder="ابحث عن خدمات" class="p-2 border border-gray-300 rounded w-full">
-        </div>
+<form method="GET" action="{% url 'service_search' %}" class="mb-4">
+  <input 
+    type="text" 
+    name="q" 
+    placeholder="ابحث عن خدمات" 
+    class="p-2 border border-gray-300 rounded w-full"
+    value="{{ request.GET.q }}">
+</form>
 
         <!-- will get types from data base  -->
         <ul>
