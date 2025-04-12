@@ -382,3 +382,19 @@ def chatbot_response(request):
             return JsonResponse({'response': f"خطأ: {str(e)}"})
 
     return JsonResponse({'response': 'طلب غير صالح'})
+# search engine 
+def search_services(request):
+    query = request.GET.get('q', '')
+    if query:
+        services = ServiceListing.objects.filter(name__icontains=query)
+    else:
+        services = ServiceListing.objects.all()
+
+    # Collect distinct service types from the choices
+    service_types = ServiceListing.SERVICE_TYPES
+
+    return render(request, 'service_search.html', {
+        'services': services,
+        'service_types': service_types,
+        'query': query
+    })
