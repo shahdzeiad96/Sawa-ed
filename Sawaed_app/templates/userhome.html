@@ -11,9 +11,14 @@
     <div class="flex justify-between mb-4">
       <div class="w-full sm:w-1/4 md:w-1/5 lg:w-1/6 px-2">
         <!--Search-bar-->
-        <div class="mb-4">
-          <input type="text" placeholder="ابحث عن خدمات" class="p-2 border border-gray-300 rounded w-full">
-        </div>
+<form method="GET" action="{% url 'service_search' %}" class="mb-4">
+  <input 
+    type="text" 
+    name="q" 
+    placeholder="ابحث عن خدمات" 
+    class="p-2 border border-gray-300 rounded w-full"
+    value="{{ request.GET.q }}">
+</form>
 
         <!-- will get types from data base  -->
         <ul>
@@ -25,29 +30,46 @@
       </div>
 
       <!-- all services -->
-      <div class="w-full sm:w-3/4 md:w-4/5 lg:w-5/6">
-        {% if user.user_type == 'handyman'%}
-        <div class="flex justify-between mb-4">
-          <a href="{% url 'add_service' %}" class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition">إضافة خدمة جديدة</a>
-        </div>
+
+      <div class="w-full sm:w-3/4 md:w-4/5 lg:w-5/6 mx-auto" dir="rtl">
+
+        {% if user.user_type == 'handyman' %}
+          <div class="flex justify-between mb-4">
+            <a href="{% url 'add_service' %}" class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition">إضافة خدمة جديدة</a>
+          </div>
         {% endif %}
+      
+        {% if service_added %}
+          <div class="bg-green-200 text-green-800 p-4 rounded-md shadow mb-4 text-center">
+            ✅ تمت إضافة الخدمة بنجاح!
+          </div>
+        {% endif %}
+      
+        {% if user_logged %}
+          <div class="bg-green-200 text-green-800 p-4 rounded-md shadow mb-4 text-center">
+            ✅ تم تسجيل دخولك بنجاح, أهلاً وسهلاً
+          </div>
+        {% endif %}
+      
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {% for service in services %}
-            <div class="bg-white shadow-lg rounded p-4 hover:shadow-xl transition">
+            <a href="{% url 'service_detail' service.id service.handyman.id %}" class="block bg-white border border-gray-200 rounded-2xl shadow hover:shadow-lg transition duration-200 overflow-hidden">
               {% if service.image %}
-                <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-full h-48 object-cover rounded mb-4">
+                <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-full h-48 object-cover">
               {% else %}
-                <img src="{% static 'images/placeholder.png' %}" alt="صورة افتراضية" class="w-full h-48 object-cover rounded mb-4">
+                <img src="{% static 'images/placeholder.png' %}" alt="صورة افتراضية" class="w-full h-48 object-cover">
               {% endif %}
-              <h3 class="text-lg font-semibold">اسم الخدمة : {{ service.name }}</h3>
-              <p class="text-gray-600 mb-4">عن الخدمة : {{ service.description|truncatewords:20 }}</p>
-              <p class="font-bold text-[#f4a261]">السعر: {{ service.price }} شيكل</p>
-              <a href="{% url 'service_detail' service.id service.handyman.id %}" class="text-[#f4a261] mt-4 block text-center">عرض التفاصيل</a>
-            </div>
+      
+              <div class="p-4 space-y-2">
+                <h3 class="text-xl font-semibold text-[#0d1b2a] truncate">{{ service.name }}</h3>
+                <p class="text-gray-600 text-sm">{{ service.description|truncatechars:100 }}</p>
+                <p class="text-[#f4a261] font-bold text-lg">السعر: {{ service.price }} شيكل</p>
+                <span class="inline-block mt-2 text-sm text-[#264653] hover:text-[#f4a261] transition">عرض التفاصيل &rarr;</span>
+              </div>
+            </a>
           {% endfor %}
         </div>
+      
       </div>
-    </div>
-  </div>
-
+      
 {% endblock %}

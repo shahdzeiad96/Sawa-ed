@@ -1,0 +1,74 @@
+
+
+{% extends 'index.html' %}
+{% block title %}محادثة مع {{ other_user.username }}{% endblock %}
+
+{% block content %}
+<div class="w-[800px] mx-auto mt-10 p-8 bg-white rounded-xl shadow-lg border border-gray-200">
+        <h1 class="text-3xl font-semibold mb-8 text-[#264653] flex items-center gap-3">
+        <i class="fas fa-comment-dots"></i> محادثة مع {{ other_user.username }}
+    </h1>
+
+    <!-- Displaying all messages in the conversation -->
+    <div class="messages-list mb-8 space-y-4 overflow-y-auto max-h-[60vh]">
+        {% for message in messages %}
+            <div class="flex {% if message.sender == request.user %}justify-end{% else %}justify-start{% endif %}">
+                <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %} p-6 mb-4 rounded-xl border {% if message.is_read %}bg-[#f9f9f9] text-[#264653]{% else %}bg-[#f1f5f9] text-[#5f6368]{% endif %} shadow-md hover:shadow-lg transition-all duration-300 max-w-[80%]">
+                    <div class="flex justify-between items-center mb-3">
+                        <p class="font-medium text-[#264653] text-lg">{{ message.sender.username }}</p>
+                        <span class="text-xs text-gray-500">{{ message.timestamp|date:"Y/m/d H:i" }}</span>
+                    </div>
+                    <p class="text-gray-700 leading-relaxed text-sm">{{ message.content }}</p>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-gray-600 text-center">لا توجد رسائل في هذه المحادثة بعد.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Reply form -->
+    <form id="message-form" method="POST" class="mt-8">
+        {% csrf_token %}
+        <textarea name="content" id="content" rows="4" class="w-full p-6 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#e76f51] shadow-md transition-all duration-200 text-sm" placeholder="اكتب ردك هنا..."></textarea>
+        <button type="submit" class="bg-[#e76f51] text-white py-3 px-8 mt-4 rounded-full hover:bg-[#f7c6a3] transform transition-all duration-300 shadow-md flex items-center gap-3">
+            <i class="fas fa-paper-plane"></i> إرسال
+        </button>
+    </form>
+</div>
+
+<script>
+    document.getElementById("message-form").addEventListener("submit", function(e) {
+        e.preventDefault();  // Prevent the default form submission
+
+        let content = document.getElementById("content").value;
+
+        fetch("{% url 'chat_detail' user_id=other_user.id %}", {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+            },
+            body: new URLSearchParams({
+                'content': content
+            })
+        })
+        .then(response => response.text())
+        .then(data => {
+            // Add new message (Reply) directly to the thread
+            let newMessage = `<div class="flex justify-end">
+                                <div class="message sent p-6 mb-4 rounded-xl border bg-[#f1f5f9] text-[#5f6368] shadow-md hover:shadow-lg transition-all duration-300 max-w-[80%]">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <p class="font-medium text-[#264653] text-lg">You</p>
+                                        <span class="text-xs text-gray-500">${new Date().toLocaleString()}</span>
+                                    </div>
+                                    <p class="text-gray-700 leading-relaxed text-sm">${content}</p>
+                                </div>
+                            </div>`;
+            document.querySelector('.messages-list').innerHTML += newMessage;  // Add new message
+            document.getElementById("content").value = '';  // Clear the textarea
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
+
+{% endblock %}

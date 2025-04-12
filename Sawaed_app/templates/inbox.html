@@ -1,119 +1,71 @@
-{% extends 'index.html' %}
-
-{% block content %}
-<div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md border border-gray-200">
-
-    <!-- Title -->
-    <h1 class="text-3xl font-bold mb-6 text-[#0d1b2a]">📨 الرسائل الواردة</h1>
-
-    <!-- Loop through messages -->
-    {% for message in messages %}
-        <div class="mb-5 p-4 rounded-lg border {% if not message.is_read %}bg-gray-50 hover:shadow-lg {% else %}bg-gray-100{% endif %} transition-all duration-300">
-            
-            <!-- Message Header -->
-            <div class="flex justify-between items-center mb-3">
-                <p class="font-semibold text-[#0d1b2a] text-lg">{{ message.sender.username }}</p>
-                <span class="text-sm text-gray-500">{{ message.timestamp|date:"Y/m/d H:i" }}</span>
-            </div>
-
-            <!-- Message Content -->
-            <p class="text-gray-800 leading-relaxed">{{ message.content }}</p>
-
-            <!-- Read/Unread indicator -->
-            {% if not message.is_read %}
-                <p class="mt-2 text-sm text-yellow-600 font-semibold">رسالة جديدة</p>
-            {% endif %}
-
-            <!-- Action Buttons -->
-            <div class="flex gap-5 mt-4">
-                <!-- Open Modal Button (View Message) -->
-                <button 
-                    class="bg-[#e76f51] text-white py-2 px-5 rounded-md hover:bg-[#f7c6a3] transition-all duration-300"
-                    data-modal-toggle="message-modal-{{ message.id }}" 
-                    onclick="openModal({{ message.id }})">
-                    <i class="fas fa-eye"></i> عرض الرسالة
-                </button>
-                
-                <!-- Delete Button -->
-                <form method="POST" action="#">
-                    {% csrf_token %}
-                    <button type="submit" class="bg-red-500 text-white py-2 px-5 rounded-md hover:bg-red-600 transition-all duration-300">
-                        <i class="fas fa-trash-alt"></i> حذف
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Modal for Viewing and Responding to Message -->
-        <div id="message-modal-{{ message.id }}" class="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 hidden z-50">
-            <div class="flex justify-center items-center h-full">
-                <div class="bg-white p-6 rounded-xl shadow-md max-w-lg w-full">
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-xl font-semibold text-[#0d1b2a]">الرسالة من {{ message.sender.username }}</h3>
-                        <button onclick="closeModal({{ message.id }})" class="text-red-500">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                    
-                    <!-- Display Original Message Content -->
-                    <p class="text-gray-800 mb-4">{{ message.content }}</p>
-
-                    <!-- Display Message Replies -->
-                    {% for reply in message.replies.all %}
-                        <div class="p-4 mb-4 border rounded-lg bg-gray-50">
-                            <p class="font-semibold text-[#0d1b2a]">{{ reply.sender.username }}</p>
-                            <p class="text-sm text-gray-500">{{ reply.timestamp|date:"Y/m/d H:i" }}</p>
-                            <p class="text-gray-800 mt-4">{{ reply.content }}</p>
-                        </div>
-                    {% empty %}
-                        <p class="text-gray-600">لا توجد ردود لهذه الرسالة.</p>
-                    {% endfor %}
-
-                    <!-- Reply Form -->
-                    <form method="POST" action="{% url 'send_reply' message.id %}" class="ajax">
-                        {% csrf_token %}
-                        <textarea name="reply_content" class="w-full p-3 border border-gray-300 rounded mb-4" placeholder="اكتب ردك هنا..." required></textarea>
-                        <button type="submit" class="bg-[#f7c6a3] text-white py-2 px-5 rounded-md hover:bg-[#e76f51] transition-all duration-300">
-                            <i class="fas fa-paper-plane"></i> إرسال الرد
-                        </button>
-                    </form>
+<head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <title>الرسائل</title>
+  </head>
+  
+  {% extends 'index.html' %}
+  {% block content %}
+  {% load static %}
+  
+  <div class="container mx-auto p-4">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="lg:col-span-2 space-y-6">
+        <div class="bg-white p-6 rounded-3xl shadow-xl space-y-6">
+          <h1 class="text-3xl font-bold text-[#0d1b2a] flex items-center gap-2">
+            📨 الرسائل الواردة
+          </h1>
+  
+          {% for user, last_message in threads %}
+            <div class="p-4 rounded-2xl border transition-all duration-300
+                        {% if not last_message.is_read and last_message.receiver == request.user %}bg-[#f1e0c5] hover:shadow-lg{% else %}bg-[#e4e5e6]{% endif %}">
+              <div class="flex justify-between items-center mb-2">
+                <div class="flex items-center gap-3">
+                  <i class="fas fa-user-circle text-[#f4a261] text-xl"></i>
+                  <p class="text-lg font-semibold text-[#0e1b2a]">{{ user.username }}</p>
                 </div>
+                <span class="text-sm text-gray-500">{{ last_message.timestamp|date:"Y/m/d H:i" }}</span>
+              </div>
+  
+              <p class="text-gray-700">{{ last_message.content|truncatechars:80 }}</p>
+  
+              {% if not last_message.is_read and last_message.receiver == request.user %}
+                <p class="mt-2 text-xs text-[#e76f51] font-semibold uppercase">رسالة جديدة</p>
+              {% endif %}
+  
+              <div class="flex flex-wrap gap-3 mt-4">
+                <a href="{% url 'chat_detail' user.id %}" class="bg-[#e76f51] text-white py-2 px-5 rounded-full hover:bg-[#f7c6a3] transition">
+                  <i class="fas fa-comment-dots"></i> عرض المحادثة
+                </a>
+                <a href="#" class="bg-[#264653] text-white py-2 px-5 rounded-full hover:bg-[#3a4f5c] transition">
+                  <i class="fas fa-trash-alt"></i> حذف
+                </a>
+                {% if not last_message.is_read and last_message.receiver == request.user %}
+                <form method="POST" action="{% url 'mark_as_read' last_message.id %}" class="inline">
+                  {% csrf_token %}
+                  <button type="submit" class="bg-[#e4e5e6] text-[#264653] py-2 px-5 rounded-full hover:bg-[#d1d3d4] transition">
+                    <i class="fas fa-eye"></i> تحديد كمقروء
+                  </button>
+                </form>
+                {% else %}
+                  <span class="text-green-600 font-semibold">✓ مقروء</span>
+                {% endif %}
+              </div>
             </div>
+          {% empty %}
+            <div class="text-center py-6 text-gray-500">
+              ✨ لا توجد رسائل حالياً ✨
+            </div>
+          {% endfor %}
         </div>
-
-    {% empty %}
-        <p class="text-gray-600">لا توجد رسائل حالياً.</p>
-    {% endfor %}
-
-</div>
-
-<!-- Script to open and close modal -->
-<script>
-function openModal(messageId) {
-    // Show the modal
-    document.getElementById('message-modal-' + messageId).classList.remove('hidden');
-
-    // Mark the message as read
-    fetch(`/mark_as_read/${messageId}/`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify({ 'message_id': messageId })
-    })
-    .then(response => {
-        if (response.ok) {
-            console.log('Message marked as read');
-        }
-    });
-}
-
-function closeModal(messageId) {
-    // Hide the modal
-    document.getElementById('message-modal-' + messageId).classList.add('hidden');
-}
-</script>
-
-{% endblock %}
- 
+      </div>
+  
+      <!-- Sidebar (Optional Info or Filters) -->
+      <div class="bg-white p-6 h-[190px] rounded-3xl shadow-xl space-y-6 text-center">
+        <h2 class="text-xl font-bold text-[#0d1b2a]">📌 معلومات</h2>
+        <p class="text-sm text-gray-600">هنا يمكنك إدارة جميع محادثاتك مع مزودي الخدمات والعملاء بكل سهولة.</p>
+      </div>
+    </div>
+  </div>
+  
+  {% endblock %}
+  

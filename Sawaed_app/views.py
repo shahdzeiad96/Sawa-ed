@@ -10,6 +10,8 @@ from django.http import JsonResponse
 from .chatbot import get_chatbot_response
 import json
 from django.contrib.auth import authenticate, login as auth_login
+from django.db.models import Q, Max
+from django.shortcuts import get_object_or_404
 
 def index(request):
     services = ServiceListing.objects.all()
@@ -19,6 +21,17 @@ def index(request):
 
     return render(request,"index.html",context)
 
+def base_view_data(request):
+    services=ServiceListing.objects.all()
+    data = {
+        'services':services,
+        'service_types': ServiceListing.SERVICE_TYPES
+    }
+    if request.user.is_authenticated:
+        data['unread_messages_count'] = Message.objects.filter(receiver=request.user, is_read=False).count()
+    else:
+        data['unread_messages_count'] = 0
+    return data
 
 def register(request):
     if request.method == 'POST':
@@ -45,7 +58,7 @@ def register(request):
                 HandymanProfile.objects.get_or_create(user=user)
                 
             messages.success(request, "تم إنشاء الحساب بنجاح. يمكنك تسجيل الدخول الآن.")
-            return redirect('login')
+            return redirect('login.html')
 
         except IntegrityError:
             messages.error(request, "اسم المستخدم أو البريد الإلكتروني مستخدم بالفعل.")
@@ -66,7 +79,7 @@ def login(request):
 
         if user is not None:
             auth_login(request, user)
-            messages.success(request, "Login successful.")
+            request.session['user_logged'] = True
             return redirect('userhome') 
         
         messages.error(request, "بيانات تسجيل الدخول غير متطابقة, حاول مرة أخرى ")
@@ -75,19 +88,25 @@ def login(request):
         return render(request, "login.html")
     
 def cart_view(request):
+    context={
+        'cart_items': "cart_items",
+        'total_price': "total_price",
+    }
+    context.update(base_view_data(request))
     return render(request, 'cart.html')
 
 
 def user_home(request):
-
-    services=ServiceListing.objects.all()
+    service_added = request.session.pop('service_added', False)
+    user_logged=request.session.pop('user_logged',False)
     handyman=HandymanProfile.objects.all()
     context={
-        'services':services,
         'handyman':handyman,
-        'service_types': ServiceListing.SERVICE_TYPES
-
+        'service_added': service_added,
+        'user_logged':user_logged,
+    
     }
+    context.update(base_view_data(request))
     return render(request,'userhome.html',context)
 
 def add_service(request):
@@ -118,7 +137,7 @@ def add_service(request):
                 price=price,
                 image=image
             )
-            messages.success(request, "تم اضافة الخدمة بنجاح")
+            request.session['service_added'] = True
             return redirect('userhome')
         except Exception as e:
             messages.error(request, f"حدث خطأ اثناء اضافة الخدمة: {e}")
@@ -128,6 +147,7 @@ def add_service(request):
         'service_types': ServiceListing.SERVICE_TYPES
 
     }
+    context.update(base_view_data(request))
     return render(request, 'addservice.html',context)
 
 def service_detail(request, service_id,user_id):
@@ -139,66 +159,108 @@ def service_detail(request, service_id,user_id):
         'handyman': handyman,
         'recipient': user
     }
-
+    context.update(base_view_data(request))
     return render(request, 'service_details.html', context)
 
-from django.shortcuts import render, redirect
-from django.contrib import messages
-from .models import CustomUser, Message
+def inbox(request):
+    user = request.user
+
+    # Get all the messages for the signed-in user
+    messages = Message.objects.filter(Q(sender=user) | Q(receiver=user))
+
+    # just to check if the id's were passed
+    for message in messages:
+        print("this is an id of msg", message.id)
+
+    # Threads of messages
+    threads = {}
+    for msg in messages:
+        other_user = msg.receiver if msg.sender == user else msg.sender
+        if other_user not in threads or msg.timestamp > threads[other_user].timestamp:
+            threads[other_user] = msg  # The last message in the thread
+
+    # Sort the threads by timestamp
+    sorted_threads = sorted(threads.items(), key=lambda x: x[1].timestamp, reverse=True)
+
+    context = {
+        'threads': sorted_threads,
+        'messages_ids': [message.id for message in messages]  # Passing a list of message IDs
+    }
+    context.update(base_view_data(request))
+
+    return render(request, 'inbox.html', context)
 
 def send_message(request, recipient_id, service_id):
-    recipient = CustomUser.objects.get(id=recipient_id)
-    
     if request.method == 'POST':
-        content = request.POST.get('content')
-        if content.strip():  # التأكد من أن الرسالة ليست فارغة
+        content = request.POST.get('message')
+        sender = request.user
+        receiver = get_object_or_404(CustomUser, id=recipient_id)
+
+        if content:
             Message.objects.create(
-                sender=request.user,
-                receiver=recipient,
+                sender=sender,
+                receiver=receiver,
                 content=content
             )
-            messages.success(request, "تم إرسال الرسالة بنجاح.")
-            return redirect('service_detail', service_id=service_id, user_id=recipient_id)
-        else:
-            messages.error(request, "لا يمكن إرسال رسالة فارغة.")
+
+        return redirect('/')
+def unread_messages_count(request):
+    if request.user.is_authenticated:
+        count = Message.objects.filter(receiver=request.user, is_read=False).count()
+    else:
+        count = 0
+    return {'unread_messages_count': count}
+
+def mark_as_read(request, message_id):
+    message = get_object_or_404(Message, id=message_id, receiver=request.user)
     
-    return redirect('service_detail', service_id=service_id, user_id=recipient_id)
+    if request.method == 'POST':
+        message.is_read = True
+        message.save()
+    
+    return redirect('inbox') 
 
-def send_reply(request, message_id):
-    original_message = Message.objects.get(id=message_id)
+def chat_detail(request, user_id):
+    other_user = get_object_or_404(CustomUser, id=user_id)
+    
+    # Get all messages between the two users
+    messages = Message.objects.filter(
+        (Q(sender=request.user) & Q(receiver=other_user)) | 
+        (Q(sender=other_user) & Q(receiver=request.user))
+    ).order_by('timestamp')
 
+    # Mark messages as read if they were sent to the current user
+    messages.filter(receiver=request.user, is_read=False).update(is_read=True)
+
+    # Handle POST request to send a new message
     if request.method == 'POST':
         content = request.POST.get('content')
 
         if content.strip():
-            reply = MessageReply(
-                original_message=original_message,
+            new_message = Message(
                 sender=request.user,
-                content=content
+                receiver=other_user,
+                content=content,
+                is_read=False
             )
-            reply.save()
+            new_message.save()
+            messages = Message.objects.filter(
+                (Q(sender=request.user) & Q(receiver=other_user)) | 
+                (Q(sender=other_user) & Q(receiver=request.user))
+            ).order_by('timestamp')  # Refresh the messages list
 
-            original_message.is_read = True
-            original_message.save()
-
-            messages.success(request, "تم إرسال الرد بنجاح.")
-            return redirect('inbox') 
-        else:
-            messages.error(request, "لا يمكن إرسال رد فارغ.")
-    
     context = {
-        'original_message': original_message
+        'messages': messages,
+        'other_user': other_user
     }
+    context.update(base_view_data(request))
 
-    return render(request, 'send_reply.html', context)
-
-
-
-def inbox(request):
-    messages = Message.objects.filter(receiver=request.user).order_by('-timestamp')
-    return render(request, 'inbox.html', {'messages': messages})
+    return render(request, 'chat_detail.html', context)
 
 def edit_profile(request):
+    context={
+
+    }
     if request.method == "POST":
         username = request.POST.get("username")
         email = request.POST.get("email")
@@ -235,8 +297,9 @@ def edit_profile(request):
         except Exception as e:
             messages.error(request, "حدث خطأ أثناء حفظ التعديلات. يرجى المحاولة مرة أخرى.")
             return redirect('edit-profile')
-
-    return render(request, 'profile.html')
+        
+    context.update(base_view_data(request))
+    return render(request, 'profile.html',context)
 
 
 def logout(request):
@@ -319,6 +382,21 @@ def chatbot_response(request):
             return JsonResponse({'response': f"خطأ: {str(e)}"})
 
     return JsonResponse({'response': 'طلب غير صالح'})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def add_to_cart(request, service_id):
     try:
