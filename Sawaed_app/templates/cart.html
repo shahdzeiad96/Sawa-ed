@@ -5,37 +5,38 @@
 {% block content %}
 <div class="p-8 max-w-4xl mx-auto">
   <h1 class="text-2xl font-bold text-[#0d1b2a] mb-6 text-center">سلة المشتريات</h1>
-
-  <!-- Empty Cart -->
-  {% if cart_items|length == 0 %}
-    <div class="text-center text-gray-500" id="empty-cart">
-      🛒 لا توجد عناصر في السلة حالياً.
-    </div>
-  {% else %}
-    <!-- Cart Items -->
+  
+  {% if cart_items %}
     <div id="cart-items" class="space-y-4">
       {% for item in cart_items %}
         <div class="flex items-center justify-between bg-white p-4 rounded shadow">
           <div>
-            <h2 class="font-semibold text-[#0d1b2a]">{{ item.product.name }}</h2>
-            <p class="text-sm text-gray-600">{{ item.quantity }} × {{ item.product.description }}</p>
+            <h2 class="font-semibold text-[#0d1b2a]">{{ item.service.name }}</h2>
+            <p class="text-sm text-gray-600">
+              {% if item.service.description %}
+                {{ item.service.description }}
+              {% endif %}
+            </p>
           </div>
           <div class="flex items-center gap-4">
-            <span class="text-[#f4a261] font-bold">{{ item.product.price }}₪</span>
-            <form method="POST" action="{% url 'remove_from_cart' item.id %}">
-              {% csrf_token %}
-              <button type="submit" class="text-red-500 hover:text-red-700">🗑️</button>
-            </form>
+            <span class="text-[#f4a261] font-bold">{{ item.service.price }}₪</span>
+            <a href="{% url 'remove_from_cart' item.id %}" class="text-red-500 hover:text-red-700">
+              🗑️
+            </a>
           </div>
         </div>
       {% endfor %}
     </div>
 
-    <!-- Checkout Button -->
     <div class="mt-8 text-center" id="checkout-section">
       <button class="bg-[#f4a261] text-white px-6 py-2 rounded hover:bg-[#e76f51] transition">
-        اطلب الخدمات الآن
+        اطلب الخدمات الآن  
       </button>
+    </div>
+  
+  {% else %}
+    <div class="text-center text-gray-500" id="empty-cart">
+      🛒 لا توجد عناصر في السلة حالياً.
     </div>
   {% endif %}
 </div>
