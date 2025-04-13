@@ -65,6 +65,12 @@
                 <p class="text-gray-600 text-sm">{{ service.description|truncatechars:100 }}</p>
                 <p class="text-[#f4a261] font-bold text-lg">السعر: {{ service.price }} شيكل</p>
                 <span class="inline-block mt-2 text-sm text-[#264653] hover:text-[#f4a261] transition">عرض التفاصيل &rarr;</span>
+                <!-- Delete button for handyman -->
+              {% if user == service.handyman %}
+              <button id="delete-service-1" class="delete-btn text-red-500 mt-2 py-1 px-2 border border-red-500 rounded hover:bg-red-500 hover:text-white transition">
+                حذف الخدمة
+              </button>
+              {% endif %}
               </div>
             </a>
           {% endfor %}
