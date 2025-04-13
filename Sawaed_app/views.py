@@ -181,7 +181,7 @@ def add_service(request):
         'services': services,
         'service_types': ServiceListing.SERVICE_TYPES,
     }
-    context.update(base_view_data(request))  # if you're using this
+    context.update(base_view_data(request))  
     return render(request, 'addservice.html', context)
     
 def service_detail(request, service_id,user_id):
@@ -501,3 +501,14 @@ def services_by_type(request, service_type):
         'services': services,
         'selected_type': service_type
     })
+#delete the service only by the handyman who post it 
+@require_POST
+@login_required
+def delete_service_ajax(request):
+    service_id = request.POST.get('service_id')
+    try:
+        service = ServiceListing.objects.get(id=service_id, handyman=request.user)
+        service.delete()
+        return JsonResponse({'success': True})
+    except ServiceListing.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Service not found or unauthorized.'})

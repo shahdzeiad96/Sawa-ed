@@ -88,3 +88,6 @@ font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans 
     background-color: #f4a261;
     border-radius: 10px;
   }
+  #delete-service-1{
+    z-index: 3;
+  }
