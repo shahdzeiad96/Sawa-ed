@@ -12,6 +12,8 @@ import json
 from django.contrib.auth import authenticate, login as auth_login
 from django.db.models import Q, Max
 from django.shortcuts import get_object_or_404
+from decimal import Decimal
+
 
 def index(request):
     services = ServiceListing.objects.all()
@@ -23,9 +25,16 @@ def index(request):
 
 def base_view_data(request):
     services=ServiceListing.objects.all()
+    cart_count = 0
+    if request.user.is_authenticated:
+        cart_count = ServiceOrder.objects.filter(client=request.user, status='pending').count()
+
+
+    
     data = {
         'services':services,
-        'service_types': ServiceListing.SERVICE_TYPES
+        'service_types': ServiceListing.SERVICE_TYPES,
+        'cart_count': cart_count,
     }
     if request.user.is_authenticated:
         data['unread_messages_count'] = Message.objects.filter(receiver=request.user, is_read=False).count()
@@ -95,12 +104,22 @@ def login(request):
         return render(request, "login.html")
     
 def cart_view(request):
-    context={
-        'cart_items': "cart_items",
-        'total_price': "total_price",
+    cart_items = ServiceOrder.objects.filter(client=request.user, status='pending')
+    
+    #to get the total price
+    total_price = sum(item.service.price for item in cart_items)
+    commission = total_price * Decimal('0.1')
+    final_total=total_price+commission
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+        'commission': commission,
+        'final_total': final_total,
     }
+
     context.update(base_view_data(request))
-    return render(request, 'cart.html')
+
+    return render(request, 'cart.html', context)
 
 
 def user_home(request):
@@ -176,10 +195,6 @@ def inbox(request):
 
     # Get all the messages for the signed-in user
     messages = Message.objects.filter(Q(sender=user) | Q(receiver=user))
-
-    # just to check if the id's were passed
-    for message in messages:
-        print("this is an id of msg", message.id)
 
     # Threads of messages
     threads = {}
@@ -392,33 +407,50 @@ def chatbot_response(request):
 
     return JsonResponse({'response': 'طلب غير صالح'})
 
+#add to cart function 
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib import messages
+from .models import ServiceListing, ServiceOrder
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+# Add to cart function
 def add_to_cart(request, service_id):
-    try:
-        service = ServiceListing.objects.get(id=service_id)
-    except ServiceListing.DoesNotExist:
-        messages.error(request, "الخدمة غير متوفرة")
-        return redirect('userhome') 
+    service = get_object_or_404(ServiceListing, id=service_id)
 
-    pending_order = ServiceOrder.objects.filter(client=request.user, service=service, status='pending').first()
+    # Check if the service is already in the cart
+    existing_order = ServiceOrder.objects.filter(
+        client=request.user, service=service, status='pending'
+    ).first()
 
-    if not pending_order:
+    if existing_order:
+        messages.info(request, "هذه الخدمة موجودة بالفعل في السلة.")
+    else:
         ServiceOrder.objects.create(client=request.user, service=service, status='pending')
         messages.success(request, "تمت إضافة الخدمة إلى السلة")
 
-    cart_items = ServiceOrder.objects.filter(client=request.user, status='pending')
-    return render(request, 'cart.html', {'cart_items': cart_items})
+    # Redirect to the cart view
+    return redirect('cart')
+
+
+#remove from cart function
+def remove_from_cart(request, order_id):
+    order = get_object_or_404(ServiceOrder, id=order_id, client=request.user, status='pending')
+    order.delete()
+    messages.success(request, "تمت إزالة الخدمة من السلة.")
+    return redirect('cart')
+
+# search engine 
+def search_services(request):
+    query = request.GET.get('q', '')
+    if query:
+        services = ServiceListing.objects.filter(name__icontains=query)
+    else:
+        services = ServiceListing.objects.all()
+
+    # Collect distinct service types from the choices
+    service_types = ServiceListing.SERVICE_TYPES
+
+    return render(request, 'service_search.html', {
+        'services': services,
+        'service_types': service_types,
+        'query': query
+    })

@@ -11,6 +11,7 @@
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css" /> 
       <script src="{% static 'JS/scripts.js' %}" defer></script>
       <link rel="stylesheet" href="{% static 'css/style.css' %}">
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
   </head>
   <body class="bg-[#fdf6ec]">
       <!-- Overlay -->
@@ -50,7 +51,7 @@
             <div class="relative">
                 <a href="{% url 'cart' %}" class="text-white hover:text-[#f4a261] transition">
                     <i class="fas fa-shopping-cart text-2xl"></i>
-                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    <span class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">{{ cart_count }}</span>
                 </a>
             </div>
     

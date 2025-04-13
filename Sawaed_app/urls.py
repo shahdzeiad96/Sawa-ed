@@ -19,8 +19,10 @@ urlpatterns = [
     path('chat/<int:user_id>/', views.chat_detail, name='chat_detail'),
     path('send-message/<int:recipient_id>/<int:service_id>/', views.send_message, name='send-message'),
     path('mark-as-read/<int:message_id>/', views.mark_as_read, name='mark_as_read'),
-    # path('search/', views.search_services, name='service_search'),
     path('add-to-cart/<int:service_id>/', views.add_to_cart, name='add-to-cart'),
+    path('search/', views.search_services, name='service_search'),
+    path('remove-from-cart/<int:order_id>/', views.remove_from_cart, name='remove_from_cart'),
+
 
 
 
