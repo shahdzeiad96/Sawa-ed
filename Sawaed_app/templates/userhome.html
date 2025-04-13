@@ -24,9 +24,15 @@
         <ul>
           <h2 class="text-lg font-semibold mb-4 text-right">التصنيفات</h2>
           {% for service_type in service_types %}
-              <li class="hover:text-[#f4a261] cursor-pointer">{{ service_type.0 }}</li> 
+          <li class="hover:text-[#f4a261] cursor-pointer">
+            <a href="{% url 'services_by_type' service_type.0 %}">
+                {{ service_type.0 }}
+            </a>
+        </li>
+        
           {% endfor %}
-      </ul>
+        </ul>
+        </ul>
       </div>
 
       <!-- all services -->

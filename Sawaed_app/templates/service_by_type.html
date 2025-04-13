@@ -1,4 +1,4 @@
-{% extends "index.html" %}
+{% extends 'index.html' %}
 {% load static %}
 
 {% block content %}
@@ -9,13 +9,11 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {% for service in services %}
       <a href="{% url 'service_detail' service.id service.handyman.id %}" class="block bg-white border border-gray-200 rounded-2xl shadow hover:shadow-lg transition duration-200 overflow-hidden">
-
         {% if service.image %}
           <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-full h-48 object-cover">
         {% else %}
           <img src="{% static 'images/placeholder.png' %}" alt="صورة الخدمة" class="w-full h-48 object-cover">
         {% endif %}
-        
         <div class="p-4 space-y-2">
           <h2 class="text-xl font-semibold text-[#0d1b2a]">{{ service.name }}</h2>
           <p class="text-gray-600 text-sm">{{ service.description|truncatechars:100 }}</p>
@@ -25,7 +23,7 @@
       {% endfor %}
     </div>
   {% else %}
-    <p class="text-center text-gray-500 text-lg mt-10">لا توجد خدمات متوفرة في هذه الفئة.</p>
+    <p class="text-gray-500 text-center">لا توجد خدمات حالياً في هذه الفئة.</p>
   {% endif %}
 </div>
 {% endblock %}
