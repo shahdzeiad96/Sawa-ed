@@ -59,6 +59,7 @@ class ServiceListing(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='service_images/', null=True, blank=True)
+    service_type = models.CharField(max_length=50, choices=SERVICE_TYPES, null=True, blank=True,default='خدمات أخرى')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
