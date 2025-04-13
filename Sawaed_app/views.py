@@ -12,6 +12,10 @@ import json
 from django.contrib.auth import authenticate, login as auth_login
 from django.db.models import Q, Max
 from django.shortcuts import get_object_or_404
+from decimal import Decimal
+import logging
+from django.contrib.auth.decorators import login_required
+
 
 def index(request):
     services = ServiceListing.objects.all()
@@ -23,9 +27,16 @@ def index(request):
 
 def base_view_data(request):
     services=ServiceListing.objects.all()
+    cart_count = 0
+    if request.user.is_authenticated:
+        cart_count = ServiceOrder.objects.filter(client=request.user, status='pending').count()
+
+
+    
     data = {
         'services':services,
-        'service_types': ServiceListing.SERVICE_TYPES
+        'service_types': ServiceListing.SERVICE_TYPES,
+        'cart_count': cart_count,
     }
     if request.user.is_authenticated:
         data['unread_messages_count'] = Message.objects.filter(receiver=request.user, is_read=False).count()
@@ -42,10 +53,13 @@ def register(request):
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
 
+        # تحقق من تطابق كلمة المرور
         if password1 != password2:
             messages.error(request, "كلمتا المرور غير متطابقتين.")
             return render(request, "register.html")
+        
         try:
+            # إنشاء المستخدم
             user = CustomUser.objects.create_user(
                 username=username,
                 email=email,
@@ -54,17 +68,22 @@ def register(request):
                 user_type=user_type
             )
             user.save()
+
+            # إذا كان المستخدم من نوع HANDYMAN، أنشئ له حساب في HandymanProfile
             if user.user_type == CustomUser.UserType.HANDYMAN:
                 HandymanProfile.objects.get_or_create(user=user)
-                
+
             messages.success(request, "تم إنشاء الحساب بنجاح. يمكنك تسجيل الدخول الآن.")
             return redirect('login')
+            return redirect('login')  # إعادة التوجيه إلى صفحة تسجيل الدخول
 
         except IntegrityError:
+            # في حال وجود خطأ في إدخال البيانات مثل تكرار اسم المستخدم أو البريد الإلكتروني
             messages.error(request, "اسم المستخدم أو البريد الإلكتروني مستخدم بالفعل.")
             return render(request, "register.html")
 
     return render(request, "register.html")
+
 
 def login(request):
     if request.method == 'POST':
@@ -88,15 +107,26 @@ def login(request):
         return render(request, "login.html")
     
 def cart_view(request):
-    context={
-        'cart_items': "cart_items",
-        'total_price': "total_price",
+    cart_items = CartItem.objects.filter(user=request.user)
+    
+    #to get the total price
+    total_price = sum(item.service.price for item in cart_items)
+    commission = total_price * Decimal('0.1')
+    final_total=total_price+commission
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+        'commission': commission,
+        'final_total': final_total,
     }
+
     context.update(base_view_data(request))
-    return render(request, 'cart.html')
+
+    return render(request, 'cart.html', context)
 
 
 def user_home(request):
+    services = ServiceListing.objects.all().order_by('-created_at')
     service_added = request.session.pop('service_added', False)
     user_logged=request.session.pop('user_logged',False)
     handyman=HandymanProfile.objects.all()
@@ -104,6 +134,7 @@ def user_home(request):
         'handyman':handyman,
         'service_added': service_added,
         'user_logged':user_logged,
+        'services':services
     
     }
     context.update(base_view_data(request))
@@ -167,10 +198,6 @@ def inbox(request):
 
     # Get all the messages for the signed-in user
     messages = Message.objects.filter(Q(sender=user) | Q(receiver=user))
-
-    # just to check if the id's were passed
-    for message in messages:
-        print("this is an id of msg", message.id)
 
     # Threads of messages
     threads = {}
@@ -255,7 +282,7 @@ def chat_detail(request, user_id):
     }
     context.update(base_view_data(request))
 
-    return render(request, 'chat_detail.html', context)
+    return redirect(request, 'chat_detail.html', context)
 
 def edit_profile(request):
     context={
@@ -318,7 +345,7 @@ def rate_service(request, service_id):
         comment = request.POST.get('comment')
 
         if not rating or int(rating) < 1 or int(rating) > 5:
-            messages.error("الرجاء ادخال تقييم بين 1 و 5")
+            messages.error(request,"الرجاء ادخال تقييم بين 1 و 5")
             return redirect('service_detail', service_id=service_id, user_id=service.handyman.id)
         
         Review.objects.create(
@@ -383,22 +410,36 @@ def chatbot_response(request):
 
     return JsonResponse({'response': 'طلب غير صالح'})
 
+#add to cart function 
+from django.shortcuts import redirect, get_object_or_404
+from django.contrib import messages
+from .models import ServiceListing, ServiceOrder
 
+# Add to cart function
 def add_to_cart(request, service_id):
-    try:
-        service = ServiceListing.objects.get(id=service_id)
-    except ServiceListing.DoesNotExist:
-        messages.error(request, "الخدمة غير متوفرة")
-        return redirect('userhome')
- 
-    pending_order = ServiceOrder.objects.filter(client=request.user, service=service, status='pending').first()
- 
-    if not pending_order:
-        ServiceOrder.objects.create(client=request.user, service=service, status='pending')
+    service = get_object_or_404(ServiceListing, id=service_id)
+
+    # Check if the service is already in the cart
+    existing_order = CartItem.objects.filter(
+        user=request.user, service=service
+    ).first()
+
+    if existing_order:
+        messages.info(request, "هذه الخدمة موجودة بالفعل في السلة.")
+    else:
+        CartItem.objects.create(user=request.user, service=service)
         messages.success(request, "تمت إضافة الخدمة إلى السلة")
- 
-    cart_items = ServiceOrder.objects.filter(client=request.user, status='pending')
-    return render(request, 'cart.html', {'cart_items': cart_items})
+
+    # Redirect to the cart view
+    return redirect('cart')
+
+
+#remove from cart function
+def remove_from_cart(request, order_id):
+    order = get_object_or_404(CartItem, id=order_id, user=request.user)
+    order.delete()
+    messages.success(request, "تمت إزالة الخدمة من السلة.")
+    return redirect('cart')
 
 # search engine 
 def search_services(request):
@@ -417,11 +458,36 @@ def search_services(request):
         'query': query
     })
 
-def remove_from_cart(request, order_id):
-    try:
-        order = ServiceOrder.objects.get(id=order_id, client=request.user, status = 'pending')
-        order.delete()
-        messages.success(request, "تم ازالة الخدمة من السلة")
-    except ServiceOrder.DoesNotExist:
-        messages.error(request, "الخدمة المطلوب ازالتها غير موجودة في السلة")
-    return redirect('cart')
+logger = logging.getLogger(__name__) 
+@login_required
+def checkout(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    if not cart_items:
+        messages.warning(request, "السلة فارغة.")
+        return redirect('cart')
+
+    total_price = sum(item.service.price for item in cart_items)
+    commission = total_price * Decimal('0.1')
+    final_total = total_price + commission
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+        'commission': commission,
+        'final_total': final_total,
+    }
+
+    if request.method == "POST":
+        for item in cart_items:
+            ServiceOrder.objects.create(
+                client=request.user,
+                service=item.service,
+                handyman=item.service.handyman,
+                status='pending',
+                price=item.service.price
+            )
+        cart_items.delete()
+        messages.success(request, "تمت عملية الشراء بنجاح.")
+        return render(request, 'checkout.html', context)
+
+
+    return render(request, 'checkout.html', context)
