@@ -74,6 +74,7 @@ def register(request):
                 HandymanProfile.objects.get_or_create(user=user)
 
             messages.success(request, "تم إنشاء الحساب بنجاح. يمكنك تسجيل الدخول الآن.")
+            return redirect('login')
             return redirect('login')  # إعادة التوجيه إلى صفحة تسجيل الدخول
 
         except IntegrityError:
