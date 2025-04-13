@@ -13,6 +13,8 @@ from django.contrib.auth import authenticate, login as auth_login
 from django.db.models import Q, Max
 from django.shortcuts import get_object_or_404
 from decimal import Decimal
+import logging
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -104,7 +106,7 @@ def login(request):
         return render(request, "login.html")
     
 def cart_view(request):
-    cart_items = ServiceOrder.objects.filter(client=request.user, status='pending')
+    cart_items = CartItem.objects.filter(user=request.user)
     
     #to get the total price
     total_price = sum(item.service.price for item in cart_items)
@@ -279,7 +281,7 @@ def chat_detail(request, user_id):
     }
     context.update(base_view_data(request))
 
-    return render(request, 'chat_detail.html', context)
+    return redirect(request, 'chat_detail.html', context)
 
 def edit_profile(request):
     context={
@@ -342,7 +344,7 @@ def rate_service(request, service_id):
         comment = request.POST.get('comment')
 
         if not rating or int(rating) < 1 or int(rating) > 5:
-            messages.error("الرجاء ادخال تقييم بين 1 و 5")
+            messages.error(request,"الرجاء ادخال تقييم بين 1 و 5")
             return redirect('service_detail', service_id=service_id, user_id=service.handyman.id)
         
         Review.objects.create(
@@ -417,14 +419,14 @@ def add_to_cart(request, service_id):
     service = get_object_or_404(ServiceListing, id=service_id)
 
     # Check if the service is already in the cart
-    existing_order = ServiceOrder.objects.filter(
-        client=request.user, service=service, status='pending'
+    existing_order = CartItem.objects.filter(
+        user=request.user, service=service
     ).first()
 
     if existing_order:
         messages.info(request, "هذه الخدمة موجودة بالفعل في السلة.")
     else:
-        ServiceOrder.objects.create(client=request.user, service=service, status='pending')
+        CartItem.objects.create(user=request.user, service=service)
         messages.success(request, "تمت إضافة الخدمة إلى السلة")
 
     # Redirect to the cart view
@@ -433,7 +435,7 @@ def add_to_cart(request, service_id):
 
 #remove from cart function
 def remove_from_cart(request, order_id):
-    order = get_object_or_404(ServiceOrder, id=order_id, client=request.user, status='pending')
+    order = get_object_or_404(CartItem, id=order_id, user=request.user)
     order.delete()
     messages.success(request, "تمت إزالة الخدمة من السلة.")
     return redirect('cart')
@@ -454,3 +456,37 @@ def search_services(request):
         'service_types': service_types,
         'query': query
     })
+
+logger = logging.getLogger(__name__) 
+@login_required
+def checkout(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+    if not cart_items:
+        messages.warning(request, "السلة فارغة.")
+        return redirect('cart')
+
+    total_price = sum(item.service.price for item in cart_items)
+    commission = total_price * Decimal('0.1')
+    final_total = total_price + commission
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+        'commission': commission,
+        'final_total': final_total,
+    }
+
+    if request.method == "POST":
+        for item in cart_items:
+            ServiceOrder.objects.create(
+                client=request.user,
+                service=item.service,
+                handyman=item.service.handyman,
+                status='pending',
+                price=item.service.price
+            )
+        cart_items.delete()
+        messages.success(request, "تمت عملية الشراء بنجاح.")
+        return render(request, 'checkout.html', context)
+
+
+    return render(request, 'checkout.html', context)

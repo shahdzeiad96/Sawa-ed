@@ -2,12 +2,10 @@
 
 {% block content %}
 <div class="p-6 max-w-3xl mx-auto">
-  <!-- عنوان الصفحة -->
   <h1 class="text-3xl font-semibold text-center text-[#0d1b2a] mb-8">
     🛒 سلة المشتريات
   </h1>
 
-  <!-- رسائل التنبيه -->
   {% if messages %}
     <div class="space-y-3 mb-6 max-w-2xl mx-auto">
       {% for message in messages %}
@@ -23,7 +21,6 @@
     </div>
   {% endif %}
 
-  <!-- عناصر السلة -->
   {% if cart_items %}
     <div class="space-y-4">
       {% for item in cart_items %}
@@ -45,7 +42,6 @@
       {% endfor %}
     </div>
 
-    <!-- المجموع -->
     <div class="mt-8 bg-gray-100 rounded-xl p-6 shadow text-center space-y-3 text-[#0d1b2a] text-lg font-medium">
       <div>💰 <strong>سعر الخدمات:</strong> <span class="text-[#f4a261]">{{ total_price }} ₪</span></div>
       <div>📊 <strong>عمولة الموقع (10٪):</strong> <span class="text-[#f4a261]">{{ commission }} ₪</span></div>
@@ -55,11 +51,13 @@
       </div>
     </div>
 
-    <!-- زر الإكمال -->
     <div class="mt-8 text-center">
-      <button class="px-6 py-3 rounded-lg bg-[#0d1b2a] text-white hover:bg-[#f4a261] hover:text-[#0d1b2a] transition duration-300 transform hover:scale-105 shadow-lg">
-        🧾 إكمال الطلب
-      </button>
+      <form method="post" action="{% url 'checkout' %}">
+        {% csrf_token %}
+        <button type="submit" class="px-6 py-3 rounded-lg bg-[#0d1b2a] text-white hover:bg-[#f4a261] hover:text-[#0d1b2a] transition duration-300 transform hover:scale-105 shadow-lg">
+          🧾 إكمال الطلب
+        </button>
+      </form>
     </div>
 
   {% else %}
