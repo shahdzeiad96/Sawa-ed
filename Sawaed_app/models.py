@@ -148,6 +148,23 @@ class Message(models.Model):
     def __str__(self):
         return f"From {self.sender} to {self.receiver} at {self.timestamp}"
 
+
+class CartItem(models.Model):
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE,
+        related_name='cart_items'
+    )
+    service = models.ForeignKey(
+        ServiceListing, 
+        on_delete=models.CASCADE,
+        related_name='cart_items'
+    )
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.service.name}"
+    
 class ServiceOrder(models.Model):
     ORDER_STATUS_CHOICES = [
         ('pending', _('Pending')),
@@ -164,6 +181,14 @@ class ServiceOrder(models.Model):
         on_delete=models.CASCADE, 
         related_name='orders'
     )
+    handyman = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='received_orders',
+        null=True,
+        blank=True
+    )
+    price = models.DecimalField(max_digits=10, decimal_places=2,null=True, blank=True)
     status = models.CharField(max_length=20, choices=ORDER_STATUS_CHOICES, default='pending')
     created_at = models.DateTimeField(auto_now_add=True)
 
