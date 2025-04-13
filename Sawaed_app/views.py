@@ -42,10 +42,13 @@ def register(request):
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
 
+        # تحقق من تطابق كلمة المرور
         if password1 != password2:
             messages.error(request, "كلمتا المرور غير متطابقتين.")
             return render(request, "register.html")
+        
         try:
+            # إنشاء المستخدم
             user = CustomUser.objects.create_user(
                 username=username,
                 email=email,
@@ -54,17 +57,21 @@ def register(request):
                 user_type=user_type
             )
             user.save()
+
+            # إذا كان المستخدم من نوع HANDYMAN، أنشئ له حساب في HandymanProfile
             if user.user_type == CustomUser.UserType.HANDYMAN:
                 HandymanProfile.objects.get_or_create(user=user)
-                
+
             messages.success(request, "تم إنشاء الحساب بنجاح. يمكنك تسجيل الدخول الآن.")
-            return redirect('login.html')
+            return redirect('login')  # إعادة التوجيه إلى صفحة تسجيل الدخول
 
         except IntegrityError:
+            # في حال وجود خطأ في إدخال البيانات مثل تكرار اسم المستخدم أو البريد الإلكتروني
             messages.error(request, "اسم المستخدم أو البريد الإلكتروني مستخدم بالفعل.")
             return render(request, "register.html")
 
     return render(request, "register.html")
+
 
 def login(request):
     if request.method == 'POST':
@@ -404,14 +411,14 @@ def add_to_cart(request, service_id):
     try:
         service = ServiceListing.objects.get(id=service_id)
     except ServiceListing.DoesNotExist:
-        messages.error(request,"الخدمة غير متوفرة")
+        messages.error(request, "الخدمة غير متوفرة")
+        return redirect('userhome') 
 
-    pending_order = ServiceOrder.objects.filter(client = request.user, service = service, status = 'pending').first()
+    pending_order = ServiceOrder.objects.filter(client=request.user, service=service, status='pending').first()
 
-    if pending_order:
-        return redirect('cart')
-    else:
+    if not pending_order:
         ServiceOrder.objects.create(client=request.user, service=service, status='pending')
-        return redirect('cart')
+        messages.success(request, "تمت إضافة الخدمة إلى السلة")
+
     cart_items = ServiceOrder.objects.filter(client=request.user, status='pending')
     return render(request, 'cart.html', {'cart_items': cart_items})
