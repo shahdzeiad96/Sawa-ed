@@ -195,3 +195,33 @@ class ServiceOrder(models.Model):
 
     def _str_(self):
         return f"{self.client.username} - {self.service.name} ({self.status})"
+    
+    class Notifications(models.Model):
+        recipient = models.ForeignKey(
+            settings.AUTH_USER_MODEL,
+            null=True,
+            blank=True,
+            on_delete=models.SET_NULL,
+            related_name="notifications"
+        )
+        actor = models.ForeignKey(
+            settings.AUTH_USER_MODEL,
+            null=True,
+            blank = True,
+            on_delete=models.SET_NULL,
+            related_name="actor_notification"
+        )
+        verb = models.CharField(max_length=40),
+        service_order = models.ForeignKey(
+            ServiceOrder, 
+            on_delete=models.CASCADE,
+            null=True,
+            blank=True,
+            related_name="notifications"
+        )
+        message = models.TextField(null=True)
+        is_read = models.BooleanField(default=False)
+        created_at = models.DateTimeField(auto_now_add=True)
+        updated_at = models.DateTimeField(auto_now=True)
+        def __str__(self):
+            return f"Notifications for {self.recipient.username}: {self.verb}"
