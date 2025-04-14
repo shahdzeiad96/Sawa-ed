@@ -15,6 +15,11 @@ from django.shortcuts import get_object_or_404
 from decimal import Decimal
 import logging
 from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.auth.tokens import default_token_generator
+
+
 
 
 def index(request):
@@ -529,7 +534,66 @@ def update_order_status(request, order_id, new_status):
 
 @login_required
 def notifications_view(request):
-    notifications = Notifications.objects.filter(recipient=request.user).order_by('-created_at')
-    return render(request, 'notifications.html', {
+    notifications = Notifications.objects.filter(recipient=request.user, is_read=False).order_by('-created_at')
+    context= {
         'notifications': notifications
-    })
+        }
+    
+    return render(request, 'notifications.html',context)
+
+
+def password_reset_request(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')  
+
+        if email:
+            try:
+                user = CustomUser.objects.get(email=email)
+                token = default_token_generator.make_token(user) 
+                uid = urlsafe_base64_encode(str(user.pk).encode()) 
+                reset_url = f"{request.scheme}://{request.get_host()}/password-reset/{uid}/{token}/"
+                
+                send_mail(
+                    'إعادة تعيين كلمة المرور',
+                    f'إضغط على الرابط التالي لإعادة تعيين كلمة المرور: {reset_url}',
+                    'noreply@yourwebsite.com',
+                    [email],
+                    fail_silently=False,
+                )
+                messages.success(request, 'تم إرسال بريد إلكتروني لإعادة تعيين كلمة المرور.')
+                return render(request,"password_reset_done.html")
+            except CustomUser.DoesNotExist:
+                messages.error(request, 'البريد الإلكتروني غير مسجل لدينا.')
+                return redirect('password_reset_request')
+        else:
+            messages.error(request, 'الرجاء إدخال بريد إلكتروني صحيح.')
+            return redirect('password_reset_request')
+    
+    return render(request, 'password_reset_form.html')
+
+def password_reset_confirm(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = CustomUser.objects.get(pk=uid)
+    except (TypeError, ValueError, CustomUser.DoesNotExist):
+        user = None
+
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            new_password = request.POST.get('new_password')  
+            confirm_password = request.POST.get('confirm_password')  
+
+            if new_password and confirm_password:
+                if new_password == confirm_password:
+                    user.set_password(new_password)
+                    user.save()
+                    messages.success(request, 'تم تحديث كلمة المرور بنجاح.')
+                    return redirect('login')
+                else:
+                    messages.error(request, 'كلمات المرور غير متطابقة.')
+            else:
+                messages.error(request, 'الرجاء إدخال جميع الحقول.')
+        return render(request, 'password_reset_confirm.html')
+    else:
+        messages.error(request, 'رابط إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية.')
+        return redirect('password_reset_request')

@@ -1,12 +1,6 @@
-<!-- templates/notifications.html -->
-<!DOCTYPE html>
-<html lang="ar">
-<head>
-    <meta charset="UTF-8">
-    <title>الإشعارات</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-[#fdfdfd] text-[#0d1b2a]">
+{% extends 'index.html' %}
+{% block content %}
+{% load static %}
     <div class="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
         <h2 class="text-2xl font-bold mb-4 text-right border-b pb-2">الإشعارات</h2>
         <ul class="overflow-y-auto max-h-96 divide-y">
@@ -43,5 +37,5 @@
             {% endfor %}
         </ul>
     </div>
-</body>
-</html>
+  
+    {% endblock %}
