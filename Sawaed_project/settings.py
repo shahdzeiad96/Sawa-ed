@@ -58,11 +58,12 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'Sawaed_project.urls'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -71,6 +72,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'Sawaed_app.context_processors.notifications_processor',
+                
             ],
         },
     },
@@ -78,6 +80,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Sawaed_project.wsgi.application'
 AUTH_USER_MODEL = 'Sawaed_app.CustomUser'#added for the custom user 
+LOGIN_URL = 'login'
 
 GEMINI_API_KEY = 'AIzaSyAiPKdEW0oBGNYEDqovSpNYDpqGMMDf5_c'
 
