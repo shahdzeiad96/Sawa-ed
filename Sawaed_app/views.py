@@ -409,10 +409,6 @@ def chatbot_response(request):
 
     return JsonResponse({'response': 'طلب غير صالح'})
 
-#add to cart function 
-from django.shortcuts import redirect, get_object_or_404
-from django.contrib import messages
-from .models import ServiceListing, ServiceOrder
 
 # Add to cart function
 def add_to_cart(request, service_id):
