@@ -24,9 +24,14 @@
         <ul>
           <h2 class="text-lg font-semibold mb-4 text-right">التصنيفات</h2>
           {% for service_type in service_types %}
-              <li class="hover:text-[#f4a261] cursor-pointer">{{ service_type.0 }}</li> 
+          <li class="hover:text-[#f4a261] cursor-pointer">
+            <a href="{% url 'services_by_type' service_type.0 %}">
+                {{ service_type.0 }}
+            </a>
+        </li>        
           {% endfor %}
-      </ul>
+        </ul>
+        </ul>
       </div>
 
       <!-- all services -->
@@ -53,29 +58,71 @@
       
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {% for service in services %}
-            <a href="{% url 'service_detail' service.id service.handyman.id %}" class="block bg-white border border-gray-200 rounded-2xl shadow hover:shadow-lg transition duration-200 overflow-hidden">
-              {% if service.image %}
-                <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-full h-48 object-cover">
-              {% else %}
-                <img src="{% static 'images/placeholder.png' %}" alt="صورة افتراضية" class="w-full h-48 object-cover">
-              {% endif %}
-      
-              <div class="p-4 space-y-2">
-                <h3 class="text-xl font-semibold text-[#0d1b2a] truncate">{{ service.name }}</h3>
-                <p class="text-gray-600 text-sm">{{ service.description|truncatechars:100 }}</p>
-                <p class="text-[#f4a261] font-bold text-lg">السعر: {{ service.price }} شيكل</p>
-                <span class="inline-block mt-2 text-sm text-[#264653] hover:text-[#f4a261] transition">عرض التفاصيل &rarr;</span>
-                <!-- Delete button for handyman -->
+            <div id="service-{{ service.id }}" class="relative group">
+              <div 
+                onclick="window.location.href='{% url 'service_detail' service.id service.handyman.id %}'"
+                class="cursor-pointer block bg-white border border-gray-200 rounded-2xl shadow hover:shadow-lg transition duration-200 overflow-hidden"
+              >
+                {% if service.image %}
+                  <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-full h-48 object-cover">
+                {% else %}
+                  <img src="{% static 'images/placeholder.png' %}" alt="صورة افتراضية" class="w-full h-48 object-cover">
+                {% endif %}
+        
+                <div class="p-4 space-y-2 pb-12 relative">  <!-- Add bottom padding to make room for the button -->
+                  <h3 class="text-xl font-semibold text-[#0d1b2a] truncate">{{ service.name }}</h3>
+                  <p class="text-gray-600 text-sm">{{ service.description|truncatechars:100 }}</p>
+                  <p class="text-[#f4a261] font-bold text-lg">السعر: {{ service.price }} شيكل</p>
+                  <span class="inline-block mt-2 text-sm text-[#264653] hover:text-[#f4a261] transition">عرض التفاصيل &rarr;</span>
+                </div>
+              </div>
+        
               {% if user == service.handyman %}
-              <button id="delete-service-1" class="delete-btn text-red-500 mt-2 py-1 px-2 border border-red-500 rounded hover:bg-red-500 hover:text-white transition">
+              <!-- Delete Button Bottom-Left -->
+              <button 
+                data-service-id="{{ service.id }}"
+                class="delete-btn absolute bottom-2 left-2 bg-red-500 text-white py-1 px-3 border border-red-600 rounded hover:bg-red-600 hover:text-white transition z-10"
+                onclick="event.stopPropagation();"
+              >
                 حذف الخدمة
               </button>
               {% endif %}
-              </div>
-            </a>
+            </div>
           {% endfor %}
         </div>
-      
-      </div>
-      
+        
+      <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          document.querySelectorAll(".delete-btn").forEach(button => {
+            button.addEventListener("click", function () {
+              const serviceId = this.getAttribute("data-service-id");
+              const serviceCard = document.getElementById(`service-${serviceId}`);
+        
+              if (confirm("هل أنت متأكد من حذف هذه الخدمة؟")) {
+                fetch("{% url 'delete_service_ajax' %}", {
+                  method: "POST",
+                  headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/x-www-form-urlencoded"
+                  },
+                  body: `service_id=${serviceId}`
+                })
+                .then(response => response.json())
+                .then(data => {
+                  if (data.success) {
+                    serviceCard.style.transition = "opacity 0.5s ease-out";
+                    serviceCard.style.opacity = 0;
+                    setTimeout(() => {
+                      serviceCard.remove();
+                    }, 500);
+                  } else {
+                    alert("فشل في حذف الخدمة.");
+                  }
+                });
+              }
+            });
+          });
+        });
+        </script>
+        
 {% endblock %}

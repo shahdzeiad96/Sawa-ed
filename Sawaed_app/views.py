@@ -74,6 +74,7 @@ def register(request):
                 HandymanProfile.objects.get_or_create(user=user)
 
             messages.success(request, "تم إنشاء الحساب بنجاح. يمكنك تسجيل الدخول الآن.")
+            return redirect('login')
             return redirect('login')  # إعادة التوجيه إلى صفحة تسجيل الدخول
 
         except IntegrityError:
@@ -140,29 +141,32 @@ def user_home(request):
     return render(request,'userhome.html',context)
 
 def add_service(request):
-    services=ServiceListing.objects.all()
+    services = ServiceListing.objects.all()
+
     if not request.user.is_authenticated:
-        messages.error(request, "يحب تسجيل الدخول لاضافة خدمات")
+        messages.error(request, "يجب تسجيل الدخول لإضافة خدمات")
         return redirect('login')
-    
+
     if request.user.user_type != CustomUser.UserType.HANDYMAN:
-        messages.error(request, "يجب ان تكون فني لاضافة خدمات")
+        messages.error(request, "يجب أن تكون فنيًا لإضافة خدمات")
         return redirect('userhome')
-    
+
     if request.method == "POST":
-        name = request.POST.get('name') 
+        name = request.POST.get('name')
+        service_type = request.POST.get('service_type')  # capture  category
         description = request.POST.get('description')
         price = request.POST.get('price')
-        image = request.FILES.get('image')  
+        image = request.FILES.get('image')
 
-        if not name or not description or not price:
-            messages.error(request, "يجب ادخال اسم ووصف وسعر الخدمة")
+        if not name or not description or not price or not service_type:
+            messages.error(request, "يجب إدخال اسم الخدمة، نوعها، وصفها وسعرها")
             return render(request, 'addservice.html')
 
         try:
             service = ServiceListing.objects.create(
                 handyman=request.user,
                 name=name,
+                service_type=service_type,  #  save in DB
                 description=description,
                 price=price,
                 image=image
@@ -170,16 +174,16 @@ def add_service(request):
             request.session['service_added'] = True
             return redirect('userhome')
         except Exception as e:
-            messages.error(request, f"حدث خطأ اثناء اضافة الخدمة: {e}")
+            messages.error(request, f"حدث خطأ أثناء إضافة الخدمة: {e}")
             return render(request, 'addservice.html')
-    context={
-        'services':services,
-        'service_types': ServiceListing.SERVICE_TYPES
 
+    context = {
+        'services': services,
+        'service_types': ServiceListing.SERVICE_TYPES,
     }
-    context.update(base_view_data(request))
-    return render(request, 'addservice.html',context)
-
+    context.update(base_view_data(request))  
+    return render(request, 'addservice.html', context)
+    
 def service_detail(request, service_id,user_id):
     service =ServiceListing.objects.get(id=service_id)
     handyman = HandymanProfile.objects.get(user=service.handyman)
@@ -486,3 +490,21 @@ def checkout(request):
 
 
     return render(request, 'checkout.html', context)
+# services by type filter 
+def services_by_type(request, service_type):
+    services = ServiceListing.objects.filter(service_type=service_type)
+    return render(request, 'service_by_type.html', {
+        'services': services,
+        'selected_type': service_type
+    })
+#delete the service only by the handyman who post it 
+@require_POST
+@login_required
+def delete_service_ajax(request):
+    service_id = request.POST.get('service_id')
+    try:
+        service = ServiceListing.objects.get(id=service_id, handyman=request.user)
+        service.delete()
+        return JsonResponse({'success': True})
+    except ServiceListing.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Service not found or unauthorized.'})

@@ -21,8 +21,14 @@ urlpatterns = [
     path('mark-as-read/<int:message_id>/', views.mark_as_read, name='mark_as_read'),
     path('add-to-cart/<int:service_id>/', views.add_to_cart, name='add-to-cart'),
     path('search/', views.search_services, name='service_search'),
+    path('add-to-cart/<int:service_id>/', views.add_to_cart, name='add-to-cart'),
+    path('remove-from-cart/<int:order_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('remove-from-cart/<int:order_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('checkout/', views.checkout, name='checkout'),
+    path('services/type/<str:service_type>/', views.services_by_type, name='services_by_type'),
+    path('delete-service/', views.delete_service_ajax, name='delete_service_ajax'),
+
+
 
 
 
