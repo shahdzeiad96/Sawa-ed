@@ -285,7 +285,7 @@ def chat_detail(request, user_id):
     }
     context.update(base_view_data(request))
 
-    return redirect(request, 'chat_detail.html', context)
+    return render(request, 'chat_detail.html', context)
 
 def edit_profile(request):
     context={
@@ -413,10 +413,6 @@ def chatbot_response(request):
 
     return JsonResponse({'response': 'طلب غير صالح'})
 
-#add to cart function 
-from django.shortcuts import redirect, get_object_or_404
-from django.contrib import messages
-from .models import ServiceListing, ServiceOrder
 
 # Add to cart function
 def add_to_cart(request, service_id):
@@ -530,3 +526,10 @@ def update_order_status(request, order_id, new_status):
     )
     messages.success(request,"تم تغيير حالة الطلب إلى {new_status}")
     return redirect('userhome')
+
+@login_required
+def notifications_view(request):
+    notifications = Notifications.objects.filter(recipient=request.user).order_by('-created_at')
+    return render(request, 'notifications.html', {
+        'notifications': notifications
+    })
