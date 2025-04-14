@@ -27,6 +27,7 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('services/type/<str:service_type>/', views.services_by_type, name='services_by_type'),
     path('delete-service/', views.delete_service_ajax, name='delete_service_ajax'),
+    path('order/<int:order_id>/update/<str:new_status>/', views.update_order_status, name='update_order_status'),
 
 
 

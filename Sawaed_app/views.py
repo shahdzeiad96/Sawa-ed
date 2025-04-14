@@ -460,36 +460,35 @@ def search_services(request):
 logger = logging.getLogger(__name__) 
 @login_required
 def checkout(request):
-    cart_items = CartItem.objects.filter(user=request.user)
-    if not cart_items:
-        messages.warning(request, "السلة فارغة.")
-        return redirect('cart')
-
-    total_price = sum(item.service.price for item in cart_items)
-    commission = total_price * Decimal('0.1')
-    final_total = total_price + commission
-    context = {
-        'cart_items': cart_items,
-        'total_price': total_price,
-        'commission': commission,
-        'final_total': final_total,
-    }
-
-    if request.method == "POST":
+    if request.method == 'POST':
+        cart_items= CartItem.objects.filter(user=request.user)
+        if not cart_items.exists():
+            messages.error(request, "سلة الخدمات فارغة")
+            return redirect('cart')
         for item in cart_items:
-            ServiceOrder.objects.create(
-                client=request.user,
-                service=item.service,
-                handyman=item.service.handyman,
-                status='pending',
-                price=item.service.price
+            service = item.service
+            order = ServiceOrder.objects.create(
+                client = request.user,
+                service = service,
+                handyman = service.handyman,
+                status = 'pending'
             )
+            Notifications.objects.create(
+                recipient = service.handyman,
+                actor = request.user,
+                verb = "طلب جديد"و
+                service_order = order,
+                message = f"طلب جديد لخدمة '{service.name}' من العميل '{request.user.username}'."
+            )
+        
         cart_items.delete()
-        messages.success(request, "تمت عملية الشراء بنجاح.")
-        return render(request, 'checkout.html', context)
+        messages.success(request,"تم انشاء الطلب بنجاح وسيتم اعلام الفني")
+        return redirect('userhome')
+    else:
+        cart_items = CartItem.objects.filter(user=request.user)
+        context = {"cart_items": cart_items}
+        return render(request,'checkout.html', context)
 
-
-    return render(request, 'checkout.html', context)
 # services by type filter 
 def services_by_type(request, service_type):
     services = ServiceListing.objects.filter(service_type=service_type)
@@ -508,3 +507,22 @@ def delete_service_ajax(request):
         return JsonResponse({'success': True})
     except ServiceListing.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Service not found or unauthorized.'})
+    
+
+def update_order_status(request, order_id, new_status):
+    order = get_object_or_404(ServiceOrder, id=order_id, status='pending')
+    if order.handyman != request.user:
+        messages.error(request,"ليس لديك صلاحية رفض أو قبول هذا الطلب")
+        return redirect('userhome')
+    order.status=new_status
+    order.save()
+
+    Notifications.objects.create(
+        recipient=order.client,
+        actor = request.user,
+        verb = new_status,
+        service_order=order,
+        message = f"تم طلب الخدمة من قبل {request.user.username}"
+    )
+    messages.success(request,"تم تغيير حالة الطلب إلى {new_status}")
+    return redirect('userhome')
