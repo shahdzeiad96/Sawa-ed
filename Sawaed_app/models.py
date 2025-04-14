@@ -211,7 +211,7 @@ class Notifications(models.Model):
         on_delete=models.SET_NULL,
         related_name="actor_notification"
         )
-    verb = models.CharField(max_length=40),
+    verb = models.CharField(max_length=40, null=True)
     service_order = models.ForeignKey(
             ServiceOrder, 
             on_delete=models.CASCADE,
