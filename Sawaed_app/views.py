@@ -480,7 +480,7 @@ def checkout(request):
             Notifications.objects.create(
                 recipient = service.handyman,
                 actor = request.user,
-                verb = "طلب جديد"و
+                verb = "طلب جديد",
                 service_order = order,
                 message = f"طلب جديد لخدمة '{service.name}' من العميل '{request.user.username}'."
             )
