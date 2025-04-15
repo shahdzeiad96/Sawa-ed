@@ -91,14 +91,24 @@
             </div>
         {% endif %}
 
-        <!-- Submit Button -->
-        <div class="md:col-span-2 text-center mt-6">
+        <!-- Submit & Change Password Buttons Side by Side -->
+        <div class="md:col-span-2 flex flex-col md:flex-row justify-center items-center gap-4 mt-6">
+            <!-- Submit Button -->
             <button type="submit"
-            class="bg-transparent border-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-green-500 font-semibold py-3 px-8 rounded-full transition flex items-center justify-center gap-2 mx-auto">
-            <i data-lucide="save"></i>
-            حفظ التعديلات
-        </button>
+                class="bg-transparent border-2 border-[#25D366] text-[#25D366] hover:bg-[#25D366] hover:text-green-500 font-semibold py-3 px-8 rounded-full transition flex items-center justify-center gap-2">
+                <i data-lucide="save"></i>
+                حفظ التعديلات
+            </button>
+
+            <!-- Change Password Button -->
+            <a href="{% url 'password_change' %}"
+                class="bg-transparent border-2 border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-blue-500 font-semibold py-3 px-8 rounded-full transition duration-300 flex items-center justify-center gap-2">
+                <i data-lucide="key-round"></i>
+                تغيير كلمة المرور
+            </a>
         </div>
+
+        
     </form>
 </div>
 
