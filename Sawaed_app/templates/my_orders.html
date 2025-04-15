@@ -1,0 +1,57 @@
+{% extends "index.html" %}
+{% load static %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-6 py-8 bg-white rounded-xl shadow-lg mt-8">
+    <h2 class="text-3xl font-bold text-center text-gray-800 mb-8">طلباتي</h2>
+    {% if orders %}
+    <div class="space-y-6">
+            {% for order in orders %}
+        <div class="bg-white shadow-lg rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-gray-100">
+    
+                    <!-- orders Info -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
+
+                        <!--  icon or img for the service -->
+                <div class="bg-[#f4a261]/10 text-[#f4a261] rounded-full p-4">
+                    <i class="fas fa-tools fa-lg"></i>
+                </div>
+
+                <div class="text-right w-full">
+                    <h3 class="text-xl font-semibold text-gray-800">{{ order.service.name }}</h3>
+                    <p class="text-sm text-gray-500 mt-1">العميل: <span class="font-medium text-gray-700">{{ order.client.username }}</span></p>
+                    <p class="text-sm mt-1">
+                    الحالة: 
+                        <span class="inline-block px-2 py-1 rounded-full text-xs font-semibold
+                            {% if order.status == 'Completed' %}
+                            bg-green-100 text-green-700
+                            {% else %}
+                            bg-yellow-100 text-yellow-700
+                            {% endif %}">
+                            {{ order.status }}
+                        </span>
+                    </p>
+                </div>
+        </div>
+    <!-- Btn Section -->
+        <div class="flex gap-3 w-full sm:w-1/2 justify-end mt-4 sm:mt-0">
+            {% if order.status != 'Completed' %}
+            <a href="{% url 'complete_order' order.id %}" 
+                class="flex-1 border-2 border-green-600 text-green-600 py-2 rounded-full text-center hover:bg-green-600 hover:text-white transition duration-300 text-sm font-medium">
+                <i class="fas fa-check mr-2"></i> إنهاء الطلب
+            </a>
+            {% else %}
+            <a href="{% url 'rate_service' service_id=order.service.id %}" 
+                class="flex-1 border-2 border-[#f4a261] text-[#f4a261] py-2 rounded-full text-center hover:bg-[#f4a261] hover:text-white transition duration-300 text-sm font-medium">
+            <i class="fas fa-star mr-2"></i> تقييم الخدمة
+            </a>
+            {% endif %}
+        </div>
+    </div>
+        {% endfor %}
+    </div>
+    {% else %}
+        <p class="text-center text-gray-500 mt-6">لا توجد طلبات حتى الآن.</p>
+    {% endif %}
+</div>
+{% endblock %}

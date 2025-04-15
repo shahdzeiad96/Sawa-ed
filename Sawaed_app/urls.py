@@ -33,7 +33,13 @@ urlpatterns = [
     path('password-reset/', views.password_reset_request, name='password_reset_request'),
     path('password-reset/<uidb64>/<token>/', views.password_reset_confirm, name='password_reset_confirm'),
     path('change-password/', views.password_change, name='password_change'),
-    path('order/<int:order_id>/delete/', views.delete_order, name='delete_order')
+    path('order/<int:order_id>/delete/', views.delete_order, name='delete_order'),
+    #new
+    path('my-orders/', views.my_orders, name='my_orders'),
+    path('complete-order/<int:order_id>/', views.complete_order, name='complete_order'),
+    
+
+
 
 
 
