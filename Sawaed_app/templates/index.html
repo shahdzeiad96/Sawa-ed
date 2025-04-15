@@ -81,7 +81,7 @@
                         {% if notification.service_order.status == 'pending' %}
                         <div class="flex justify-end space-x-2">
                           <!-- Accept Button -->
-                          <form method="post" action="{% url 'accept_order' notification.service_order.id 'confirmed' %}">
+                          <form method="post" action="{% url 'accept_order' notification.service_order.id  %}">
                             {% csrf_token %}
                             <button type="submit"
                               class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition">
