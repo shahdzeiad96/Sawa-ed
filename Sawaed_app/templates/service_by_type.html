@@ -3,14 +3,12 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-6" dir="rtl">
-  <!-- رجوع للخلف -->
   <div class="mb-4">
     <a href="{% url 'userhome' %}" class="inline-block bg-[#f4a261] text-white px-6 py-2 rounded-full font-medium hover:bg-[#e07b4c] transition duration-300">
       🔙 الرجوع إلى الصفحة الرئيسية
     </a>
   </div>
 
-  <!-- عنوان الفئة -->
   <h1 class="text-3xl font-bold text-[#0d1b2a] mb-6 text-center">الخدمات في فئة: {{ selected_type }}</h1>
 
   {% if services %}
