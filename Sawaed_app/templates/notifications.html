@@ -1,41 +1,55 @@
 {% extends 'index.html' %}
 {% block content %}
 {% load static %}
-    <div class="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
-        <h2 class="text-2xl font-bold mb-4 text-right border-b pb-2">الإشعارات</h2>
-        <ul class="overflow-y-auto max-h-96 divide-y">
-            {% for notification in notifications %}
-            <li class="p-4 hover:bg-[#fdf6ec]">
-                {% if user.user_type == "handyman" %}
-                <!-- Handyman Notifications -->
-                <div class="flex flex-col space-y-2">
-                    <p class="text-sm">{{ notification.message }}</p>
-                    <div class="flex justify-end space-x-2">
-                        <form method="post" action="{% url 'update_order_status' notification.service_order.id 'confirmed' %}">
-                            {% csrf_token %}
-                            <button type="submit"
-                                class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition">
-                                قبول
-                            </button>
-                        </form>
-                        <form method="post" action="{% url 'update_order_status' notification.service_order.id 'rejected' %}">
-                            {% csrf_token %}
-                            <button type="submit"
-                                class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">
-                                رفض
-                            </button>
-                        </form>
-                    </div>
-                </div>
-                {% elif user.user_type == "client" %}
-                <!-- Client Notifications -->
-                <p class="text-sm">{{ notification.message }}</p>
-                {% endif %}
-            </li>
-            {% empty %}
-            <li class="p-4 text-gray-500 text-center">لا توجد إشعارات جديدة.</li>
-            {% endfor %}
-        </ul>
-    </div>
-  
-    {% endblock %}
+
+<div class="p-6 text-right bg-white rounded-xl shadow-md border border-gray-200 w-[90%] mx-auto mt-8">
+  <h2 class="text-2xl font-bold text-[#264653] mb-6 flex items-center justify-end gap-2">
+    <i class="fas fa-bell text-[#f4a261]"></i> الإشعارات
+  </h2>
+
+  <ul class="space-y-4 max-h-[400px] overflow-y-auto pr-2">
+    {% for notification in notifications %}
+    <li class="p-4 bg-[#fdfaf6] hover:bg-[#fef3e4] transition rounded-xl border flex items-start justify-between gap-4">
+      <div class="flex items-start gap-3 w-full">
+        
+        <img src="{{ notification.actor.image.url }}" alt="avatar"
+        class="w-10 h-10 rounded-full border border-[#e9c46a] shadow-sm">
+
+        <div class="flex-1">
+          <p class="text-sm text-gray-700 leading-relaxed mb-2">
+            <i class="fas fa-info-circle text-[#e76f51] ml-1"></i>
+            {{ notification.message }}
+          </p>
+
+          {% if user.user_type == "handyman" and notification.service_order.status == 'pending' %}
+          <div class="flex gap-2 justify-end">
+            <form method="post" action="{% url 'accept_order' notification.service_order.id 'confirmed' %}">
+              {% csrf_token %}
+              <button type="submit"
+                class="bg-green-500 text-white px-4 py-1.5 text-sm rounded-full hover:bg-green-600 transition">
+                <i class="fas fa-check-circle mr-1"></i> قبول
+              </button>
+            </form>
+
+            <form method="post" action="{% url 'reject_order' notification.service_order.id %}">
+              {% csrf_token %}
+              <button type="submit"
+                class="bg-red-500 text-white px-4 py-1.5 text-sm rounded-full hover:bg-red-600 transition">
+                <i class="fas fa-times-circle mr-1"></i> رفض
+              </button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </li>
+    {% empty %}
+    <li class="text-center text-gray-500 p-4">لا توجد إشعارات جديدة.</li>
+    {% endfor %}
+  </ul>
+
+  <div class="text-center mt-6">
+
+  </div>
+</div>
+{% endblock %}

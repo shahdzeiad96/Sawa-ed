@@ -43,36 +43,47 @@
             <label for="image" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
                 <i data-lucide="image"></i> الصورة الشخصية
             </label>
+
+            <!-- Display Current Profile Image -->
+            {% if user.image %}
+                <img src="{{ user.image.url }}" alt="Profile Image" class="w-32 h-32 rounded-full object-cover mb-4">
+            {% else %}
+                <img src="{% static 'default-profile-image.jpg' %}" alt="Default Profile Image" class="w-32 h-32 rounded-full object-cover mb-4">
+            {% endif %}
+            
+            <!-- File Input for Image -->
             <input type="file" id="image" name="image"
                 class="w-full border border-gray-300 rounded-xl p-2 file:bg-orange-500 file:text-white file:px-4 file:py-2 file:rounded-xl file:border-0">
         </div>
+
         {% if user.user_type == 'handyman' %}
-                <!-- Bio -->
-                <div class="md:col-span-2">
-                    <label for="bio" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
-                        <i data-lucide="info"></i> نبذة عنك
-                    </label>
-                    <textarea id="bio" name="bio" rows="3"
-                        class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">{{ user.bio }}</textarea>
-                </div>
-        
-                <!-- Experience -->
-                <div class="md:col-span-2">
-                    <label for="experience" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
-                        <i data-lucide="briefcase"></i> الخبرة
-                    </label>
-                    <textarea id="experience" name="experience" rows="3"
-                        class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">{{ user.experience }}</textarea>
-                </div>
-        
-                <!-- Field of Expertise -->
-                <div class="md:col-span-2">
-                    <label for="field_of_expertise" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
-                        <i data-lucide="hammer"></i> مجال الخبرة
-                    </label>
-                    <textarea id="field_of_expertise" name="field_of_expertise" rows="2"
-                        class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">{{ user.field_of_expertise }}</textarea>
-                </div>
+            <!-- Bio -->
+            <div class="md:col-span-2">
+                <label for="bio" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
+                    <i data-lucide="info"></i> نبذة عنك
+                </label>
+                <textarea id="bio" name="bio" rows="3"
+                    class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">{{ user.bio }}</textarea>
+            </div>
+    
+            <!-- Experience -->
+            <div class="md:col-span-2">
+                <label for="experience" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
+                    <i data-lucide="briefcase"></i> الخبرة
+                </label>
+                <textarea id="experience" name="experience" rows="3"
+                    class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">{{ user.experience }}</textarea>
+            </div>
+    
+            <!-- Field of Expertise -->
+            <div class="md:col-span-2">
+                <label for="field_of_expertise" class="block text-[#002244] font-semibold mb-1 flex items-center gap-2">
+                    <i data-lucide="hammer"></i> مجال الخبرة
+                </label>
+                <textarea id="field_of_expertise" name="field_of_expertise" rows="2"
+                    class="w-full border border-gray-300 rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-orange-500">{{ user.field_of_expertise }}</textarea>
+            </div>
+
             <!-- Availability -->
             <div class="md:col-span-2">
                 <label class="block text-[#002244] font-semibold mb-2 flex items-center gap-2">
@@ -108,7 +119,6 @@
             </a>
         </div>
 
-        
     </form>
 </div>
 
@@ -117,4 +127,4 @@
 <script>
     lucide.createIcons();
 </script>
-        {% endblock %}
+{% endblock %}

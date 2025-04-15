@@ -2,7 +2,7 @@
 
 {% extends 'index.html' %}
 {% block title %}محادثة مع {{ other_user.username }}{% endblock %}
-
+{%load static%}
 {% block content %}
 <div class="w-[800px] mx-auto mt-10 p-8 bg-white rounded-xl shadow-lg border border-gray-200">
         <h1 class="text-3xl font-semibold mb-8 text-[#264653] flex items-center gap-3">
@@ -12,15 +12,17 @@
     <!-- Displaying all messages in the conversation -->
     <div class="messages-list mb-8 space-y-4 overflow-y-auto max-h-[60vh]">
         {% for message in messages %}
-            <div class="flex {% if message.sender == request.user %}justify-end{% else %}justify-start{% endif %}">
-                <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %} p-6 mb-4 rounded-xl border {% if message.is_read %}bg-[#f9f9f9] text-[#264653]{% else %}bg-[#f1f5f9] text-[#5f6368]{% endif %} shadow-md hover:shadow-lg transition-all duration-300 max-w-[80%]">
-                    <div class="flex justify-between items-center mb-3">
-                        <p class="font-medium text-[#264653] text-lg">{{ message.sender.username }}</p>
-                        <span class="text-xs text-gray-500">{{ message.timestamp|date:"Y/m/d H:i" }}</span>
-                    </div>
-                    <p class="text-gray-700 leading-relaxed text-sm">{{ message.content }}</p>
+        <div class="flex {% if message.sender == request.user %}justify-start{% else %}justify-end{% endif %}">
+            <div class="speech-bubble {% if message.sender == request.user %}bubble-sent{% else %}bubble-received{% endif %}">
+                <div class="flex justify-between items-center mb-2">
+                    <p class="font-medium text-sm text-[#264653]">{{ message.sender.username }}</p>
                 </div>
+                <p><span class="text-xs text-gray-500">{{ message.timestamp|date:"H:i" }}</span></p>
+                <p class="text-sm text-[#5f6368] leading-relaxed">{% if message.content|length > 0 %}{{ message.content }}{% else %}لا توجد رسائل{% endif %}</p>
             </div>
+        </div> 
+          
+          
         {% empty %}
             <p class="text-gray-600 text-center">لا توجد رسائل في هذه المحادثة بعد.</p>
         {% endfor %}
