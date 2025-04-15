@@ -530,3 +530,19 @@ def update_order_status(request, order_id, new_status):
     )
     messages.success(request,"تم تغيير حالة الطلب إلى {new_status}")
     return redirect('userhome')
+
+def delete_order(request, order_id):
+    order= get_object_or_404(ServiceOrder, id=order_id, status='pending')
+    if order.handyman != request.user:
+        messages.error(request,"ليس لديك صلاحية رفض أو قبول هذا الطلب")
+        return redirect('userhome')
+    Notifications.objects.create(
+        recipient=order.client,
+        actor = request.user,
+        verb = 'rejected',
+        service_order=order,
+        message = f"تم رفض طلب الخدمة من طرف {request.user.username}"
+    )
+    order.delete()
+    messages.success(request, "تم حذف الطلب")
+    return redirect('userhome')
