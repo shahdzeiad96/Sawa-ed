@@ -1,31 +1,35 @@
-{% extends "index.html" %}
+{% extends 'index.html' %}
 {% load static %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-6" dir="rtl">
-  <h1 class="text-2xl font-bold text-[#0d1b2a] mb-6">الخدمات في فئة: {{ selected_type }}</h1>
+  <div class="mb-4">
+    <a href="{% url 'userhome' %}" class="inline-block bg-[#f4a261] text-white px-6 py-2 rounded-full font-medium hover:bg-[#e07b4c] transition duration-300">
+      🔙 الرجوع إلى الصفحة الرئيسية
+    </a>
+  </div>
+
+  <h1 class="text-3xl font-bold text-[#0d1b2a] mb-6 text-center">نتائج البحث عن : {{ query }}</h1>
 
   {% if services %}
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
       {% for service in services %}
-      <a href="{% url 'service_detail' service.id service.handyman.id %}" class="block bg-white border border-gray-200 rounded-2xl shadow hover:shadow-lg transition duration-200 overflow-hidden">
-
+      <a href="{% url 'service_detail' service.id service.handyman.id %}" class="block bg-white border border-gray-200 rounded-2xl shadow-md hover:shadow-xl transition duration-300 overflow-hidden hover:scale-105">
         {% if service.image %}
-          <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-full h-48 object-cover">
+          <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-full h-48 object-cover rounded-t-2xl">
         {% else %}
-          <img src="{% static 'images/placeholder.png' %}" alt="صورة الخدمة" class="w-full h-48 object-cover">
+          <img src="{% static 'images/placeholder.png' %}" alt="صورة الخدمة" class="w-full h-48 object-cover rounded-t-2xl">
         {% endif %}
-        
-        <div class="p-4 space-y-2">
+        <div class="p-6 space-y-4">
           <h2 class="text-xl font-semibold text-[#0d1b2a]">{{ service.name }}</h2>
           <p class="text-gray-600 text-sm">{{ service.description|truncatechars:100 }}</p>
-          <p class="text-[#f4a261] font-bold">السعر: {{ service.price }} شيكل</p>
+          <p class="text-[#f4a261] font-bold text-lg">السعر: {{ service.price }} شيكل</p>
         </div>
       </a>
       {% endfor %}
     </div>
   {% else %}
-    <p class="text-center text-gray-500 text-lg mt-10">لا توجد خدمات متوفرة في هذه الفئة.</p>
+    <p class="text-gray-500 text-center text-lg">ليس هناك اي نتائج للبحث, حاول البحث بكلمات اخرى </p>
   {% endif %}
 </div>
 {% endblock %}
