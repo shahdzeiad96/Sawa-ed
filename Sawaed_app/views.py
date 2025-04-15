@@ -18,6 +18,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.auth.hashers import check_password
+
 
 
 
@@ -597,3 +599,30 @@ def password_reset_confirm(request, uidb64, token):
     else:
         messages.error(request, 'رابط إعادة تعيين كلمة المرور غير صالح أو منتهي الصلاحية.')
         return redirect('password_reset_request')
+    
+def password_change(request):
+    if request.method == 'POST':
+        old_password = request.POST.get('old_password')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        user = request.user
+
+        if not check_password(old_password, user.password):
+            messages.error(request, "كلمة المرور الحالية غير صحيحة.")
+            return redirect('password_change')
+
+        if new_password != confirm_password:
+            messages.error(request, "كلمة المرور الجديدة وتأكيدها غير متطابقين.")
+            return redirect('password_change')
+
+        if len(new_password) < 8:
+            messages.error(request, "يجب أن تكون كلمة المرور الجديدة مكونة من 8 أحرف على الأقل.")
+            return redirect('password_change')
+
+        user.set_password(new_password)
+        user.save()
+        messages.success(request, "تم تغيير كلمة المرور بنجاح. يرجى تسجيل الدخول مرة أخرى.")
+        return redirect('login')
+
+    return render(request, 'change_password.html')
