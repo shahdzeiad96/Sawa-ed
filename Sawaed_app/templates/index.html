@@ -1,7 +1,7 @@
   {% load static %}
   <!DOCTYPE html>
   <html lang="ar" dir="rtl">
-  <head>
+  <head>  
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -13,7 +13,7 @@
       <link rel="stylesheet" href="{% static 'css/style.css' %}">
       <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
   </head>
-  <body class="bg-[#fdf6ec]">
+  <body class="bg-gray-100">
       <!-- Overlay -->
       <div id="overlay" class="fixed inset-0 bg-black bg-opacity-10 z-40 hidden" onclick="closeSidebar()"></div>
 
@@ -66,8 +66,8 @@
               </button>
 
               <!-- Dropdown Menu for Notifications -->
-              <div id="notificationsDropdown" class="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg hidden">
-                  <div class="p-4 text-right text-[#0d1b2a] font-semibold border-b">
+              <div id="notificationsDropdown" class="absolute left-0 mt-2 w-96 bg-white text-[#0d1b2a] rounded-lg shadow-lg hidden z-50">
+                <div class="p-4 text-right text-[#0d1b2a] font-semibold border-b">
                       الإشعارات
                   </div>
                   <ul class="overflow-y-auto max-h-64">
@@ -171,7 +171,7 @@ target="_blank" rel="noopener">
 </a>
 
 <!-- Sidebar -->
-    <div id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50 border-l">
+<div id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50 border-l">
   <button onclick="closeSidebar()" class="absolute top-4 left-4 text-2xl text-gray-500 hover:text-red-500">
     &times;
   </button>
@@ -186,10 +186,34 @@ target="_blank" rel="noopener">
         </a>
       </li>
 
+      <li>
+        <a href="{% url 'userhome' %}" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
+          جميع الخدمات <i class="fas fa-th-list"></i>
+        </a>
+      </li>
+
       {% if user.is_authenticated %}
       <li>
         <a href="{% url 'edit-profile' %}" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
           الملف الشخصي <i class="fas fa-user-circle"></i>
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
+          طلباتي <i class="fas fa-clipboard-list"></i>
+        </a>
+      </li>
+
+      <li>
+        <a href="{% url 'inbox' %}" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
+          الرسائل <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+
+      <li>
+        <a href="{% url 'notifications' %}" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
+          الإشعارات <i class="fas fa-bell"></i>
         </a>
       </li>
 
@@ -221,18 +245,23 @@ target="_blank" rel="noopener">
         </a>
       </li>
       {% endif %}
-    </ul>
 
-    <hr class="my-6">
+      <hr class="my-6">
 
-    <h2 class="text-lg font-semibold mb-4 text-right text-[#0d1b2a]">التصنيفات</h2>
-    <ul class="space-y-2 text-right text-gray-700">
-      {% for service_type in service_types %}
-        <li class="hover:text-[#f4a261] cursor-pointer">{{ service_type.0 }}</li>
-      {% endfor %}
+      <li>
+        <a href="#" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
+          عن الموقع <i class="fas fa-info-circle"></i>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
+          تواصل معنا <i class="fas fa-phone-alt"></i>
+        </a>
+      </li>
     </ul>
   </div>
 </div>
+
 
       
 
@@ -266,22 +295,37 @@ target="_blank" rel="noopener">
     document.addEventListener('DOMContentLoaded', () => {
         const notificationsButton = document.getElementById('notificationsButton');
         const notificationsDropdown = document.getElementById('notificationsDropdown');
-
-        notificationsButton.addEventListener('click', () => {
-            const isHidden = notificationsDropdown.classList.contains('hidden');
-            if (isHidden) {
-                notificationsDropdown.classList.remove('hidden');
-            } else {
+    
+        notificationsButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            notificationsDropdown.classList.toggle('hidden');
+        });
+    
+        // Close if clicking outside
+        document.addEventListener('click', (event) => {
+            const isClickInside = notificationsDropdown.contains(event.target) || notificationsButton.contains(event.target);
+            if (!isClickInside) {
                 notificationsDropdown.classList.add('hidden');
             }
         });
-
+    
+        // profile picture drop-down 
+        const userProfileImage = document.getElementById('userProfileImage');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+    
+        userProfileImage.addEventListener('click', (e) => {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('hidden');
+        });
+    
         document.addEventListener('click', (event) => {
-            if (!notificationsDropdown.contains(event.target) && event.target !== notificationsButton) {
-                notificationsDropdown.classList.add('hidden');
+            const isClickInsideProfile = dropdownMenu.contains(event.target) || userProfileImage.contains(event.target);
+            if (!isClickInsideProfile) {
+                dropdownMenu.classList.add('hidden');
             }
         });
     });
-  </script>
+    </script>
+    
   </body>
   </html>

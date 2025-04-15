@@ -78,22 +78,29 @@
 
       <h4 class="text-xl font-bold text-[#0d1b2a]">{{ handyman.user.username }}</h4>
       <p class="text-sm text-gray-500">{{ handyman.field_of_expertise }}</p>
-
-      <div class="flex flex-col gap-3 w-full mt-4">
-        <a href="#" onclick="openMessageModal()" class="w-full border-2 border-[#f4a261] text-[#f4a261] py-2 rounded-full text-center hover:bg-[#f4a261] hover:text-white transition">
+      <!-- contact section -->
+      <div class="flex justify-center gap-3 w-full mt-4">
+        <a href="#" onclick="openMessageModal()" class="w-1/3 border-2 border-[#f4a261] text-[#f4a261] py-2 rounded-full text-center hover:bg-[#f4a261] hover:text-white transition duration-300">
           <i class="fas fa-comment-alt mr-2"></i> إرسال رسالة
         </a>
-        <a href="https://wa.me/{{ handyman.user.phone_number }}" target="_blank" class="w-full border-2 border-[#25D366] text-[#25D366] py-2 rounded-full text-center hover:bg-[#25D366] hover:text-white transition">
-          <i class="fab fa-whatsapp mr-2"></i> تواصل عبر واتساب
+        
+        <a href="https://wa.me/{{ handyman.user.phone_number }}" target="_blank" class="w-1/3 border-2 border-[#25D366] text-[#25D366] py-2 rounded-full text-center hover:bg-[#25D366] hover:text-white transition duration-300">
+          <i class="fab fa-whatsapp mr-2"></i> واتساب
+        </a>
+    
+        <a href="tel:{{ handyman.user.phone_number }}" class="w-1/3 border-2 border-[#4CAF50] text-[#4CAF50] py-2 rounded-full text-center hover:bg-[#4CAF50] hover:text-white transition duration-300">
+          <i class="fas fa-phone-alt mr-2"></i> اتصل بالعامل
         </a>
       </div>
+      
 
-      <div class="text-sm text-gray-600 space-y-2 mt-4 text-start w-full">
+      <div class="text-sm text-gray-600 space-y-2 mt-4 text-center w-full">
         <p><i class="fas fa-star text-[#f4a261]"></i> التقييم العام: {{ handyman.rating }}</p>
         <p><i class="fas fa-map-marker-alt text-[#f4a261]"></i> الموقع: {{ handyman.location }}</p>
         <p><i class="fas fa-calendar-check text-[#f4a261]"></i> التوافر: {% if handyman.availability %}متاح{% else %}غير متاح{% endif %}</p>
         <p><i class="fas fa-phone-alt text-[#f4a261]"></i> رقم الهاتف: {{ handyman.user.phone_number }}</p>
       </div>
+      
     </div>
   </div>
 </div>
