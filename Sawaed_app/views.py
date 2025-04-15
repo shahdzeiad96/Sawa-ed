@@ -36,7 +36,7 @@ def base_view_data(request):
     services=ServiceListing.objects.all()
     cart_count = 0
     if request.user.is_authenticated:
-        cart_count = ServiceOrder.objects.filter(client=request.user, status='pending').count()
+        cart_count = CartItem.objects.filter(user=request.user).count()
 
 
     
