@@ -682,3 +682,8 @@ def complete_order(request, order_id):
     
     # Redirect back to the user's orders page
     return redirect('my_orders')
+
+def about_us(request):
+    return render(request, 'about_us.html')
+def contact_us(request):
+    return render(request, 'contact_us.html')

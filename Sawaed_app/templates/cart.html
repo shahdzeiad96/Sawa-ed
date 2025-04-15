@@ -1,69 +1,44 @@
 {% extends "index.html" %}
 
 {% block content %}
-<div class="p-6 max-w-3xl mx-auto">
-  <h1 class="text-3xl font-semibold text-center text-[#0d1b2a] mb-8">
-    🛒 سلة المشتريات
-  </h1>
+<div class="p-6 rounded-2xl bg-white shadow-xl max-w-7xl w-[1000px] space-y-6 animate-visible" data-animate="">
+  <h2 class="text-2xl font-bold text-[#0d1b2a] mb-4 text-right">ملخص الطلب</h2>
 
-  {% if messages %}
-    <div class="space-y-3 mb-6 max-w-2xl mx-auto">
-      {% for message in messages %}
-        <div class="flex items-center gap-3 p-4 rounded-2xl shadow-md transition-all duration-300 
-            {% if message.tags == 'success' %}bg-green-100 text-green-800 border border-green-300
-            {% elif message.tags == 'error' %}bg-red-100 text-red-800 border border-red-300
-            {% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-800 border border-yellow-300
-            {% else %}bg-blue-100 text-blue-800 border border-blue-300{% endif %}">
-          <i class="fas fa-info-circle text-xl"></i>
-          <span class="text-sm font-medium">{{ message }}</span>
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-
-  {% if cart_items %}
-    <div class="space-y-4">
-      {% for item in cart_items %}
-        <div class="flex justify-between items-center border-b pb-4 mb-4">
-          <div class="flex items-center gap-4">
-            <img src="{{ item.service.image.url }}" alt="Service Image" class="w-16 h-16 object-cover rounded-full border">
-            <div>
-              <h2 class="text-lg font-semibold text-[#0d1b2a]">{{ item.service.name }}</h2>
-              {% if item.service.description %}
-                <p class="text-sm text-gray-600">{{ item.service.description }}</p>
-              {% endif %}
-            </div>
-          </div>
+  <!-- الخدمات -->
+  <div class="space-y-5">
+    {% for item in cart_items %}
+      <div class="flex justify-between items-center py-4 border-b border-gray-300 animate-visible" data-animate="" style="animation-delay: {{ forloop.counter0 }}00ms">
+        <div class="flex items-center gap-4">
+          <img src="{{ item.service.image.url }}" alt="{{ item.service.name }}" class="w-16 h-16 rounded object-cover border">
           <div class="text-right">
-            <span class="text-[#f4a261] text-lg font-semibold">{{ item.service.price }} ₪</span>
-            <a href="{% url 'remove_from_cart' item.id %}" class="text-sm text-red-500 hover:text-red-700 mt-2 inline-block">إزالة</a>
+            <h3 class="font-semibold text-[#0d1b2a]">{{ item.service.name }}</h3>
+            <p class="text-sm text-gray-500">الكمية: 1</p>
           </div>
         </div>
-      {% endfor %}
-    </div>
-
-    <div class="mt-8 bg-gray-100 rounded-xl p-6 shadow text-center space-y-3 text-[#0d1b2a] text-lg font-medium">
-      <div>💰 <strong>سعر الخدمات:</strong> <span class="text-[#f4a261]">{{ total_price }} ₪</span></div>
-      <div>📊 <strong>عمولة الموقع (10٪):</strong> <span class="text-[#f4a261]">{{ commission }} ₪</span></div>
-      <div class="text-xl font-bold border-t pt-3">
-        ✅ المجموع الكلي:
-        <span class="text-[#f4a261]">{{ final_total }} ₪</span>
+        <span class="text-[#f4a261] font-bold text-lg">{{ item.service.price }} ₪</span>
       </div>
+    {% endfor %}
+  </div>
+
+  <!-- التسعير -->
+  <div class="space-y-4 pt-2 text-right">
+    <div class="flex justify-between text-gray-600">
+      <span>المجموع الفرعي</span>
+      <span>{{ total_price }} ₪</span>
+    </div>
+    <div class="flex justify-between text-gray-600">
+      <span>عمولة الموقع (10٪)</span>
+      <span>{{ commission }} ₪</span>
     </div>
 
-    <div class="mt-8 text-center">
-      <form method="post" action="{% url 'checkout' %}">
-        {% csrf_token %}
-        <button type="submit" class="px-6 py-3 rounded-lg bg-[#0d1b2a] text-white hover:bg-[#f4a261] hover:text-[#0d1b2a] transition duration-300 transform hover:scale-105 shadow-lg">
-          🧾 إكمال الطلب
-        </button>
-      </form>
-    </div>
 
-  {% else %}
-    <div class="text-center text-gray-500 text-xl mt-10">
-      🛒 لا توجد عناصر في السلة حالياً.
+
+    <!-- المجموع النهائي -->
+    <div class="flex justify-between pt-4 border-t border-gray-300 text-lg font-bold text-[#0d1b2a]">
+      <span>الإجمالي</span>
+      <span id="total-cost">{{ final_total }} ₪</span>
     </div>
-  {% endif %}
+  </div>
 </div>
+
 {% endblock %}

@@ -68,7 +68,7 @@
     <div class="bg-white p-6 rounded-3xl shadow-xl space-y-6 flex flex-col items-center text-center">
       <div class="relative mb-4">
         <div class="w-28 h-28 bg-gray-200 rounded-full overflow-hidden border-4 border-[#f4a261] shadow-lg">
-          <img src="{{ user.image.url }}" alt="Profile" onerror="this.onerror=null;this.src='{% static 'images/profile.png' %}'">
+          <img src="{{ handyman.user.image.url }}" alt="Profile" onerror="this.onerror=null;this.src='{% static 'images/profile.png' %}'">
         </div>
         <div class="absolute top-0 right-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-md"
              style="background-color: {% if handyman.availability %}#25D366{% else %}#dc3545{% endif %};">

@@ -11,16 +11,12 @@
     {% for notification in notifications %}
     <li class="p-4 bg-[#fdfaf6] hover:bg-[#fef3e4] transition rounded-xl border flex items-start justify-between gap-4">
       <div class="flex items-start gap-3 w-full">
-        
-        <img src="{{ notification.actor.image.url }}" alt="avatar"
-        class="w-10 h-10 rounded-full border border-[#e9c46a] shadow-sm">
-
         <div class="flex-1">
           <p class="text-sm text-gray-700 leading-relaxed mb-2">
             <i class="fas fa-info-circle text-[#e76f51] ml-1"></i>
             {{ notification.message }}
           </p>
-
+          <small class="text-gray-400 text-xs">{{ notification.created_at|timesince }} مضت</small>
           {% if user.user_type == "handyman" and notification.service_order.status == 'pending' %}
           <div class="flex gap-2 justify-end">
             <form method="post" action="{% url 'accept_order' notification.service_order.id 'confirmed' %}">

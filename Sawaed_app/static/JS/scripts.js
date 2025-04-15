@@ -65,3 +65,11 @@ star.innerHTML = "&#9734;";
 }
 });
 }
+window.addEventListener('scroll', function() {
+  const ctaContainer = document.querySelector('.cta-container');
+  if (window.scrollY > 100) {
+      ctaContainer.classList.add('animate-background');
+  } else {
+      ctaContainer.classList.remove('animate-background');
+  }
+});
