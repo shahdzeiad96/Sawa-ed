@@ -87,7 +87,7 @@
                                       </button>
                                   </form>
                                   <!-- Reject Button -->
-                                  <form method="post" action="{% url 'delete_order' notification.service_order.id 'rejected' %}">
+                                  <form method="post" action="{% url 'delete_order' notification.service_order.id   %}">
                                       {% csrf_token %}
                                       <button type="submit"
                                           class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">

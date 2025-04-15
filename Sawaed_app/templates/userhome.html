@@ -21,12 +21,12 @@
         </button>
       </form>
 
-      <!--Services-lists-->
+      <!--Services-lists-types-->
       <div>
         <h2 class="text-lg font-semibold mb-3 text-right">التصنيفات</h2>
         <div class="flex flex-wrap gap-2">
           {% for service_type in service_types %}
-            <a href="{% url 'services_by_type' service_type.0 %}" class="bg-[#e9ecef] text-[#264653] px-3 py-1 rounded-full hover:bg-[#f4a261] hover:text-white transition text-sm">
+            <a href="{% url 'services_by_type' service_type.0 %}" class="bg-[#f4a261] text-[#264653] px-3 py-1 rounded-full hover:bg-[#f4a261] hover:text-white transition text-sm">
               {{ service_type.0 }}
             </a>
           {% endfor %}
