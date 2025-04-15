@@ -462,6 +462,7 @@ def search_services(request):
         'services': services,
         'service_types': service_types,
         'query': query
+        
     })
 
 logger = logging.getLogger(__name__) 

@@ -171,7 +171,7 @@ target="_blank" rel="noopener">
 </a>
 
 <!-- Sidebar -->
-    <div id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50 border-l">
+<div id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50 border-l">
   <button onclick="closeSidebar()" class="absolute top-4 left-4 text-2xl text-gray-500 hover:text-red-500">
     &times;
   </button>
@@ -186,10 +186,34 @@ target="_blank" rel="noopener">
         </a>
       </li>
 
+      <li>
+        <a href="{% url 'userhome' %}" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
+          جميع الخدمات <i class="fas fa-th-list"></i>
+        </a>
+      </li>
+
       {% if user.is_authenticated %}
       <li>
         <a href="{% url 'edit-profile' %}" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
           الملف الشخصي <i class="fas fa-user-circle"></i>
+        </a>
+      </li>
+
+      <li>
+        <a href="#" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
+          طلباتي <i class="fas fa-clipboard-list"></i>
+        </a>
+      </li>
+
+      <li>
+        <a href="{% url 'inbox' %}" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
+          الرسائل <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+
+      <li>
+        <a href="{% url 'notifications' %}" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
+          الإشعارات <i class="fas fa-bell"></i>
         </a>
       </li>
 
@@ -221,18 +245,23 @@ target="_blank" rel="noopener">
         </a>
       </li>
       {% endif %}
-    </ul>
 
-    <hr class="my-6">
+      <hr class="my-6">
 
-    <h2 class="text-lg font-semibold mb-4 text-right text-[#0d1b2a]">التصنيفات</h2>
-    <ul class="space-y-2 text-right text-gray-700">
-      {% for service_type in service_types %}
-        <li class="hover:text-[#f4a261] cursor-pointer">{{ service_type.0 }}</li>
-      {% endfor %}
+      <li>
+        <a href="#" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
+          عن الموقع <i class="fas fa-info-circle"></i>
+        </a>
+      </li>
+      <li>
+        <a href="#" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
+          تواصل معنا <i class="fas fa-phone-alt"></i>
+        </a>
+      </li>
     </ul>
   </div>
 </div>
+
 
       
 
