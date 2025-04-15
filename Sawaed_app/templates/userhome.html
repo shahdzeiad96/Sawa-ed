@@ -1,128 +1,132 @@
 {% extends 'index.html' %}
-
 {% block content %}
 {% load static %}
 
+<div class="container mx-auto p-4">
+  <h1 class="text-3xl font-bold text-center mb-6 text-[#0d1b2a]">جميع الخدمات</h1>
 
+  <div class="flex flex-col lg:flex-row gap-6">
 
-  <div class="container mx-auto p-4">
-    <h1 class="text-3xl font-bold text-center mb-6 text-[#0d1b2a]">جميع الخدمات</h1>
-    
-    <div class="flex justify-between mb-4">
-      <div class="w-full sm:w-1/4 md:w-1/5 lg:w-1/6 px-2">
-        <!--Search-bar-->
-<form method="GET" action="{% url 'service_search' %}" class="mb-4">
-  <input 
-    type="text" 
-    name="q" 
-    placeholder="ابحث عن خدمات" 
-    class="p-2 border border-gray-300 rounded w-full"
-    value="{{ request.GET.q }}">
-</form>
+    <div class="lg:w-1/4 space-y-6" dir="rtl">
+      <!-- Search-bar-->
+      <form method="GET" action="{% url 'service_search' %}" class="relative">
+        <input 
+          type="text" 
+          name="q" 
+          placeholder="🔍 ابحث عن خدمات" 
+          class="p-2 pr-10 border border-gray-300 rounded w-full focus:outline-none focus:ring-2 focus:ring-[#f4a261]"
+          value="{{ request.GET.q }}">
+        <button type="submit" class="absolute right-2 top-2 text-[#f4a261]">
+          <i data-lucide="search" class="w-5 h-5"></i>
+        </button>
+      </form>
 
-        <!-- will get types from data base  -->
-        <ul>
-          <h2 class="text-lg font-semibold mb-4 text-right">التصنيفات</h2>
+      <!--Services-lists-types-->
+      <div>
+        <h2 class="text-lg font-semibold mb-3 text-right">التصنيفات</h2>
+        <div class="flex flex-wrap gap-2">
           {% for service_type in service_types %}
-          <li class="hover:text-[#f4a261] cursor-pointer">
-            <a href="{% url 'services_by_type' service_type.0 %}">
-                {{ service_type.0 }}
+            <a href="{% url 'services_by_type' service_type.0 %}" class="bg-[#e9ecef] text-[#264653] px-3 py-1 rounded-full hover:bg-[#f4a261] hover:text-white transition text-sm">
+              {{ service_type.0 }}
             </a>
-        </li>        
-          {% endfor %}
-        </ul>
-        </ul>
-      </div>
-
-      <!-- all services -->
-
-      <div class="w-full sm:w-3/4 md:w-4/5 lg:w-5/6 mx-auto" dir="rtl">
-
-        {% if user.user_type == 'handyman' %}
-          <div class="flex justify-between mb-4">
-            <a href="{% url 'add_service' %}" class="bg-[#f4a261] text-white px-4 py-2 rounded hover:bg-[#e76f51] transition">إضافة خدمة جديدة</a>
-          </div>
-        {% endif %}
-      
-        {% if service_added %}
-          <div class="bg-green-200 text-green-800 p-4 rounded-md shadow mb-4 text-center">
-            ✅ تمت إضافة الخدمة بنجاح!
-          </div>
-        {% endif %}
-      
-        {% if user_logged %}
-          <div class="bg-green-200 text-green-800 p-4 rounded-md shadow mb-4 text-center">
-            ✅ تم تسجيل دخولك بنجاح, أهلاً وسهلاً
-          </div>
-        {% endif %}
-      
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {% for service in services %}
-            <div id="service-{{ service.id }}" class="relative group">
-              <div 
-                onclick="window.location.href='{% url 'service_detail' service.id service.handyman.id %}'"
-                class="cursor-pointer block bg-white border border-gray-200 rounded-2xl shadow hover:shadow-lg transition duration-200 overflow-hidden"
-              >
-                {% if service.image %}
-                  <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-full h-48 object-cover">
-                {% else %}
-                  <img src="{% static 'images/placeholder.png' %}" alt="صورة افتراضية" class="w-full h-48 object-cover">
-                {% endif %}
-        
-                <div class="p-4 space-y-2 pb-12 relative">  <!-- Add bottom padding to make room for the button -->
-                  <h3 class="text-xl font-semibold text-[#0d1b2a] truncate">{{ service.name }}</h3>
-                  <p class="text-gray-600 text-sm">{{ service.description|truncatechars:100 }}</p>
-                  <p class="text-[#f4a261] font-bold text-lg">السعر: {{ service.price }} شيكل</p>
-                  <span class="inline-block mt-2 text-sm text-[#264653] hover:text-[#f4a261] transition">عرض التفاصيل &rarr;</span>
-                </div>
-              </div>
-        
-              {% if user == service.handyman %}
-              <!-- Delete Button Bottom-Left -->
-              <button 
-                data-service-id="{{ service.id }}"
-                class="delete-btn absolute bottom-2 left-2 bg-red-500 text-white py-1 px-3 border border-red-600 rounded hover:bg-red-600 hover:text-white transition z-10"
-                onclick="event.stopPropagation();"
-              >
-                حذف الخدمة
-              </button>
-              {% endif %}
-            </div>
           {% endfor %}
         </div>
-        
-      <script>
-        document.addEventListener("DOMContentLoaded", function () {
-          document.querySelectorAll(".delete-btn").forEach(button => {
-            button.addEventListener("click", function () {
-              const serviceId = this.getAttribute("data-service-id");
-              const serviceCard = document.getElementById(`service-${serviceId}`);
-        
-              if (confirm("هل أنت متأكد من حذف هذه الخدمة؟")) {
-                fetch("{% url 'delete_service_ajax' %}", {
-                  method: "POST",
-                  headers: {
-                    "X-CSRFToken": "{{ csrf_token }}",
-                    "Content-Type": "application/x-www-form-urlencoded"
-                  },
-                  body: `service_id=${serviceId}`
-                })
-                .then(response => response.json())
-                .then(data => {
-                  if (data.success) {
-                    serviceCard.style.transition = "opacity 0.5s ease-out";
-                    serviceCard.style.opacity = 0;
-                    setTimeout(() => {
-                      serviceCard.remove();
-                    }, 500);
-                  } else {
-                    alert("فشل في حذف الخدمة.");
-                  }
-                });
-              }
-            });
+      </div>
+    </div>
+
+    <div class="lg:w-3/4 space-y-6" dir="rtl">
+
+      {% if user.user_type == 'handyman' %}
+        <div class="text-left">
+          <a href="{% url 'add_service' %}" class="inline-block border-2 border-[#f4a261] text-[#f4a261] px-5 py-2 rounded-full font-medium hover:bg-[#f4a261] hover:text-white transition duration-300">
+            ➕ إضافة خدمة جديدة
+          </a>
+                  </div>
+      {% endif %}
+
+      {% if service_added %}
+        <div class="flex items-center bg-green-100 text-green-800 p-4 rounded-md shadow text-sm gap-2">
+          <i data-lucide="check-circle" class="w-5 h-5"></i>
+          <span>✅ تمت إضافة الخدمة بنجاح!</span>
+        </div>
+      {% endif %}
+
+      {% if user_logged %}
+        <div class="flex items-center bg-green-100 text-green-800 p-4 rounded-md shadow text-sm gap-2">
+          <i data-lucide="smile" class="w-5 h-5"></i>
+          <span>✅ تم تسجيل دخولك بنجاح, أهلاً وسهلاً</span>
+        </div>
+      {% endif %}
+
+      <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4">
+        {% for service in services %}
+          <div id="service-{{ service.id }}" class="relative service-card">
+            <div 
+              onclick="window.location.href='{% url 'service_detail' service.id service.handyman.id %}'"
+              class="cursor-pointer bg-white rounded-3xl shadow-lg hover:shadow-2xl transition duration-300 border border-gray-200 overflow-hidden"
+            >
+              <img src="{{ service.image.url|default_if_none:'/static/images/placeholder.png' }}" alt="{{ service.name }}" class="w-full h-48 object-cover">
+
+              <div class="p-4">
+                <h3 class="text-lg font-bold text-[#0d1b2a] truncate">{{ service.name }}</h3>
+                <p class="text-gray-600 text-sm mb-3">{{ service.description|truncatechars:80 }}</p>
+              </div>
+
+              <div class="absolute bottom-0 w-full flex justify-between items-center px-4 py-2 bg-white border-t">
+                <span class="text-[#f4a261] font-semibold">{{ service.price }} شيكل</span>
+                <span class="text-[#264653] hover:text-[#f4a261] text-sm font-medium">عرض التفاصيل</span>
+              </div>
+            </div>
+
+            {% if user == service.handyman %}
+              <button 
+                data-service-id="{{ service.id }}"
+                class="delete-btn absolute top-2 left-2 bg-red-500 text-white text-xs px-3 py-1 rounded-full hover:bg-red-600 transition z-10"
+                onclick="event.stopPropagation();"
+              >
+                حذف
+              </button>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- delete the service using AJAX -->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll(".delete-btn").forEach(button => {
+      button.addEventListener("click", function () {
+        const serviceId = this.getAttribute("data-service-id");
+        const serviceCard = document.getElementById(`service-${serviceId}`);
+
+        if (confirm("هل أنت متأكد من حذف هذه الخدمة؟")) {
+          fetch("{% url 'delete_service_ajax' %}", {
+            method: "POST",
+            headers: {
+              "X-CSRFToken": "{{ csrf_token }}",
+              "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: `service_id=${serviceId}`
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              serviceCard.style.transition = "opacity 0.5s ease-out";
+              serviceCard.style.opacity = 0;
+              setTimeout(() => {
+                serviceCard.remove();
+              }, 500);
+            } else {
+              alert("فشل في حذف الخدمة.");
+            }
           });
-        });
-        </script>
-        
+        }
+      });
+    });
+  });
+</script>
+
 {% endblock %}
