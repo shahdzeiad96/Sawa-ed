@@ -71,40 +71,46 @@
                       الإشعارات
                   </div>
                   <ul class="overflow-y-auto max-h-64">
-                      {% for notification in notifications %}
-                      <li class="p-3 border-b hover:bg-[#fdf6ec]">
-                          {% if user.user_type == "handyman" %}
-                          <!-- Handyman Notifications -->
-                          <div class="flex flex-col space-y-2">
-                              <p class="text-sm">{{ notification.message }}</p>
-                              <div class="flex justify-end space-x-2">
-                                  <!-- Accept Button -->
-                                  <form method="post" action="{% url 'update_order_status' notification.service_order.id 'confirmed' %}">
-                                      {% csrf_token %}
-                                      <button type="submit"
-                                          class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition">
-                                          قبول
-                                      </button>
-                                  </form>
-                                  <!-- Reject Button -->
-                                  <form method="post" action="{% url 'delete_order' notification.service_order.id   %}">
-                                      {% csrf_token %}
-                                      <button type="submit"
-                                          class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">
-                                          رفض
-                                      </button>
-                                  </form>
-                              </div>
-                          </div>
-                          {% elif user.user_type == "client" %}
-                          <!-- Client Notifications -->
-                          <p class="text-sm">{{ notification.message }}</p>
-                          {% endif %}
-                      </li>
-                      {% empty %}
-                      <li class="p-3 text-gray-500 text-center">لا توجد إشعارات جديدة.</li>
-                      {% endfor %}
+                    {% for notification in notifications %}
+                    <li class="p-3 border-b hover:bg-[#fdf6ec]">
+                      {% if user.user_type == "handyman" %}
+                      <!-- Handyman Notifications -->
+                      <div class="flex flex-col space-y-2">
+                        <p class="text-sm">{{ notification.message }}</p>
+                  
+                        {% if notification.service_order.status == 'pending' %}
+                        <div class="flex justify-end space-x-2">
+                          <!-- Accept Button -->
+                          <form method="post" action="{% url 'accept_order' notification.service_order.id  %}">
+                            {% csrf_token %}
+                            <button type="submit"
+                              class="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition">
+                              قبول
+                            </button>
+                          </form>
+                  
+                          <!-- Reject Button -->
+                          <form method="post" action="{% url 'reject_order' notification.service_order.id %}">
+                            {% csrf_token %}
+                            <button type="submit"
+                              class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition">
+                              رفض
+                            </button>
+                          </form>
+                        </div>
+                        {% endif %}
+                  
+                      </div>
+                      {% elif user.user_type == "client" %}
+                      <!-- Client Notifications -->
+                      <p class="text-sm">{{ notification.message }}</p>
+                      {% endif %}
+                    </li>
+                    {% empty %}
+                    <li class="p-3 text-gray-500 text-center">لا توجد إشعارات جديدة.</li>
+                    {% endfor %}
                   </ul>
+                  
                   <div class="text-center p-2">
                       <a href="{% url 'notifications' %}" class="text-sm text-[#f4a261] hover:text-[#e76f51]">
                           عرض جميع الإشعارات

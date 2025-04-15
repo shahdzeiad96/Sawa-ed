@@ -517,39 +517,53 @@ def delete_service_ajax(request):
         return JsonResponse({'success': False, 'error': 'Service not found or unauthorized.'})
     
 
-def update_order_status(request, order_id, new_status):
-    order = get_object_or_404(ServiceOrder, id=order_id, status='pending')
-    if order.handyman != request.user:
-        messages.error(request,"ليس لديك صلاحية رفض أو قبول هذا الطلب")
-        return redirect('userhome')
-    order.status=new_status
-    order.save()
-
-    Notifications.objects.create(
-        recipient=order.client,
-        actor = request.user,
-        verb = new_status,
-        service_order=order,
-        message = f"تم طلب الخدمة من قبل {request.user.username}"
-    )
-    messages.success(request,"تم تغيير حالة الطلب إلى {new_status}")
-    return redirect('userhome')
-
-def delete_order(request, order_id):
+def reject_order(request, order_id):
     order= get_object_or_404(ServiceOrder, id=order_id, status='pending')
     if order.handyman != request.user:
         messages.error(request,"ليس لديك صلاحية رفض أو قبول هذا الطلب")
         return redirect('userhome')
+    # delete the older notification
+    Notifications.objects.filter(service_order=order).delete()
+
+    # creat a new notification of status of order
     Notifications.objects.create(
         recipient=order.client,
-        actor = request.user,
-        verb = 'rejected',
+        actor=request.user,
+        verb='رفض الطلب',
         service_order=order,
-        message = f"تم رفض طلب الخدمة من طرف {request.user.username}"
+        message=f"عذرًا، تم رفض طلبك من قبل {request.user.username}"
     )
-    order.delete()
-    messages.success(request, "تم حذف الطلب")
+
+    # change status of the order
+    order.status = 'rejected'
+    order.save()
+
+    messages.success(request, "تم رفض الطلب بنجاح")
     return redirect('userhome')
+
+def accept_order(request, order_id):
+    order = get_object_or_404(ServiceOrder, id=order_id, status='pending')
+
+    if order.handyman != request.user:
+        messages.error(request, "ليس لديك صلاحية قبول هذا الطلب")
+        return redirect('userhome')
+    #delete the old notification    
+    Notifications.objects.filter(service_order=order).delete()
+    #create a new one for acceptance
+    Notifications.objects.create(
+        recipient=order.client,
+        actor=request.user,
+        verb='قبول الطلب',
+        service_order=order,
+        message=f"تم قبول طلبك من قبل {request.user.username}"
+    )
+    #change the status
+    order.status = 'accepted'
+    order.save()
+
+    messages.success(request, "تم قبول الطلب بنجاح")
+    return redirect('userhome')
+
 @login_required
 def notifications_view(request):
     notifications = Notifications.objects.filter(recipient=request.user, is_read=False).order_by('-created_at')

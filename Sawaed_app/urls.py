@@ -27,17 +27,15 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('services/type/<str:service_type>/', views.services_by_type, name='services_by_type'),
     path('delete-service/', views.delete_service_ajax, name='delete_service_ajax'),
-    path('order/<int:order_id>/update/<str:new_status>/', views.update_order_status, name='update_order_status'),
-    path('order/<int:order_id>/delete/', views.delete_order, name='delete_order'),
     path('notifications/', views.notifications_view, name='notifications'),
     path('password-reset/', views.password_reset_request, name='password_reset_request'),
     path('password-reset/<uidb64>/<token>/', views.password_reset_confirm, name='password_reset_confirm'),
     path('change-password/', views.password_change, name='password_change'),
     path('order/<int:order_id>/delete/', views.delete_order, name='delete_order'),
-    #new
     path('my-orders/', views.my_orders, name='my_orders'),
     path('complete-order/<int:order_id>/', views.complete_order, name='complete_order'),
-    
+    path('orders/<int:order_id>/reject/', views.reject_order, name='reject_order'),
+    path('orders/<int:order_id>/accept/', views.accept_order, name='accept_order'),
 
 
 
@@ -51,7 +49,6 @@ urlpatterns = [
 
 
 
-
-
-
-]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+]
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
