@@ -656,3 +656,29 @@ def password_change(request):
         return redirect('login')
 
     return render(request, 'change_password.html')
+
+
+#the orders display views 
+@login_required
+def my_orders(request):
+    orders = ServiceOrder.objects.filter(client=request.user)
+    return render(request, 'my_orders.html', {'orders': orders})
+
+def complete_order(request, order_id):
+    # Get the order by its ID
+    order = ServiceOrder.objects.get(id=order_id)
+    
+    # Check if the order already has the status 'Completed'
+    if order.status == 'Completed':
+        messages.info(request, "الطلب تم إنجازه بالفعل.")
+        return redirect('my_orders')  # Redirect to the user's orders page
+
+    # Mark the order as 'Completed'
+    order.status = 'Completed'
+    order.save()
+
+    # Add a success message to inform the user
+    messages.success(request, "تم إنهاء الطلب بنجاح.")
+    
+    # Redirect back to the user's orders page
+    return redirect('my_orders')
