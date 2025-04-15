@@ -164,17 +164,30 @@
     <!-- chatbotlink -->
 <!-- Floating Chatbot Button (Mamdouh) -->
 <a href="{% url 'chat-ui' %}"
-class="fixed bottom-6 left-6 transform translate-x-1/2 z-50 flex flex-col items-center space-y-1 text-sm font-semibold text-[#0d1b2a] hover:scale-105 transition-transform"
-target="_blank" rel="noopener">
+   class="fixed bottom-6 left-6 z-50 flex flex-col items-center space-y-2 group"
+   target="_blank" rel="noopener">
 
-<span class="bg-white px-2 py-1 rounded-full shadow text-center">اسأل ممدوح</span>
+   <a href="{% url 'chat-ui' %}"
+   class="fixed bottom-6 left-6 z-50 flex flex-col items-center space-y-2 group"
+   target="_blank" rel="noopener">
 
-<div class="w-16 h-16 rounded-full shadow-lg border-4 border-white overflow-hidden">
- <img src="{% static 'images/mamdouh.jpg' %}" 
-      alt="Chatbot Icon" 
-      class="w-full h-full object-cover">
-</div>
+   <span class="bg-[#0d1b2a] text-white px-3 py-1 text-sm font-semibold rounded-full shadow-lg">
+    اسأل ممدوح
+  </span>
+  <!-- Pulsing Avatar Container -->
+  <div class="relative w-16 h-16">
+    <!-- Pulse Ring -->
+    <span class="absolute inset-0 rounded-full border-4 border-[#0d1b2a] animate-ping opacity-50"></span>
+
+    <!-- Avatar -->
+    <div class="w-full h-full rounded-full border-4 border-[#0d1b2a] shadow-xl overflow-hidden relative z-10">
+      <img src="{% static 'images/mamdouh.jpg' %}" 
+           alt="Chatbot Icon" 
+           class="w-full h-full object-cover" />
+    </div>
+  </div>
 </a>
+
 
 <!-- Sidebar -->
 <div id="sidebar" class="fixed top-0 right-0 h-full w-64 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50 border-l">
@@ -255,12 +268,12 @@ target="_blank" rel="noopener">
       <hr class="my-6">
 
       <li>
-        <a href="#" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
+        <a href="{%url 'about_us'%}" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
           عن الموقع <i class="fas fa-info-circle"></i>
         </a>
       </li>
       <li>
-        <a href="#" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
+        <a href="{%url 'contact_us'%}" class="flex items-center justify-end gap-2 hover:text-[#f4a261]">
           تواصل معنا <i class="fas fa-phone-alt"></i>
         </a>
       </li>
