@@ -102,7 +102,7 @@ DATABASES = {
         'NAME': config('DB_NAME'),
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
-        'HOST': '127.0.0.1',
+        'HOST': 'database-1.c9iyu84gct9x.eu-north-1.rds.amazonaws.com',
         'PORT': '3306',
     }
 }
