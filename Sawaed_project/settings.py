@@ -99,9 +99,9 @@ GEMINI_API_KEY = 'AIzaSyAiPKdEW0oBGNYEDqovSpNYDpqGMMDf5_c'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
+        'NAME': 'sawaed_db',
+        'USER': 'admin',
+        'PASSWORD': '1q2w3e4r!Sha',
         'HOST': 'database-1.c9iyu84gct9x.eu-north-1.rds.amazonaws.com',
         'PORT': '3306',
     }
