@@ -161,27 +161,27 @@
     <!-- chatbotlink -->
 <!-- Floating Chatbot Button (Mamdouh) -->
 <a href="{% url 'chat-ui' %}"
-   class="fixed bottom-6 left-6 z-50 flex flex-col items-center space-y-2 group"
-   target="_blank" rel="noopener">
+  class="fixed bottom-6 left-6 z-50 flex flex-col items-center space-y-2 group"
+  target="_blank" rel="noopener">
 
-   <a href="{% url 'chat-ui' %}"
-   class="fixed bottom-6 left-6 z-50 flex flex-col items-center space-y-2 group"
-   target="_blank" rel="noopener">
-
-   <span class="bg-[#0d1b2a] text-white px-3 py-1 text-sm font-semibold rounded-full shadow-lg">
+  <span class="bg-[#0d1b2a] text-white px-3 py-1 text-sm font-semibold rounded-full shadow-lg 
+              group-hover:shadow-[0_0_15px_4px_#0d1b2a] transition-shadow duration-300">
     اسأل ممدوح
   </span>
-  <!-- Pulsing Avatar Container -->
-  <div class="relative w-16 h-16">
-    <!-- Pulse Ring -->
+
+  <!-- Avatar Container -->
+  <div class="relative w-16 h-16 group-hover:shadow-[0_0_25px_6px_#0d1b2a] transition-shadow duration-300 rounded-full">
+    
+    <!--  Ring -->
     <span class="absolute inset-0 rounded-full border-4 border-[#0d1b2a] animate-ping opacity-50"></span>
 
     <!-- Avatar -->
     <div class="w-full h-full rounded-full border-4 border-[#0d1b2a] shadow-xl overflow-hidden relative z-10">
       <img src="{% static 'images/mamdouh.jpg' %}" 
-           alt="Chatbot Icon" 
-           class="w-full h-full object-cover" />
+          alt="Chatbot Icon" 
+          class="w-full h-full object-cover" />
     </div>
+
   </div>
 </a>
 
@@ -279,8 +279,6 @@
 </div>
 
 
-      
-
       <!-- Main content block -->
       <main class="flex flex-col items-center justify-center p-8">
           {% block content %}
@@ -295,7 +293,7 @@
               <p>&copy; 2025 Sawa-ed. All rights reserved.</p>
           </div>
           <div class="flex items-center gap-4">
-              <a href="https://www.facebook.com" target="_blank" class="text-[#f4a261] hover:text-[#e76f51]">
+              <a href="https://www.facebook.com/profile.php?id=61575222783260" target="_blank" class="text-[#f4a261] hover:text-[#e76f51]">
                   <i class="fab fa-facebook"></i>
               </a>
               <a href="https://www.twitter.com" target="_blank" class="text-[#f4a261] hover:text-[#e76f51]">

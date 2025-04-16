@@ -94,6 +94,18 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+#to connect to mysql DB uncomment from line 98 to 107 remebmer to comment/remove linrs from 91 to 96(the sqlite DB )
+#remember to add the password 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME':'dell', 
+#         'USER':'root',  
+#         'PASSWORD':'',
+#         'HOST':'127.0.0.1',
+#         'PORT':'3306'
+#     }
+# }
 
 #for the images
 MEDIA_URL = '/media/'

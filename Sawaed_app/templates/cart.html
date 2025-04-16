@@ -41,5 +41,14 @@
       <span id="total-cost">{{ final_total }} ₪</span>
     </div>
   </div>
+  
+  <div class="mt-8 text-center">
+    <form method="post" action="{% url 'checkout' %}">
+      {% csrf_token %}
+      <button type="submit" class="px-6 py-3 rounded-lg bg-[#0d1b2a] text-white hover:bg-[#f4a261] hover:text-[#0d1b2a] transition duration-300 transform hover:scale-105 shadow-lg">
+        🧾 إكمال الطلب
+      </button>
+    </form>
+  </div>
 </div>
 {% endblock %}
