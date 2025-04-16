@@ -11,12 +11,40 @@
 
       <!-- Service Image -->
     <div class="bg-white shadow-xl rounded-3xl overflow-hidden">
-        {% if service.image %}
-      <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-full h-80 object-cover">
-      {% else %}
-      <img src="{% static 'images/placeholder.png' %}" alt="صورة افتراضية" class="w-full h-80 object-cover">
-      {% endif %}
+      {% if service.image %}
+      <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-full h-48 object-cover">
+  {% else %}
+      <img src="{% static 'images/placeholderservice.png' %}" alt="{{ service.name }}" class="w-full h-48 object-contain">
+  {% endif %}
     </div>
+    {% block messages %}
+    {% if messages %}
+      <div class="w-full max-w-2xl space-y-3 mb-6 animate-fade-in-down">
+        {% for message in messages %}
+          <div class="flex items-center gap-3 p-4 rounded-2xl shadow transition-all duration-300
+              {% if message.tags == 'success' %}bg-green-100 text-green-800 border border-green-300
+              {% elif message.tags == 'error' %}bg-red-100 text-red-800 border border-red-300
+              {% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-800 border border-yellow-300
+              {% else %}bg-blue-100 text-blue-800 border border-blue-300{% endif %}">
+            
+            <!-- Icon -->
+            {% if message.tags == 'success' %}
+              <i class="fas fa-check-circle text-xl"></i>
+            {% elif message.tags == 'error' %}
+              <i class="fas fa-times-circle text-xl"></i>
+            {% elif message.tags == 'warning' %}
+              <i class="fas fa-exclamation-triangle text-xl"></i>
+            {% else %}
+              <i class="fas fa-info-circle text-xl"></i>
+            {% endif %}
+            
+            <!-- Message Text -->
+            <span class="text-sm font-medium">{{ message }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endblock %}
 
 
       <!-- Service Description -->
@@ -116,7 +144,7 @@
     </h2>
     <form method="POST" action="{% url 'send-message' recipient.id service.id %}">
       {% csrf_token %}
-      <textarea name="content" rows="4" required class="w-full border border-[#f4a261] rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#f4a261]" placeholder="اكتب رسالتك هنا..."></textarea>
+      <textarea name="content" rows="4" class="w-full border border-[#f4a261] rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#f4a261]" placeholder="اكتب رسالتك هنا..."></textarea>
       <button type="submit" class="w-full bg-[#f4a261] hover:bg-[#e07b3b] text-white font-semibold py-2 rounded-xl transition duration-200 mt-4">إرسال</button>
     </form>
   </div>
@@ -136,8 +164,8 @@
           <span class="cursor-pointer star" data-value="{{ forloop.counter }}" id="star-{{ forloop.counter }}">&#9734;</span>
         {% endfor %}
       </div>
-      <input type="hidden" name="rating" id="rating-input" required>
-      <textarea name="comment" class="w-full p-3 border rounded mb-4" placeholder="اكتب تعليقك عن الخدمة..." required></textarea>
+      <input type="hidden" name="rating" id="rating-input" >
+      <textarea name="comment" class="w-full p-3 border rounded mb-4" placeholder="اكتب تعليقك عن الخدمة..." ></textarea>
       <button type="submit" class="w-full bg-[#f4a261] hover:bg-[#f7c6a3] text-white font-semibold py-2 rounded transition duration-300">إرسال التقييم</button>
     </form>
   </div>

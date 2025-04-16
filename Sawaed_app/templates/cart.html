@@ -1,5 +1,5 @@
 {% extends "index.html" %}
-
+{%load static%}
 {% block content %}
 <!-- تأكدي من إضافة Font Awesome في base.html -->
 <div class="p-6 rounded-2xl bg-white shadow-xl max-w-7xl w-[1000px] space-y-6 animate-visible" data-animate="">
@@ -9,7 +9,11 @@
     {% for item in cart_items %}
       <div class="flex justify-between items-center py-4 border-b border-gray-300 animate-visible" data-animate="" style="animation-delay: {{ forloop.counter0 }}00ms">
         <div class="flex items-center gap-4">
+          {% if service.image %}
           <img src="{{ item.service.image.url }}" alt="{{ item.service.name }}" class="w-16 h-16 rounded object-cover border">
+              {% else %}
+            <img src="{% static 'images/placeholderservice.png' %}" alt="{{ item.service.name }}" class="w-16 h-16 rounded object-cover border">
+          {% endif %}
           <div class="text-right">
             <h3 class="font-semibold text-[#0d1b2a]">{{ item.service.name }}</h3>
             <p class="text-sm text-gray-500">الكمية: 1</p>
@@ -41,7 +45,34 @@
       <span id="total-cost">{{ final_total }} ₪</span>
     </div>
   </div>
-  
+  {% block messages %}
+  {% if messages %}
+    <div class="w-full max-w-2xl space-y-3 mb-6 animate-fade-in-down">
+      {% for message in messages %}
+        <div class="flex items-center gap-3 p-4 rounded-2xl shadow transition-all duration-300
+            {% if message.tags == 'success' %}bg-green-100 text-green-800 border border-green-300
+            {% elif message.tags == 'error' %}bg-red-100 text-red-800 border border-red-300
+            {% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-800 border border-yellow-300
+            {% else %}bg-blue-100 text-blue-800 border border-blue-300{% endif %}">
+          
+          <!-- Icon -->
+          {% if message.tags == 'success' %}
+            <i class="fas fa-check-circle text-xl"></i>
+          {% elif message.tags == 'error' %}
+            <i class="fas fa-times-circle text-xl"></i>
+          {% elif message.tags == 'warning' %}
+            <i class="fas fa-exclamation-triangle text-xl"></i>
+          {% else %}
+            <i class="fas fa-info-circle text-xl"></i>
+          {% endif %}
+          
+          <!-- Message Text -->
+          <span class="text-sm font-medium">{{ message }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endblock %}
   <div class="mt-8 text-center">
     <form method="post" action="{% url 'checkout' %}">
       {% csrf_token %}

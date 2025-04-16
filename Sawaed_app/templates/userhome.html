@@ -65,8 +65,11 @@
               onclick="window.location.href='{% url 'service_detail' service.id service.handyman.id %}'"
               class="cursor-pointer bg-white rounded-3xl shadow-lg hover:shadow-2xl transition duration-300 border border-gray-200 overflow-hidden"
             >
-              <img src="{{ service.image.url|default_if_none:'/static/images/placeholder.png' }}" alt="{{ service.name }}" class="w-full h-48 object-cover">
-
+            {% if service.image %}
+            <img src="{{ service.image.url }}" alt="{{ service.name }}" class="w-full h-48 object-cover">
+              {% else %}
+            <img src="{% static 'images/placeholderservice.png' %}" alt="{{ service.name }}" class="w-full h-48 object-cover">
+            {% endif %}
               <div class="p-4">
                 <h3 class="text-lg font-bold text-[#0d1b2a] truncate">{{ service.name }}</h3>
                 <p class="text-gray-600 text-sm mb-3">{{ service.description|truncatechars:80 }}</p>

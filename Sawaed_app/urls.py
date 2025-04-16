@@ -3,7 +3,8 @@ from . import views
 from django.conf import settings
 from django.conf.urls.static import static
 urlpatterns = [
-    path('', views.user_home, name='userhome'),
+    path('',views.guest_home,name='guesthome'),
+    path('userhome/', views.user_home, name='userhome'),
     path('register/', views.register, name='register'),
     path('login/', views.login, name='login'),
     path('cart/', views.cart_view, name='cart'),
