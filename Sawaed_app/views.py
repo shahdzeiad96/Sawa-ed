@@ -664,24 +664,23 @@ def my_orders(request):
     orders = ServiceOrder.objects.filter(client=request.user)
     return render(request, 'my_orders.html', {'orders': orders})
 
+
+@require_POST
+@login_required
 def complete_order(request, order_id):
-    # Get the order by its ID
-    order = ServiceOrder.objects.get(id=order_id)
-    
-    # Check if the order already has the status 'Completed'
-    if order.status == 'Completed':
-        messages.info(request, "الطلب تم إنجازه بالفعل.")
-        return redirect('my_orders')  # Redirect to the user's orders page
+    try:
+        order = ServiceOrder.objects.get(id=order_id, client=request.user)
 
-    # Mark the order as 'Completed'
-    order.status = 'Completed'
-    order.save()
+        if order.status == 'Completed':
+            return JsonResponse({'status': 'already_completed'}, status=200)
 
-    # Add a success message to inform the user
-    messages.success(request, "تم إنهاء الطلب بنجاح.")
-    
-    # Redirect back to the user's orders page
-    return redirect('my_orders')
+        order.status = 'Completed'
+        order.save()
+
+        return JsonResponse({'status': 'success'}, status=200)
+
+    except ServiceOrder.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Order not found.'}, status=404)
 
 def about_us(request):
     return render(request, 'about_us.html')

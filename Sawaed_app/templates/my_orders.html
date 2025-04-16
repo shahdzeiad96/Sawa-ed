@@ -9,10 +9,10 @@
             {% for order in orders %}
         <div class="bg-white shadow-lg rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border border-gray-100">
     
-                    <!-- orders Info -->
+                    <!-- orders info -->
             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full">
 
-                        <!--  icon or img for the service -->
+                        <!--  icon/img for the service -->
                 <div class="bg-[#f4a261]/10 text-[#f4a261] rounded-full p-4">
                     <i class="fas fa-tools fa-lg"></i>
                 </div>
@@ -33,7 +33,7 @@
                     </p>
                 </div>
         </div>
-    <!-- Btn Section -->
+    <!-- Btns Section -->
         <div class="flex gap-3 w-full sm:w-1/2 justify-end mt-4 sm:mt-0">
             {% if order.status != 'Completed' %}
             <a href="{% url 'complete_order' order.id %}" 
