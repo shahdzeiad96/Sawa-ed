@@ -19,7 +19,7 @@
           <small class="text-gray-400 text-xs">{{ notification.created_at|timesince }} مضت</small>
           {% if user.user_type == "handyman" and notification.service_order.status == 'pending' %}
           <div class="flex gap-2 justify-end">
-            <form method="post" action="{% url 'accept_order' notification.service_order.id 'confirmed' %}">
+            <form method="post" action="{% url 'accept_order' notification.service_order.id  %}">
               {% csrf_token %}
               <button type="submit"
                 class="bg-green-500 text-white px-4 py-1.5 text-sm rounded-full hover:bg-green-600 transition">

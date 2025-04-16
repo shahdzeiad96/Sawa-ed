@@ -566,10 +566,11 @@ def accept_order(request, order_id):
 
 @login_required
 def notifications_view(request):
-    notifications = Notifications.objects.filter(recipient=request.user, is_read=False).order_by('-created_at')
+    notifications = Notifications.objects.filter(recipient=request.user).order_by('-created_at')
     context= {
         'notifications': notifications
         }
+    Notifications.objects.filter(recipient=request.user, is_read=False).update(is_read=True)
     
     return render(request, 'notifications.html',context)
 
