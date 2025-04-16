@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from decouple import config
 import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -88,24 +89,24 @@ GEMINI_API_KEY = 'AIzaSyAiPKdEW0oBGNYEDqovSpNYDpqGMMDf5_c'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-#to connect to mysql DB uncomment from line 98 to 107 remebmer to comment/remove linrs from 91 to 96(the sqlite DB )
-#remember to add the password 
 # DATABASES = {
 #     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME':'dell', 
-#         'USER':'root',  
-#         'PASSWORD':'',
-#         'HOST':'127.0.0.1',
-#         'PORT':'3306'
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+#to connect to mysql DB uncomment from line 98 to 107 remebmer to comment/remove linrs from 91 to 96(the sqlite DB )
+#remember to add the password 
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST':'127.0.0.1',
+        'PORT':'3306'
+    }
+}
 
 #for the images
 MEDIA_URL = '/media/'
