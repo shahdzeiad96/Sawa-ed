@@ -9,7 +9,36 @@
 <div class="max-w-6xl mx-auto mt-8 bg-white p-10 rounded-3xl shadow-lg border border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-8">
 
     <!-- Left Side: Service Form -->
+     
     <div>
+        {% block messages %}
+        {% if messages %}
+          <div class="w-full max-w-2xl space-y-3 mb-6 animate-fade-in-down">
+            {% for message in messages %}
+              <div class="flex items-center gap-3 p-4 rounded-2xl shadow transition-all duration-300
+                  {% if message.tags == 'success' %}bg-green-100 text-green-800 border border-green-300
+                  {% elif message.tags == 'error' %}bg-red-100 text-red-800 border border-red-300
+                  {% elif message.tags == 'warning' %}bg-yellow-100 text-yellow-800 border border-yellow-300
+                  {% else %}bg-blue-100 text-blue-800 border border-blue-300{% endif %}">
+                
+                <!-- Icon -->
+                {% if message.tags == 'success' %}
+                  <i class="fas fa-check-circle text-xl"></i>
+                {% elif message.tags == 'error' %}
+                  <i class="fas fa-times-circle text-xl"></i>
+                {% elif message.tags == 'warning' %}
+                  <i class="fas fa-exclamation-triangle text-xl"></i>
+                {% else %}
+                  <i class="fas fa-info-circle text-xl"></i>
+                {% endif %}
+                
+                <!-- Message Text -->
+                <span class="text-sm font-medium">{{ message }}</span>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endblock %}
         <h1 class="text-3xl font-bold text-[#0d1b2a] mb-8">إضافة خدمة جديدة</h1>
 
         <form method="POST" enctype="multipart/form-data" action="{% url 'add_service' %}">
@@ -17,12 +46,12 @@
 
             <div class="mb-6">
                 <label for="name" class="block text-lg font-medium text-[#0d1b2a]">اسم الخدمة</label>
-                <input type="text" name="name" id="name" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#f7c6a3]" placeholder="اسم الخدمة" required />
+                <input type="text" name="name" id="name" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#f7c6a3]" placeholder="اسم الخدمة"  />
             </div>
 
             <div class="mb-6">
                 <label for="service_type" class="block text-lg font-medium text-[#0d1b2a]">نوع الخدمة</label>
-                <select name="service_type" id="service_type" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#f7c6a3]" required>
+                <select name="service_type" id="service_type" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#f7c6a3]" >
                     {% for service_type in service_types %}
                         <option value="{{ service_type.0 }}">{{ service_type.0 }}</option>
                     {% endfor %}
@@ -31,21 +60,22 @@
 
             <div class="mb-6">
                 <label for="description" class="block text-lg font-medium text-[#0d1b2a]">الوصف</label>
-                <textarea name="description" id="description" rows="4" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#f7c6a3]" placeholder="وصف الخدمة" required></textarea>
+                <textarea name="description" id="description" rows="4" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#f7c6a3]" placeholder="وصف الخدمة" ></textarea>
             </div>
 
             <div class="mb-6">
                 <label for="price" class="block text-lg font-medium text-[#0d1b2a]">السعر</label>
-                <input type="number" name="price" id="price" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#f7c6a3]" placeholder="السعر" required />
+                <input type="number" name="price" id="price" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#f7c6a3]" placeholder="السعر"  />
             </div>
 
             <div class="mb-6">
                 <label for="image" class="block text-lg font-medium text-[#0d1b2a]">صورة الخدمة</label>
-                <input type="file" name="image" id="image" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#f7c6a3]" required />
+                <input type="file" name="image" id="image" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#f7c6a3]"  />
             </div>
 
             <button type="submit" class="w-full bg-[#f7c6a3] text-white py-3 rounded-xl hover:bg-[#e76f51] transition duration-300">إضافة الخدمة</button>
         </form>
+
     </div>
 
     <!-- Right Side: Tips -->

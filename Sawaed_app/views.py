@@ -31,6 +31,12 @@ def index(request):
                }
 
     return render(request,"index.html",context)
+def guest_home(request):
+    services = ServiceListing.objects.all()
+    context = {'services': services, 
+               'service_types': ServiceListing.SERVICE_TYPES
+               }
+    return render(request,"guesthome.html",context)
 
 def base_view_data(request):
     services=ServiceListing.objects.all()
@@ -490,8 +496,8 @@ def checkout(request):
             )
         
         cart_items.delete()
-        messages.success(request,"تم انشاء الطلب بنجاح وسيتم اعلام الفني")
-        return redirect('userhome')
+        messages.success(request,"تم ارسال الطلب بنجاح وسيتم اعلام الفني")
+        return redirect('checkout')
     else:
         cart_items = CartItem.objects.filter(user=request.user)
         context = {"cart_items": cart_items}
@@ -539,7 +545,7 @@ def reject_order(request, order_id):
     order.save()
 
     messages.success(request, "تم رفض الطلب بنجاح")
-    return redirect('userhome')
+    return redirect('my_orders')
 
 def accept_order(request, order_id):
     order = get_object_or_404(ServiceOrder, id=order_id, status='pending')
@@ -562,7 +568,7 @@ def accept_order(request, order_id):
     order.save()
 
     messages.success(request, "تم قبول الطلب بنجاح")
-    return redirect('userhome')
+    return redirect('my_orders')
 
 @login_required
 def notifications_view(request):
@@ -669,6 +675,7 @@ def my_orders(request):
 @require_POST
 @login_required
 def complete_order(request, order_id):
+    
     try:
         order = ServiceOrder.objects.get(id=order_id, client=request.user)
 
@@ -681,7 +688,7 @@ def complete_order(request, order_id):
         return JsonResponse({'status': 'success'}, status=200)
 
     except ServiceOrder.DoesNotExist:
-        return JsonResponse({'status': 'error', 'message': 'Order not found.'}, status=404)
+        return JsonResponse({'status': 'error', 'message': 'لم يتم العثور على الطلب.'}, status=404)
 
 def about_us(request):
     return render(request, 'about_us.html')
