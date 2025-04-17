@@ -692,3 +692,15 @@ def about_us(request):
     return render(request, 'about_us.html')
 def contact_us(request):
     return render(request, 'contact_us.html')
+
+@login_required
+def cancel_order(request, order_id):
+    order = get_object_or_404(ServiceOrder, id=order_id)
+
+    if request.user == order.client and order.status == 'Pending':
+        order.delete()
+        messages.success(request, "تم حذف الطلب بنجاح.")
+    else:
+        messages.error(request, "لا يمكنك حذف هذا الطلب.")
+
+    return redirect('my_orders') 
