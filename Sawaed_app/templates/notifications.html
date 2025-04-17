@@ -17,7 +17,7 @@
             {{ notification.message }}
           </p>
           <small class="text-gray-400 text-xs">{{ notification.created_at|timesince }} مضت</small>
-          {% if user.user_type == "handyman" and notification.service_order.status == 'pending' %}
+          {% if user.user_type == "handyman" and notification.service_order.status == 'Pending' %}
           <div class="flex gap-2 justify-end">
             <form method="post" action="{% url 'accept_order' notification.service_order.id  %}">
               {% csrf_token %}
