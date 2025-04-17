@@ -66,7 +66,7 @@
           </div>
 
           <div class="flex gap-3">
-            {% if user.user_type == 'client' %}
+            {% if user.user_type != 'handyman' %}
               {% if order.status == 'Completed' %}
                 <a href="{% url 'rate_service' service_id=order.service.id %}" 
                    class="px-4 py-2 rounded-lg border-2 border-[#f4a261] text-[#f4a261] hover:bg-[#f4a261] hover:text-white transition duration-300 text-sm font-medium">
