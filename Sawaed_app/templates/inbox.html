@@ -1,71 +1,63 @@
-<head>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
-    <title>الرسائل</title>
-  </head>
-  
-  {% extends 'index.html' %}
-  {% block content %}
-  {% load static %}
-  
-  <div class="container mx-auto p-4">
+{% extends 'index.html' %}
+
+{% block content %}
+<div class="container mx-auto p-4">
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <div class="lg:col-span-2 space-y-6">
-        <div class="bg-white p-6 rounded-3xl shadow-xl space-y-6">
-          <h1 class="text-3xl font-bold text-[#0d1b2a] flex items-center gap-2">
-            📨 الرسائل الواردة
-          </h1>
-  
-          {% for user, last_message in threads %}
-            <div class="p-4 rounded-2xl border transition-all duration-300
-                        {% if not last_message.is_read and last_message.receiver == request.user %}bg-[#f1e0c5] hover:shadow-lg{% else %}bg-[#e4e5e6]{% endif %}">
-              <div class="flex justify-between items-center mb-2">
-                <div class="flex items-center gap-3">
-                  <i class="fas fa-user-circle text-[#f4a261] text-xl"></i>
-                  <p class="text-lg font-semibold text-[#0e1b2a]">{{ user.username }}</p>
-                </div>
-                <span class="text-sm text-gray-500">{{ last_message.timestamp|date:"Y/m/d H:i" }}</span>
-              </div>
-  
-              <p class="text-gray-700">{{ last_message.content|truncatechars:80 }}</p>
-  
-              {% if not last_message.is_read and last_message.receiver == request.user %}
-                <p class="mt-2 text-xs text-[#e76f51] font-semibold uppercase">رسالة جديدة</p>
-              {% endif %}
-  
-              <div class="flex flex-wrap gap-3 mt-4">
-                <a href="{% url 'chat_detail' user.id %}" class="bg-[#e76f51] text-white py-2 px-5 rounded-full hover:bg-[#f7c6a3] transition">
-                  <i class="fas fa-comment-dots"></i> عرض المحادثة
-                </a>
-                <a href="#" class="bg-[#264653] text-white py-2 px-5 rounded-full hover:bg-[#3a4f5c] transition">
-                  <i class="fas fa-trash-alt"></i> حذف
-                </a>
-                {% if not last_message.is_read and last_message.receiver == request.user %}
-                <form method="POST" action="{% url 'mark_as_read' last_message.id %}" class="inline">
-                  {% csrf_token %}
-                  <button type="submit" class="bg-[#e4e5e6] text-[#264653] py-2 px-5 rounded-full hover:bg-[#d1d3d4] transition">
-                    <i class="fas fa-eye"></i> تحديد كمقروء
-                  </button>
-                </form>
-                {% else %}
-                  <span class="text-green-600 font-semibold">✓ مقروء</span>
-                {% endif %}
-              </div>
+        <div class="lg:col-span-2 space-y-6">
+            <div class="bg-white p-6 rounded-3xl shadow-xl space-y-6">
+                <h1 class="text-3xl font-bold text-[#0d1b2a] flex items-center gap-2">
+                    📨 الرسائل الواردة
+                </h1>
+
+                {% for user, last_message in threads %}
+                    <div class="p-4 rounded-2xl border transition-all duration-300
+                                {% if not last_message.is_read and last_message.receiver == request.user %}bg-[#f1e0c5] hover:shadow-lg{% else %}bg-[#e4e5e6]{% endif %}">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="flex items-center gap-3">
+                                <i class="fas fa-user-circle text-[#f4a261] text-xl"></i>
+                                <p class="text-lg font-semibold text-[#0e1b2a]">{{ user.username }}</p>
+                            </div>
+                            <span class="text-sm text-gray-500">{{ last_message.timestamp|date:"Y/m/d H:i" }}</span>
+                        </div>
+
+                        <p class="text-gray-700">{{ last_message.content|truncatechars:80 }}</p>
+
+                        {% if not last_message.is_read and last_message.receiver == request.user %}
+                            <p class="mt-2 text-xs text-[#e76f51] font-semibold uppercase">رسالة جديدة</p>
+                        {% endif %}
+
+                        <div class="flex flex-wrap gap-3 mt-4">
+                            <a href="{% url 'chat_detail' user.id %}" class="bg-[#e76f51] text-white py-2 px-5 rounded-full hover:bg-[#f7c6a3] transition">
+                                <i class="fas fa-comment-dots"></i> عرض المحادثة
+                            </a>
+                            <a href="#" class="bg-[#264653] text-white py-2 px-5 rounded-full hover:bg-[#3a4f5c] transition">
+                                <i class="fas fa-trash-alt"></i> حذف
+                            </a>
+                            {% if not last_message.is_read and last_message.receiver == request.user %}
+                                <form method="POST" action="{% url 'mark_as_read' last_message.id %}" class="inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="bg-[#e4e5e6] text-[#264653] py-2 px-5 rounded-full hover:bg-[#d1d3d4] transition">
+                                        <i class="fas fa-eye"></i> تحديد كمقروء
+                                    </button>
+                                </form>
+                            {% else %}
+                                <span class="text-green-600 font-semibold">✓ مقروء</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="text-center py-6 text-gray-500">
+                        ✨ لا توجد رسائل حالياً ✨
+                    </div>
+                {% endfor %}
             </div>
-          {% empty %}
-            <div class="text-center py-6 text-gray-500">
-              ✨ لا توجد رسائل حالياً ✨
-            </div>
-          {% endfor %}
         </div>
-      </div>
-  
-      <!-- Sidebar (Optional Info or Filters) -->
-      <div class="bg-white p-6 h-[190px] rounded-3xl shadow-xl space-y-6 text-center">
-        <h2 class="text-xl font-bold text-[#0d1b2a]">📌 معلومات</h2>
-        <p class="text-sm text-gray-600">هنا يمكنك إدارة جميع محادثاتك مع مزودي الخدمات والعملاء بكل سهولة.</p>
-      </div>
+
+        <!-- Sidebar (Optional Info or Filters) -->
+        <div class="bg-white p-6 h-[190px] rounded-3xl shadow-xl space-y-6 text-center">
+            <h2 class="text-xl font-bold text-[#0d1b2a]">📌 معلومات</h2>
+            <p class="text-sm text-gray-600">هنا يمكنك إدارة جميع محادثاتك مع مزودي الخدمات والعملاء بكل سهولة.</p>
+        </div>
     </div>
-  </div>
-  
-  {% endblock %}
-  
+</div>
+{% endblock %}

@@ -205,51 +205,63 @@ def service_detail(request, service_id,user_id):
     }
     context.update(base_view_data(request))
     return render(request, 'service_details.html', context)
+
+# Inbox: Display all messages (both sent and received)
 @login_required
 def inbox(request):
     user = request.user
 
-    # Get all the messages for the signed-in user
+    # Get all sent and received messages for the user
     messages = Message.objects.filter(Q(sender=user) | Q(receiver=user))
 
-    # Threads of messages
+    # Dictionary to store the last message in each thread
     threads = {}
     for msg in messages:
+        # Determine the other participant in the thread (sender or receiver)
         other_user = msg.receiver if msg.sender == user else msg.sender
-        if other_user not in threads or msg.timestamp > threads[other_user].timestamp:
-            threads[other_user] = msg  # The last message in the thread
 
-    # Sort the threads by timestamp
+        # Keep the most recent message in the thread
+        if other_user not in threads or msg.timestamp > threads[other_user].timestamp:
+            threads[other_user] = msg
+
+    # Sort the threads by the timestamp of the last message
     sorted_threads = sorted(threads.items(), key=lambda x: x[1].timestamp, reverse=True)
 
     context = {
-        'threads': sorted_threads,
-        'messages_ids': [message.id for message in messages]  # Passing a list of message IDs
+        'threads': sorted_threads,  # Threads sorted by the latest message timestamp
+        'messages_ids': [message.id for message in messages]  # List of message IDs
     }
-    context.update(base_view_data(request))
 
     return render(request, 'inbox.html', context)
+
+# Send a new message
 @login_required
-def send_message(request, recipient_id, service_id):
+def send_message(request, recipient_id):
+    recipient = get_object_or_404(CustomUser, id=recipient_id)
+
     if request.method == 'POST':
-        content = request.POST.get('message')
+        content = request.POST.get('content')
         sender = request.user
-        receiver = get_object_or_404(CustomUser, id=recipient_id)
 
         if content:
             Message.objects.create(
                 sender=sender,
-                receiver=receiver,
-                content=content
+                receiver=recipient,
+                content=content,
+ 
             )
 
-        return redirect('/')
+        return redirect('inbox')
+
+# Count the number of unread messages
 def unread_messages_count(request):
     if request.user.is_authenticated:
-        count = Message.objects.filter(receiver=request.user, is_read=False).count()
+        count = Message.objects.filter(recipient=request.user, is_read=False).count()
     else:
         count = 0
-    return {'unread_messages_count': count}
+    return {'unread_messages_count': count}  # Return the unread messages count
+
+# Mark a message as read
 @login_required
 def mark_as_read(request, message_id):
     message = get_object_or_404(Message, id=message_id, receiver=request.user)
@@ -258,7 +270,7 @@ def mark_as_read(request, message_id):
         message.is_read = True
         message.save()
     
-    return redirect('inbox') 
+    return redirect('inbox')  # Redirect to the inbox page after marking as read
 @login_required
 def chat_detail(request, user_id):
     other_user = get_object_or_404(CustomUser, id=user_id)
@@ -665,10 +677,17 @@ def password_change(request):
 
 
 #the orders display views 
+
 @login_required
 def my_orders(request):
-    orders = ServiceOrder.objects.filter(client=request.user)
-    return render(request, 'my_orders.html', {'orders': orders})
+    if request.user.user_type == 'client':
+        orders = ServiceOrder.objects.filter(client=request.user)
+    elif request.user.user_type == 'handyman':
+        orders = ServiceOrder.objects.filter(service__handyman=request.user)
+    else:
+        orders = ServiceOrder.objects.none()
+    context={'orders': orders}
+    return render(request, 'my_orders.html', context)
 
 @login_required
 def complete_order(request, order_id):

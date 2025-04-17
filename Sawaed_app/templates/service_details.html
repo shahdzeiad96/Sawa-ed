@@ -123,8 +123,7 @@
       
 
       <div class="text-sm text-gray-600 space-y-2 mt-4 text-center w-full">
-        <p><i class="fas fa-star text-[#f4a261]"></i> التقييم العام: {{ handyman.rating }}</p>
-        <p><i class="fas fa-map-marker-alt text-[#f4a261]"></i> الموقع: {{ handyman.location }}</p>
+        <p><i class="fas fa-map-marker-alt text-[#f4a261]"></i> الموقع: {% if handyman.location %}{{ handyman.location }}{% else %}لم يتم تحديد موقع{% endif %}</p>
         <p><i class="fas fa-calendar-check text-[#f4a261]"></i> التوافر: {% if handyman.availability %}متاح{% else %}غير متاح{% endif %}</p>
         <p><i class="fas fa-phone-alt text-[#f4a261]"></i> رقم الهاتف: {{ handyman.user.phone_number }}</p>
       </div>
@@ -142,7 +141,7 @@
     <h2 class="text-xl font-semibold text-[#002244] mb-4 flex items-center gap-2">
       <i data-lucide="message-square"></i> إرسال رسالة
     </h2>
-    <form method="POST" action="{% url 'send-message' recipient.id service.id %}">
+    <form method="POST" action="{% url 'send-message' recipient.id %}">
       {% csrf_token %}
       <textarea name="content" rows="4" class="w-full border border-[#f4a261] rounded-xl p-3 focus:outline-none focus:ring-2 focus:ring-[#f4a261]" placeholder="اكتب رسالتك هنا..."></textarea>
       <button type="submit" class="w-full bg-[#f4a261] hover:bg-[#e07b3b] text-white font-semibold py-2 rounded-xl transition duration-200 mt-4">إرسال</button>
