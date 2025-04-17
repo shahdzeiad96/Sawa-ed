@@ -66,13 +66,11 @@ def register(request):
         password1 = request.POST.get('password1')
         password2 = request.POST.get('password2')
 
-        # تحقق من تطابق كلمة المرور
         if password1 != password2:
             messages.error(request, "كلمتا المرور غير متطابقتين.")
             return render(request, "register.html")
         
         try:
-            # إنشاء المستخدم
             user = CustomUser.objects.create_user(
                 username=username,
                 email=email,
@@ -82,16 +80,14 @@ def register(request):
             )
             user.save()
 
-            # إذا كان المستخدم من نوع HANDYMAN، أنشئ له حساب في HandymanProfile
+
             if user.user_type == CustomUser.UserType.HANDYMAN:
                 HandymanProfile.objects.get_or_create(user=user)
 
             messages.success(request, "تم إنشاء الحساب بنجاح. يمكنك تسجيل الدخول الآن.")
             return redirect('login')
-            return redirect('login')  # إعادة التوجيه إلى صفحة تسجيل الدخول
 
         except IntegrityError:
-            # في حال وجود خطأ في إدخال البيانات مثل تكرار اسم المستخدم أو البريد الإلكتروني
             messages.error(request, "اسم المستخدم أو البريد الإلكتروني مستخدم بالفعل.")
             return render(request, "register.html")
 
@@ -119,6 +115,7 @@ def login(request):
     else:
         return render(request, "login.html")
     
+@login_required
 def cart_view(request):
     cart_items = CartItem.objects.filter(user=request.user)
     
@@ -137,7 +134,7 @@ def cart_view(request):
 
     return render(request, 'cart.html', context)
 
-
+@login_required
 def user_home(request):
     services = ServiceListing.objects.all().order_by('-created_at')
     service_added = request.session.pop('service_added', False)
@@ -152,7 +149,7 @@ def user_home(request):
     }
     context.update(base_view_data(request))
     return render(request,'userhome.html',context)
-
+@login_required
 def add_service(request):
     services = ServiceListing.objects.all()
 
@@ -208,7 +205,7 @@ def service_detail(request, service_id,user_id):
     }
     context.update(base_view_data(request))
     return render(request, 'service_details.html', context)
-
+@login_required
 def inbox(request):
     user = request.user
 
@@ -232,7 +229,7 @@ def inbox(request):
     context.update(base_view_data(request))
 
     return render(request, 'inbox.html', context)
-
+@login_required
 def send_message(request, recipient_id, service_id):
     if request.method == 'POST':
         content = request.POST.get('message')
@@ -253,7 +250,7 @@ def unread_messages_count(request):
     else:
         count = 0
     return {'unread_messages_count': count}
-
+@login_required
 def mark_as_read(request, message_id):
     message = get_object_or_404(Message, id=message_id, receiver=request.user)
     
@@ -262,7 +259,7 @@ def mark_as_read(request, message_id):
         message.save()
     
     return redirect('inbox') 
-
+@login_required
 def chat_detail(request, user_id):
     other_user = get_object_or_404(CustomUser, id=user_id)
     
@@ -299,7 +296,7 @@ def chat_detail(request, user_id):
     context.update(base_view_data(request))
 
     return render(request, 'chat_detail.html', context)
-
+@login_required
 def edit_profile(request):
     context={
 
@@ -348,7 +345,7 @@ def edit_profile(request):
 def logout(request):
     request.session.flush() 
     return redirect('login')
-
+@login_required
 def rate_service(request, service_id):
     service = ServiceListing.objects.get(id=service_id)
     context={"setvice":service}
@@ -428,6 +425,7 @@ def chatbot_response(request):
 
 
 # Add to cart function
+@login_required
 def add_to_cart(request, service_id):
     service = get_object_or_404(ServiceListing, id=service_id)
 
@@ -447,6 +445,7 @@ def add_to_cart(request, service_id):
 
 
 #remove from cart function
+@login_required
 def remove_from_cart(request, order_id):
     order = get_object_or_404(CartItem, id=order_id, user=request.user)
     order.delete()
@@ -522,7 +521,7 @@ def delete_service_ajax(request):
     except ServiceListing.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Service not found or unauthorized.'})
     
-
+@login_required
 def reject_order(request, order_id):
     order= get_object_or_404(ServiceOrder, id=order_id, status='pending')
     if order.handyman != request.user:
@@ -546,7 +545,7 @@ def reject_order(request, order_id):
 
     messages.success(request, "تم رفض الطلب بنجاح")
     return redirect('my_orders')
-
+@login_required
 def accept_order(request, order_id):
     order = get_object_or_404(ServiceOrder, id=order_id, status='pending')
 
@@ -671,7 +670,7 @@ def my_orders(request):
     orders = ServiceOrder.objects.filter(client=request.user)
     return render(request, 'my_orders.html', {'orders': orders})
 
-
+@login_required
 def complete_order(request, order_id):
     # Get  order by  ID
     order = ServiceOrder.objects.get(id=order_id)
