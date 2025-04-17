@@ -75,7 +75,7 @@
                       <div class="flex flex-col space-y-2">
                         <p class="text-sm">{{ notification.message }}</p>
                   
-                        {% if notification.service_order.status == 'pending' %}
+                        {% if notification.service_order.status == 'Pending' %}
                         <div class="flex justify-end space-x-2">
                           <!-- Accept Button -->
                           <form method="post" action="{% url 'accept_order' notification.service_order.id  %}">
