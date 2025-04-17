@@ -11,23 +11,24 @@
 
     <form method="POST">
         {% csrf_token %}
-
         <!-- ⭐ Star Rating -->
         <div class="mb-6">
             <label class="block mb-2 font-semibold text-[#0d1b2a]">اختر تقييمك:</label>
             <div class="flex flex-row-reverse justify-end gap-1" dir="rtl">
-                {% for i in "54321" %}
-                    <input type="radio" name="rating" id="star{{ i }}" value="{{ i }}" class="hidden peer" required />
-                    <label for="star{{ i }}" class="cursor-pointer">
-                        <svg class="w-8 h-8 text-gray-300 peer-checked:text-[#e76f51] peer-hover:text-[#f4a261] hover:text-[#f4a261] transition-all fill-current"
-                                xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                            <path d="M10 15l-5.878 3.09 1.122-6.545L.487 6.91l6.561-.955L10 0l2.952 5.955 6.561.955-4.757 4.635 1.122 6.545z"/>
-                        </svg>
-                    </label>
+            {% for i in "54321" %}
+                <input type="radio" name="rating" id="star{{ i }}" value="{{ i }}" class="hidden peer" required />
+                <label for="star{{ i }}" class="cursor-pointer">
+                    <svg class="w-8 h-8 transition-all fill-current text-gray-300 
+                            peer-checked:text-yellow-400 
+                            hover:text-yellow-300 
+                            peer-hover:text-yellow-300" 
+                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                        <path d="M10 15l-5.878 3.09 1.122-6.545L.487 6.91l6.561-.955L10 0l2.952 5.955 6.561.955-4.757 4.635 1.122 6.545z"/>
+                    </svg>
+                </label>
                 {% endfor %}
             </div>
-        </div>
-
+            </div>
         <!-- Comment -->
         <div class="mb-4">
             <label for="comment" class="block mb-2 font-semibold text-[#0d1b2a]">تعليقك:</label>
@@ -40,4 +41,24 @@
         </button>
     </form>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const stars = document.querySelectorAll('input[name="rating"]');
+      stars.forEach((star) => {
+        star.addEventListener('change', () => {
+          let selected = parseInt(star.value);
+          stars.forEach((s) => {
+            let label = document.querySelector(`label[for="${s.id}"] svg`);
+            if (parseInt(s.value) <= selected) {
+              label.classList.add('text-[#e76f51]');
+              label.classList.remove('text-gray-300');
+            } else {
+              label.classList.remove('text-[#e76f51]');
+              label.classList.add('text-gray-300');
+            }
+          });
+        });
+      });
+    });
+  </script>
 {% endblock %}
