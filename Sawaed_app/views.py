@@ -484,7 +484,7 @@ def checkout(request):
                 client = request.user,
                 service = service,
                 handyman = service.handyman,
-                status = 'pending'
+                status = 'Pending'
             )
             Notifications.objects.create(
                 recipient = service.handyman,
@@ -523,7 +523,7 @@ def delete_service_ajax(request):
     
 @login_required
 def reject_order(request, order_id):
-    order= get_object_or_404(ServiceOrder, id=order_id, status='pending')
+    order= get_object_or_404(ServiceOrder, id=order_id, status='Pending')
     if order.handyman != request.user:
         messages.error(request,"ليس لديك صلاحية رفض أو قبول هذا الطلب")
         return redirect('userhome')
@@ -540,14 +540,14 @@ def reject_order(request, order_id):
     )
 
     # change status of the order
-    order.status = 'rejected'
+    order.status = 'Rejected'
     order.save()
 
     messages.success(request, "تم رفض الطلب بنجاح")
     return redirect('my_orders')
 @login_required
 def accept_order(request, order_id):
-    order = get_object_or_404(ServiceOrder, id=order_id, status='pending')
+    order = get_object_or_404(ServiceOrder, id=order_id, status='Pending')
 
     if order.handyman != request.user:
         messages.error(request, "ليس لديك صلاحية قبول هذا الطلب")
@@ -563,7 +563,7 @@ def accept_order(request, order_id):
         message=f"تم قبول طلبك من قبل {request.user.username}"
     )
     #change the status
-    order.status = 'accepted'
+    order.status = 'Accepted'
     order.save()
 
     messages.success(request, "تم قبول الطلب بنجاح")

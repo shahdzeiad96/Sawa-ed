@@ -23,11 +23,11 @@
               <p class="text-sm text-gray-500">
                 الحالة: 
                 <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold
-                {% if order.status == 'completed' %}
+                {% if order.status == 'Completed' %}
                   bg-green-100 text-green-700
-                {% elif order.status == 'accepted' %}
+                {% elif order.status == 'Accepted' %}
                   bg-blue-100 text-blue-700
-                {% elif order.status == 'rejected' %}
+                {% elif order.status == 'Rejected' %}
                   bg-red-100 text-red-700
                 {% else %}
                   bg-yellow-100 text-yellow-700
@@ -39,18 +39,30 @@
           </div>
 
           <div class="flex gap-3">
-            {% if order.status != 'Completed' %}
-              <a href="{% url 'complete_order' order.id %}" 
-                 class="px-4 py-2 rounded-lg border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition duration-300 text-sm font-medium">
-                <i class="fas fa-check mr-2"></i> إنهاء الطلب
-              </a>
-            {% else %}
-              <a href="{% url 'rate_service' service_id=order.service.id %}" 
-                 class="px-4 py-2 rounded-lg border-2 border-[#f4a261] text-[#f4a261] hover:bg-[#f4a261] hover:text-white transition duration-300 text-sm font-medium">
-                <i class="fas fa-star mr-2"></i> تقييم الخدمة
-              </a>
+            {% if user.user_type == 'client' %}
+              {% if order.status == 'Completed' %}
+                <a href="{% url 'rate_service' service_id=order.service.id %}" 
+                   class="px-4 py-2 rounded-lg border-2 border-[#f4a261] text-[#f4a261] hover:bg-[#f4a261] hover:text-white transition duration-300 text-sm font-medium">
+                  <i class="fas fa-star mr-2"></i> تقييم الخدمة
+                </a>
+              {% elif order.status == 'Pending' %}
+                <a href="{% url 'cancel_order' order.id %}" 
+                   class="px-4 py-2 rounded-lg border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition duration-300 text-sm font-medium">
+                  <i class="fas fa-times mr-2"></i> إلغاء الطلب
+                </a>
+              {% endif %}
+            {% endif %}
+          
+            {% if user.user_type == 'handyman' %}
+              {% if order.status != 'Completed' %}
+                <a href="{% url 'complete_order' order.id %}" 
+                   class="px-4 py-2 rounded-lg border-2 border-green-600 text-green-600 hover:bg-green-600 hover:text-white transition duration-300 text-sm font-medium">
+                  <i class="fas fa-check mr-2"></i> إنهاء الطلب
+                </a>
+              {% endif %}
             {% endif %}
           </div>
+          
 
         </div>
       {% endfor %}
