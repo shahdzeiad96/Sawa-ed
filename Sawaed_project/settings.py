@@ -98,12 +98,8 @@ GEMINI_API_KEY = 'AIzaSyAiPKdEW0oBGNYEDqovSpNYDpqGMMDf5_c'
 #remember to add the password 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'sawaed_db',
-        'USER': 'admin',
-        'PASSWORD': '1q2w3e4r!Sha',
-        'HOST': 'database-1.c9iyu84gct9x.eu-north-1.rds.amazonaws.com',
-        'PORT': '3306',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / "sawaed_db.sqlite3"
     }
 }
 
